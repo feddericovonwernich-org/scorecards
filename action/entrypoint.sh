@@ -375,6 +375,16 @@ if [ -n "$SCORECARDS_REPO" ]; then
             echo "First run for this service - will create initial entry"
         fi
 
+        # Write current checks hash to a well-known location for UI
+        # This is done on every run (outside SKIP_COMMIT check) since it represents
+        # the current state of checks, not service-specific results
+        echo "$CHECKS_HASH" > "current-checks-hash.txt"
+        jq -n --arg hash "$CHECKS_HASH" --argjson count "$CHECKS_COUNT" '{
+            checks_hash: $hash,
+            checks_count: $count,
+            generated_at: (now | todate)
+        }' > "current-checks.json"
+
         # Only update files if there are meaningful changes
         if [ "$SKIP_COMMIT" = "false" ]; then
             # Copy results
@@ -387,15 +397,6 @@ if [ -n "$SCORECARDS_REPO" ]; then
             # Create per-service registry entry (eliminates shared file conflicts)
             mkdir -p "registry/$SERVICE_ORG"
             REGISTRY_FILE="registry/$SERVICE_ORG/$SERVICE_REPO.json"
-
-            # Write current checks hash to a well-known location for UI
-            # This avoids duplicating hash generation logic in JavaScript
-            echo "$CHECKS_HASH" > "current-checks-hash.txt"
-            jq -n --arg hash "$CHECKS_HASH" --argjson count "$CHECKS_COUNT" '{
-                checks_hash: $hash,
-                checks_count: $count,
-                generated_at: (now | todate)
-            }' > "current-checks.json"
 
             # Write this service's registry entry
             jq -n \
@@ -422,11 +423,11 @@ if [ -n "$SCORECARDS_REPO" ]; then
                     checks_count: $checks_count
                 }' > "$REGISTRY_FILE"
 
-            # Commit and push
-            git add results/ badges/ registry/ current-checks.json current-checks-hash.txt
+            # Commit and push service results
+            git add results/ badges/ registry/
 
             if git diff --staged --quiet; then
-                echo -e "${YELLOW}No changes to commit${NC}"
+                echo -e "${YELLOW}No meaningful changes to commit${NC}"
             else
                 git commit -m "Update scorecard for $SERVICE_ORG/$SERVICE_REPO
 
@@ -497,6 +498,25 @@ Commit: $GITHUB_SHA"
                     echo -e "${YELLOW}⚠ Failed to push after $MAX_RETRIES attempts${NC}"
                     cat "$WORK_DIR/git-push.log"
                 fi
+            fi
+        fi
+
+        # Always commit current-checks files (even if service results didn't change)
+        # This ensures the check suite hash is always up-to-date
+        git add current-checks.json current-checks-hash.txt
+
+        if ! git diff --staged --quiet; then
+            echo -e "${BLUE}Committing check suite metadata...${NC}"
+            git commit -m "Update check suite metadata
+
+Checks hash: $CHECKS_HASH
+Checks count: $CHECKS_COUNT"
+
+            if git push origin "$SCORECARDS_BRANCH" > "$WORK_DIR/git-push-checks.log" 2>&1; then
+                echo -e "${GREEN}✓${NC} Check suite metadata committed"
+            else
+                echo -e "${YELLOW}⚠ Failed to push check suite metadata${NC}"
+                cat "$WORK_DIR/git-push-checks.log"
             fi
         fi
     fi
