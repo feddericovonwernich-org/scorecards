@@ -158,16 +158,15 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -b scorecards-install
 
-      - name: Copy workflow template
+      - name: Prepare workflow template for PR description
+        id: prepare-workflow
         run: |
-          mkdir -p .github/workflows
-
-          # Copy template and customize it
+          # Customize template for this repo
           sed -e "s|feddericovonwernich/scorecards|${{ inputs.scorecards-repo }}|g" \
               -e "s|scorecards-branch: 'catalog'|scorecards-branch: '${{ inputs.scorecards-branch }}'|g" \
-              .scorecards-tmp/scorecard-workflow-template.yml > .github/workflows/scorecards.yml
+              .scorecards-tmp/scorecard-workflow-template.yml > /tmp/scorecards-workflow.yml
 
-          echo "✅ Created .github/workflows/scorecards.yml"
+          echo "✅ Prepared workflow template"
 
       - name: Create config template
         run: |
@@ -190,11 +189,10 @@ jobs:
 
       - name: Commit changes
         run: |
-          git add .github/workflows/scorecards.yml .scorecard/config.yml
-          git commit -m "chore: Add Scorecards quality monitoring
+          git add .scorecard/config.yml
+          git commit -m "chore: Add Scorecards config template
 
-          - Add scorecards workflow (runs daily)
-          - Add scorecards config template
+          Adds scorecard configuration file for quality monitoring.
 
           Current score: ${{ needs.run-scorecards.outputs.score }}/100 (${{ needs.run-scorecards.outputs.rank }})"
 
@@ -206,18 +204,14 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.github-token }}
         run: |
-          # Download results to include in PR body
-          RESULTS_FILE="${{ needs.run-scorecards.outputs.results-file }}"
-
-          # Create PR body
-          cat > pr-body.md << 'EOF'
+          # Create PR body with workflow content
+          cat > pr-body.md << 'EOFMAIN'
           ## 🎯 Scorecards Quality Monitoring
 
-          This PR adds automated quality monitoring using Scorecards.
+          This PR adds the configuration file for automated quality monitoring using Scorecards.
 
           ### What's Included
 
-          - **Workflow file**: `.github/workflows/scorecards.yml` - Runs daily to calculate quality scores
           - **Config file**: `.scorecard/config.yml` - Service metadata and configuration
 
           ### Current Score
@@ -226,9 +220,9 @@ jobs:
           **Rank**: ${{ needs.run-scorecards.outputs.rank }}
           **Checks Passed**: ${{ needs.run-scorecards.outputs.passed-checks }}/${{ needs.run-scorecards.outputs.total-checks }}
 
-          ### What Happens After Merge
+          ### What Happens After Setup
 
-          Once merged, scorecards will:
+          Once the workflow is added, scorecards will:
           - ✅ Run daily via cron schedule (configurable)
           - ✅ Post results to the central catalog
           - ✅ Generate quality badges for your README
@@ -236,7 +230,7 @@ jobs:
 
           ### Customize Your Config
 
-          Edit `.scorecard/config.yml` to add:
+          Edit `.scorecard/config.yml` in this PR to add:
           - Team name
           - Service description
           - Links to documentation
@@ -252,7 +246,17 @@ jobs:
           🤖 This PR was automatically created by the Scorecards installation workflow.
           If you close this PR without merging, we'll respect your decision and won't create another one.
           However, scorecards will continue to run daily and results will be available in the Actions tab.
-          EOF
+          EOFMAIN
+
+          # Append workflow content
+          echo "" >> pr-body.md
+          echo "### 📝 Workflow File to Add" >> pr-body.md
+          echo "" >> pr-body.md
+          echo "After merging this PR, create \`.github/workflows/scorecards.yml\` with this content:" >> pr-body.md
+          echo "" >> pr-body.md
+          echo '```yaml' >> pr-body.md
+          cat /tmp/scorecards-workflow.yml >> pr-body.md
+          echo '```' >> pr-body.md
 
           # Create the PR
           gh pr create \
