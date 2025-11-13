@@ -258,6 +258,9 @@ jobs:
           cat /tmp/scorecards-workflow.yml >> pr-body.md
           echo '```' >> pr-body.md
 
+          # Create the label if it doesn't exist
+          gh label create "scorecards-install" --description "Automated scorecards installation PR" --color "0366d6" 2>/dev/null || true
+
           # Create the PR
           gh pr create \
             --title "chore: Add Scorecards quality monitoring" \
