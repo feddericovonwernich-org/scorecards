@@ -59,21 +59,100 @@ Scorecards helps teams understand and improve their services by running automate
 └─────────────────────┘
 ```
 
+## Installation
+
+### For Platform/DevOps Teams
+
+Set up the central scorecards repository for your organization:
+
+#### One-Line Installation
+
+```bash
+export GITHUB_TOKEN=your_github_pat
+curl -fsSL https://raw.githubusercontent.com/feddericovonwernich/scorecards/main/scripts/install.sh | bash
+```
+
+The installation script will:
+1. Validate prerequisites (git, gh CLI, jq)
+2. Prompt for your target repository (org/repo)
+3. Create the repository if it doesn't exist
+4. Set up the main branch with all system code
+5. Create the catalog branch for data storage
+6. Push both branches to your repository
+7. Customize documentation to reference your repository
+8. Configure GitHub Pages to host the catalog
+9. Provide next steps for service integration
+
+#### Prerequisites
+
+- **git**: Version control
+- **gh**: [GitHub CLI](https://cli.github.com/)
+- **jq**: JSON processor
+- **GitHub Personal Access Token** with `repo` and `workflow` permissions
+
+#### Manual Installation
+
+If you prefer to set up manually:
+
+1. Clone or fork this repository to your organization
+2. Create an orphan `catalog` branch:
+   ```bash
+   git checkout --orphan catalog
+   git rm -rf .
+   git checkout main -- docs/
+   mkdir -p results badges registry
+   echo '[]' > registry/services.json
+   git add . && git commit -m "Initialize catalog branch"
+   git push -u origin catalog
+   ```
+3. Enable GitHub Pages: Settings → Pages → Source: `catalog` branch, `/` (root)
+4. Wait for Pages to deploy (check Settings → Pages for the URL)
+
+#### Customization
+
+After installation, you can:
+- Add custom checks in `checks/` directory
+- Customize the catalog UI in `docs/`
+- Adjust check weights in `checks/*/metadata.json`
+- Configure branch protection rules
+
 ## Quick Start
 
 ### For Service Teams
 
-Add this step to your existing CI workflow:
+Once your platform team has installed the central scorecards repository, add this workflow to your service:
 
 ```yaml
-# .github/workflows/ci.yml
-- name: Run Scorecards
-  uses: your-org/scorecards/action@main
-  with:
-    github-token: ${{ secrets.GITHUB_TOKEN }}
+# .github/workflows/scorecards.yml
+name: Scorecards
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  scorecards:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Scorecards
+        uses: feddericovonwernich/scorecards/action@main
+        with:
+          github-token: ${{ secrets.SCORECARDS_TOKEN }}
+          scorecards-repo: 'feddericovonwernich/scorecards'
+          scorecards-branch: 'catalog'  # optional, this is the default
 ```
 
-That's it! The first run will calculate your score and you'll appear in the catalog.
+#### Setting up the Token
+
+Create a GitHub Personal Access Token with `repo` permissions and add it as a secret:
+
+1. Create token: [GitHub Settings → Tokens](https://github.com/settings/tokens/new)
+2. Select `repo` (full control of private repositories)
+3. Add as `SCORECARDS_TOKEN` secret in your service repository
+
+That's it! The next push to main will calculate your score and you'll appear in the catalog.
 
 ### Optional Configuration
 
@@ -114,11 +193,11 @@ score = (sum of passed check weights / sum of all check weights) × 100
 
 ## Badges
 
-Add badges to your README:
+Add badges to your service's README (replace `your-org/your-repo` with your service's org and repo name):
 
 ```markdown
-![Score](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/your-org/scorecards/catalog/badges/your-org/your-repo/score.json)
-![Rank](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/your-org/scorecards/catalog/badges/your-org/your-repo/rank.json)
+![Score](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/feddericovonwernich/scorecards/catalog/badges/your-org/your-repo/score.json)
+![Rank](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/feddericovonwernich/scorecards/catalog/badges/your-org/your-repo/rank.json)
 ```
 
 ## Available Checks
@@ -142,7 +221,7 @@ Want to add a new check? See [docs/CHECKS.md](./docs/CHECKS.md) for the developm
 
 ## Catalog
 
-Visit the [Scorecards Catalog](https://your-org.github.io/scorecards/) to see all services, their scores, and detailed check results.
+Visit the [Scorecards Catalog](https://feddericovonwernich.github.io/scorecards/) to see all services, their scores, and detailed check results.
 
 ## Action Inputs
 
