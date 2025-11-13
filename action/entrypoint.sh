@@ -330,6 +330,8 @@ if [ -n "$SCORECARDS_REPO" ]; then
                 rank: .rank,
                 passed_checks: .passed_checks,
                 total_checks: .total_checks,
+                checks_hash: .checks_hash,
+                checks_count: .checks_count,
                 service: {
                     name: .service.name,
                     team: .service.team,
@@ -348,6 +350,8 @@ if [ -n "$SCORECARDS_REPO" ]; then
                 rank: .rank,
                 passed_checks: .passed_checks,
                 total_checks: .total_checks,
+                checks_hash: .checks_hash,
+                checks_count: .checks_count,
                 service: {
                     name: .service.name,
                     team: .service.team,
