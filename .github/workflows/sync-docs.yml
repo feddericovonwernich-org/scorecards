@@ -12,6 +12,8 @@ jobs:
   sync-docs:
     runs-on: ubuntu-latest
     name: Sync Documentation
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout main branch
