@@ -20,6 +20,9 @@ on:
       scorecards-pat:
         description: 'PAT for pushing to scorecards central repo (optional, only needed if installed)'
         required: false
+      installation-pat:
+        description: 'PAT for creating installation PR with workflow files (required to bypass GitHub security restrictions)'
+        required: false
 
 jobs:
   check-status:
@@ -136,14 +139,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: [check-status, run-scorecards]
     if: needs.check-status.outputs.installed == 'false' && needs.check-status.outputs.pr-exists == 'false'
-    permissions:
-      contents: write
-      pull-requests: write
     steps:
       - name: Checkout service repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.github-token }}
+          token: ${{ secrets.installation-pat || secrets.github-token }}
 
       - name: Checkout scorecards repository for templates
         uses: actions/checkout@v4
@@ -158,15 +158,16 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -b scorecards-install
 
-      - name: Prepare workflow template for PR description
-        id: prepare-workflow
+      - name: Copy workflow template
         run: |
-          # Customize template for this repo
+          mkdir -p .github/workflows
+
+          # Copy template and customize it
           sed -e "s|feddericovonwernich/scorecards|${{ inputs.scorecards-repo }}|g" \
               -e "s|scorecards-branch: 'catalog'|scorecards-branch: '${{ inputs.scorecards-branch }}'|g" \
-              .scorecards-tmp/scorecard-workflow-template.yml > /tmp/scorecards-workflow.yml
+              .scorecards-tmp/scorecard-workflow-template.yml > .github/workflows/scorecards.yml
 
-          echo "✅ Prepared workflow template"
+          echo "✅ Created .github/workflows/scorecards.yml"
 
       - name: Create config template
         run: |
@@ -189,10 +190,11 @@ jobs:
 
       - name: Commit changes
         run: |
-          git add .scorecard/config.yml
-          git commit -m "chore: Add Scorecards config template
+          git add .github/workflows/scorecards.yml .scorecard/config.yml
+          git commit -m "chore: Add Scorecards quality monitoring
 
-          Adds scorecard configuration file for quality monitoring.
+          - Add scorecards workflow (runs daily)
+          - Add scorecards config template
 
           Current score: ${{ needs.run-scorecards.outputs.score }}/100 (${{ needs.run-scorecards.outputs.rank }})"
 
@@ -202,16 +204,20 @@ jobs:
 
       - name: Create Pull Request
         env:
-          GH_TOKEN: ${{ secrets.github-token }}
+          GH_TOKEN: ${{ secrets.installation-pat || secrets.github-token }}
         run: |
-          # Create PR body with workflow content
-          cat > pr-body.md << 'EOFMAIN'
+          # Download results to include in PR body
+          RESULTS_FILE="${{ needs.run-scorecards.outputs.results-file }}"
+
+          # Create PR body
+          cat > pr-body.md << 'EOF'
           ## 🎯 Scorecards Quality Monitoring
 
-          This PR adds the configuration file for automated quality monitoring using Scorecards.
+          This PR adds automated quality monitoring using Scorecards.
 
           ### What's Included
 
+          - **Workflow file**: `.github/workflows/scorecards.yml` - Runs daily to calculate quality scores
           - **Config file**: `.scorecard/config.yml` - Service metadata and configuration
 
           ### Current Score
@@ -220,9 +226,9 @@ jobs:
           **Rank**: ${{ needs.run-scorecards.outputs.rank }}
           **Checks Passed**: ${{ needs.run-scorecards.outputs.passed-checks }}/${{ needs.run-scorecards.outputs.total-checks }}
 
-          ### What Happens After Setup
+          ### What Happens After Merge
 
-          Once the workflow is added, scorecards will:
+          Once merged, scorecards will:
           - ✅ Run daily via cron schedule (configurable)
           - ✅ Post results to the central catalog
           - ✅ Generate quality badges for your README
@@ -230,7 +236,7 @@ jobs:
 
           ### Customize Your Config
 
-          Edit `.scorecard/config.yml` in this PR to add:
+          Edit `.scorecard/config.yml` to add:
           - Team name
           - Service description
           - Links to documentation
@@ -246,17 +252,7 @@ jobs:
           🤖 This PR was automatically created by the Scorecards installation workflow.
           If you close this PR without merging, we'll respect your decision and won't create another one.
           However, scorecards will continue to run daily and results will be available in the Actions tab.
-          EOFMAIN
-
-          # Append workflow content
-          echo "" >> pr-body.md
-          echo "### 📝 Workflow File to Add" >> pr-body.md
-          echo "" >> pr-body.md
-          echo "After merging this PR, create \`.github/workflows/scorecards.yml\` with this content:" >> pr-body.md
-          echo "" >> pr-body.md
-          echo '```yaml' >> pr-body.md
-          cat /tmp/scorecards-workflow.yml >> pr-body.md
-          echo '```' >> pr-body.md
+          EOF
 
           # Create the label if it doesn't exist
           gh label create "scorecards-install" --description "Automated scorecards installation PR" --color "0366d6" 2>/dev/null || true
