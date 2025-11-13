@@ -210,55 +210,107 @@ if [ -n "$SCORECARDS_REPO" ]; then
         mkdir -p "badges/$SERVICE_ORG/$SERVICE_REPO"
         mkdir -p "registry"
 
-        # Copy results
-        cp "$OUTPUT_DIR/final-results.json" "results/$SERVICE_ORG/$SERVICE_REPO/results.json"
+        # Check if results have meaningfully changed
+        SKIP_COMMIT=false
+        OLD_RESULTS_FILE="results/$SERVICE_ORG/$SERVICE_REPO/results.json"
 
-        # Copy badges
-        cp "$SCORE_BADGE_FILE" "badges/$SERVICE_ORG/$SERVICE_REPO/score.json"
-        cp "$RANK_BADGE_FILE" "badges/$SERVICE_ORG/$SERVICE_REPO/rank.json"
+        if [ -f "$OLD_RESULTS_FILE" ]; then
+            echo "Comparing with previous results..."
 
-        # Update or create registry entry
-        REGISTRY_FILE="registry/services.json"
+            # Extract meaningful fields (excluding timestamp, commit_sha, stdout, stderr, duration)
+            OLD_SUMMARY=$(jq -S '{
+                score: .score,
+                rank: .rank,
+                passed_checks: .passed_checks,
+                total_checks: .total_checks,
+                service: {
+                    name: .service.name,
+                    team: .service.team
+                },
+                checks: [.checks[] | {
+                    check_id: .check_id,
+                    status: .status,
+                    exit_code: .exit_code
+                }]
+            }' "$OLD_RESULTS_FILE")
 
-        if [ ! -f "$REGISTRY_FILE" ]; then
-            echo "[]" > "$REGISTRY_FILE"
+            NEW_SUMMARY=$(jq -S '{
+                score: .score,
+                rank: .rank,
+                passed_checks: .passed_checks,
+                total_checks: .total_checks,
+                service: {
+                    name: .service.name,
+                    team: .service.team
+                },
+                checks: [.checks[] | {
+                    check_id: .check_id,
+                    status: .status,
+                    exit_code: .exit_code
+                }]
+            }' "$OUTPUT_DIR/final-results.json")
+
+            if [ "$OLD_SUMMARY" = "$NEW_SUMMARY" ]; then
+                echo -e "${YELLOW}No meaningful changes detected - skipping commit${NC}"
+                SKIP_COMMIT=true
+            else
+                echo "Changes detected - will update catalog"
+            fi
+        else
+            echo "First run for this service - will create initial entry"
         fi
 
-        # Add or update service in registry
-        REGISTRY_ENTRY=$(jq -n \
-            --arg org "$SERVICE_ORG" \
-            --arg repo "$SERVICE_REPO" \
-            --arg name "$SERVICE_NAME" \
-            --arg team "$TEAM_NAME" \
-            --argjson score "$SCORE" \
-            --arg rank "$RANK" \
-            --arg timestamp "$TIMESTAMP" \
-            '{
-                org: $org,
-                repo: $repo,
-                name: $name,
-                team: $team,
-                score: $score,
-                rank: $rank,
-                last_updated: $timestamp
-            }')
+        # Only update files if there are meaningful changes
+        if [ "$SKIP_COMMIT" = "false" ]; then
+            # Copy results
+            cp "$OUTPUT_DIR/final-results.json" "results/$SERVICE_ORG/$SERVICE_REPO/results.json"
 
-        # Update registry (remove old entry if exists, add new entry)
-        jq --argjson entry "$REGISTRY_ENTRY" \
-            --arg org "$SERVICE_ORG" \
-            --arg repo "$SERVICE_REPO" \
-            'map(select(.org != $org or .repo != $repo)) + [$entry]' \
-            "$REGISTRY_FILE" > "$REGISTRY_FILE.tmp"
+            # Copy badges
+            cp "$SCORE_BADGE_FILE" "badges/$SERVICE_ORG/$SERVICE_REPO/score.json"
+            cp "$RANK_BADGE_FILE" "badges/$SERVICE_ORG/$SERVICE_REPO/rank.json"
 
-        mv "$REGISTRY_FILE.tmp" "$REGISTRY_FILE"
+            # Update or create registry entry
+            REGISTRY_FILE="registry/services.json"
 
-        # Commit and push
-        git add results/ badges/ registry/
+            if [ ! -f "$REGISTRY_FILE" ]; then
+                echo "[]" > "$REGISTRY_FILE"
+            fi
 
-        if git diff --staged --quiet; then
-            echo -e "${YELLOW}No changes to commit${NC}"
-        else
-            git commit -m "Update scorecard for $SERVICE_ORG/$SERVICE_REPO
+            # Add or update service in registry
+            REGISTRY_ENTRY=$(jq -n \
+                --arg org "$SERVICE_ORG" \
+                --arg repo "$SERVICE_REPO" \
+                --arg name "$SERVICE_NAME" \
+                --arg team "$TEAM_NAME" \
+                --argjson score "$SCORE" \
+                --arg rank "$RANK" \
+                --arg timestamp "$TIMESTAMP" \
+                '{
+                    org: $org,
+                    repo: $repo,
+                    name: $name,
+                    team: $team,
+                    score: $score,
+                    rank: $rank,
+                    last_updated: $timestamp
+                }')
+
+            # Update registry (remove old entry if exists, add new entry)
+            jq --argjson entry "$REGISTRY_ENTRY" \
+                --arg org "$SERVICE_ORG" \
+                --arg repo "$SERVICE_REPO" \
+                'map(select(.org != $org or .repo != $repo)) + [$entry]' \
+                "$REGISTRY_FILE" > "$REGISTRY_FILE.tmp"
+
+            mv "$REGISTRY_FILE.tmp" "$REGISTRY_FILE"
+
+            # Commit and push
+            git add results/ badges/ registry/
+
+            if git diff --staged --quiet; then
+                echo -e "${YELLOW}No changes to commit${NC}"
+            else
+                git commit -m "Update scorecard for $SERVICE_ORG/$SERVICE_REPO
 
 Score: $SCORE/100
 Rank: $RANK
@@ -266,11 +318,12 @@ Checks: $PASSED_CHECKS/$TOTAL_CHECKS passed
 
 Commit: $GITHUB_SHA"
 
-            if git push origin "$SCORECARDS_BRANCH" > "$WORK_DIR/git-push.log" 2>&1; then
-                echo -e "${GREEN}✓${NC} Results committed to central repository"
-            else
-                echo -e "${YELLOW}⚠ Failed to push to central repository${NC}"
-                cat "$WORK_DIR/git-push.log"
+                if git push origin "$SCORECARDS_BRANCH" > "$WORK_DIR/git-push.log" 2>&1; then
+                    echo -e "${GREEN}✓${NC} Results committed to central repository"
+                else
+                    echo -e "${YELLOW}⚠ Failed to push to central repository${NC}"
+                    cat "$WORK_DIR/git-push.log"
+                fi
             fi
         fi
     fi
