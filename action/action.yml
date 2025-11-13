@@ -24,7 +24,7 @@ inputs:
   scorecards-branch:
     description: 'Branch to commit results to in the central scorecards repo'
     required: false
-    default: 'main'
+    default: 'catalog'
 
 outputs:
   score:

@@ -9,7 +9,7 @@ set -euo pipefail
 GITHUB_TOKEN="${INPUT_GITHUB_TOKEN}"
 CREATE_CONFIG_PR="${INPUT_CREATE_CONFIG_PR:-false}"
 SCORECARDS_REPO="${INPUT_SCORECARDS_REPO}"
-SCORECARDS_BRANCH="${INPUT_SCORECARDS_BRANCH:-main}"
+SCORECARDS_BRANCH="${INPUT_SCORECARDS_BRANCH:-catalog}"
 
 # Extract org and repo from GITHUB_REPOSITORY (format: owner/repo)
 SERVICE_ORG=$(echo "$GITHUB_REPOSITORY" | cut -d'/' -f1)
@@ -196,7 +196,7 @@ if [ -n "$SCORECARDS_REPO" ]; then
     # Clone central repo
     CENTRAL_REPO_DIR="$WORK_DIR/central-repo"
 
-    if ! git clone "https://x-access-token:${GITHUB_TOKEN}@github.com/${SCORECARDS_REPO}.git" "$CENTRAL_REPO_DIR" > "$WORK_DIR/git-clone.log" 2>&1; then
+    if ! git clone -b "$SCORECARDS_BRANCH" "https://x-access-token:${GITHUB_TOKEN}@github.com/${SCORECARDS_REPO}.git" "$CENTRAL_REPO_DIR" > "$WORK_DIR/git-clone.log" 2>&1; then
         echo -e "${YELLOW}⚠ Failed to clone central repository${NC}"
         echo "  Results will not be stored centrally"
         cat "$WORK_DIR/git-clone.log"
