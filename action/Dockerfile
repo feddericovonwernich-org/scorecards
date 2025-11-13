@@ -43,6 +43,9 @@ RUN npm install -g \
     yaml@2.3.4 \
     && npm cache clean --force
 
+# Set NODE_PATH so Node can find globally installed modules
+ENV NODE_PATH=/usr/lib/node_modules
+
 # Set working directory
 WORKDIR /scorecard
 
