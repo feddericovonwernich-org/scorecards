@@ -388,6 +388,15 @@ if [ -n "$SCORECARDS_REPO" ]; then
             mkdir -p "registry/$SERVICE_ORG"
             REGISTRY_FILE="registry/$SERVICE_ORG/$SERVICE_REPO.json"
 
+            # Write current checks hash to a well-known location for UI
+            # This avoids duplicating hash generation logic in JavaScript
+            echo "$CHECKS_HASH" > "current-checks-hash.txt"
+            jq -n --arg hash "$CHECKS_HASH" --argjson count "$CHECKS_COUNT" '{
+                checks_hash: $hash,
+                checks_count: $count,
+                generated_at: (now | todate)
+            }' > "current-checks.json"
+
             # Write this service's registry entry
             jq -n \
                 --arg org "$SERVICE_ORG" \
@@ -414,7 +423,7 @@ if [ -n "$SCORECARDS_REPO" ]; then
                 }' > "$REGISTRY_FILE"
 
             # Commit and push
-            git add results/ badges/ registry/
+            git add results/ badges/ registry/ current-checks.json current-checks-hash.txt
 
             if git diff --staged --quiet; then
                 echo -e "${YELLOW}No changes to commit${NC}"
