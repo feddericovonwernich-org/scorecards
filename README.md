@@ -117,8 +117,8 @@ score = (sum of passed check weights / sum of all check weights) × 100
 Add badges to your README:
 
 ```markdown
-![Score](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/your-org/scorecards/main/badges/your-org/your-repo/score.json)
-![Rank](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/your-org/scorecards/main/badges/your-org/your-repo/rank.json)
+![Score](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/your-org/scorecards/catalog/badges/your-org/your-repo/score.json)
+![Rank](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/your-org/scorecards/catalog/badges/your-org/your-repo/rank.json)
 ```
 
 ## Available Checks

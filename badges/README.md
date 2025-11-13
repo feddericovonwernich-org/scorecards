@@ -50,8 +50,8 @@ badges/acme-corp/api-service/rank.json
 Add badges to your README using shields.io endpoint:
 
 ```markdown
-![Score](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/your-org/scorecards/main/badges/acme-corp/api-service/score.json)
-![Rank](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/your-org/scorecards/main/badges/acme-corp/api-service/rank.json)
+![Score](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/your-org/scorecards/catalog/badges/acme-corp/api-service/score.json)
+![Rank](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/your-org/scorecards/catalog/badges/acme-corp/api-service/rank.json)
 ```
 
 Replace `your-org`, `acme-corp`, and `api-service` with your values.
