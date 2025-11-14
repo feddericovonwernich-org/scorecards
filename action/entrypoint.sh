@@ -451,6 +451,7 @@ if [ -n "$SCORECARDS_REPO" ]; then
                 checks_hash: .checks_hash,
                 checks_count: .checks_count,
                 installed: .installed,
+                recent_contributors: .recent_contributors,
                 service: {
                     name: .service.name,
                     team: .service.team,
@@ -472,6 +473,7 @@ if [ -n "$SCORECARDS_REPO" ]; then
                 checks_hash: .checks_hash,
                 checks_count: .checks_count,
                 installed: .installed,
+                recent_contributors: .recent_contributors,
                 service: {
                     name: .service.name,
                     team: .service.team,
