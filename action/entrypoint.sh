@@ -506,16 +506,6 @@ if [ -n "$SCORECARDS_REPO" ]; then
             fi
         fi
 
-        # Write current checks hash to a well-known location for UI
-        # This is done on every run (outside SKIP_COMMIT check) since it represents
-        # the current state of checks, not service-specific results
-        echo "$CHECKS_HASH" > "current-checks-hash.txt"
-        jq -n --arg hash "$CHECKS_HASH" --argjson count "$CHECKS_COUNT" '{
-            checks_hash: $hash,
-            checks_count: $count,
-            generated_at: (now | todate)
-        }' > "current-checks.json"
-
         # Only update files if there are meaningful changes
         if [ "$SKIP_COMMIT" = "false" ]; then
             # Copy results
@@ -674,6 +664,16 @@ Commit: $GITHUB_SHA"
                 fi
             fi
         fi
+
+        # Write current checks hash to a well-known location for UI
+        # This is done on every run (outside SKIP_COMMIT check) since it represents
+        # the current state of checks, not service-specific results
+        echo "$CHECKS_HASH" > "current-checks-hash.txt"
+        jq -n --arg hash "$CHECKS_HASH" --argjson count "$CHECKS_COUNT" '{
+            checks_hash: $hash,
+            checks_count: $count,
+            generated_at: (now | todate)
+        }' > "current-checks.json"
 
         # Commit current-checks files only if they changed
         # This happens when checks are added, modified, or removed
