@@ -1,0 +1,157 @@
+name: Trigger Service Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      org:
+        description: 'Organization name (for single service trigger)'
+        required: false
+        type: string
+      repo:
+        description: 'Repository name (for single service trigger)'
+        required: false
+        type: string
+      services:
+        description: 'JSON array of services for bulk trigger (format: [{"org":"org1","repo":"repo1"},...])'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  trigger-single:
+    name: Trigger Single Service
+    runs-on: ubuntu-latest
+    if: ${{ inputs.org != '' && inputs.repo != '' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: catalog
+
+      - name: Validate service exists in registry
+        id: validate
+        run: |
+          REGISTRY_FILE="registry/${{ inputs.org }}/${{ inputs.repo }}.json"
+
+          if [ ! -f "$REGISTRY_FILE" ]; then
+            echo "error=Service not found in registry: ${{ inputs.org }}/${{ inputs.repo }}" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+          INSTALLED=$(jq -r '.installed // false' "$REGISTRY_FILE")
+          if [ "$INSTALLED" != "true" ]; then
+            echo "error=Scorecards not installed on service: ${{ inputs.org }}/${{ inputs.repo }}" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+          echo "Service validated: ${{ inputs.org }}/${{ inputs.repo }}"
+
+      - name: Trigger workflow via GitHub API
+        env:
+          GH_TOKEN: ${{ secrets.SCORECARDS_PAT || secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Triggering scorecard workflow for ${{ inputs.org }}/${{ inputs.repo }}"
+
+          # Try to trigger the workflow - first try scorecards.yml, then .github/workflows/scorecards.yml
+          WORKFLOW_FILE="scorecards.yml"
+
+          # Trigger the workflow dispatch event
+          if gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "/repos/${{ inputs.org }}/${{ inputs.repo }}/actions/workflows/${WORKFLOW_FILE}/dispatches" \
+            -f ref='main' 2>/dev/null; then
+            echo "Successfully triggered workflow via main branch"
+          elif gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "/repos/${{ inputs.org }}/${{ inputs.repo }}/actions/workflows/${WORKFLOW_FILE}/dispatches" \
+            -f ref='master' 2>/dev/null; then
+            echo "Successfully triggered workflow via master branch"
+          else
+            echo "Failed to trigger workflow - please check if the workflow file exists and the token has workflow permissions"
+            exit 1
+          fi
+
+          echo "Workflow triggered successfully for ${{ inputs.org }}/${{ inputs.repo }}"
+
+  trigger-bulk:
+    name: Trigger Bulk Services
+    runs-on: ubuntu-latest
+    if: ${{ inputs.services != '' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: catalog
+
+      - name: Parse and trigger services
+        env:
+          GH_TOKEN: ${{ secrets.SCORECARDS_PAT || secrets.GITHUB_TOKEN }}
+          SERVICES_JSON: ${{ inputs.services }}
+        run: |
+          echo "Processing bulk service triggers..."
+
+          # Parse the JSON array
+          SERVICES=$(echo "$SERVICES_JSON" | jq -c '.[]')
+
+          SUCCESS_COUNT=0
+          FAIL_COUNT=0
+
+          for service in $SERVICES; do
+            ORG=$(echo "$service" | jq -r '.org')
+            REPO=$(echo "$service" | jq -r '.repo')
+
+            echo "----------------------------------------"
+            echo "Processing: $ORG/$REPO"
+
+            # Validate service exists and is installed
+            REGISTRY_FILE="registry/$ORG/$REPO.json"
+
+            if [ ! -f "$REGISTRY_FILE" ]; then
+              echo "  ⚠️  Service not found in registry, skipping"
+              ((FAIL_COUNT++))
+              continue
+            fi
+
+            INSTALLED=$(jq -r '.installed // false' "$REGISTRY_FILE")
+            if [ "$INSTALLED" != "true" ]; then
+              echo "  ⚠️  Scorecards not installed, skipping"
+              ((FAIL_COUNT++))
+              continue
+            fi
+
+            # Trigger the workflow
+            WORKFLOW_FILE="scorecards.yml"
+
+            if gh api \
+              --method POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "/repos/$ORG/$REPO/actions/workflows/${WORKFLOW_FILE}/dispatches" \
+              -f ref='main' 2>/dev/null || \
+               gh api \
+              --method POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "/repos/$ORG/$REPO/actions/workflows/${WORKFLOW_FILE}/dispatches" \
+              -f ref='master' 2>/dev/null; then
+              echo "  ✅ Successfully triggered workflow"
+              ((SUCCESS_COUNT++))
+            else
+              echo "  ❌ Failed to trigger workflow"
+              ((FAIL_COUNT++))
+            fi
+
+            # Small delay to avoid rate limiting
+            sleep 1
+          done
+
+          echo "----------------------------------------"
+          echo "Bulk trigger complete:"
+          echo "  ✅ Success: $SUCCESS_COUNT"
+          echo "  ❌ Failed: $FAIL_COUNT"

@@ -72,6 +72,54 @@ rank = platinum (90+), gold (75+), silver (50+), bronze (0+)
 
 **Backwards Compatibility:** Scorecards without `checks_hash` field are automatically marked stale
 
+## Workflow Trigger Feature
+
+**Purpose:** Allow manual re-triggering of scorecard workflows for stale services directly from the catalog UI
+
+**Architecture:**
+- **Backend:** GitHub Action proxy workflow (`.github/workflows/trigger-service-workflow.yml`)
+- **Frontend:** Trigger buttons throughout catalog UI
+- **Authentication:** GitHub Personal Access Token (PAT) with `workflow` scope stored in browser localStorage
+
+**Trigger Locations:**
+1. **Service Cards** - Small refresh icon button on each stale service card in grid view
+2. **Detail Modal** - "Re-run Scorecard" button in staleness warning banner
+3. **Bulk Action** - "Re-run All Stale" button in controls section
+
+**How It Works:**
+1. User clicks trigger button
+2. Browser requests GitHub PAT (if not stored)
+3. Frontend calls GitHub API to dispatch proxy workflow
+4. Proxy workflow validates service in registry and checks if installed
+5. Proxy workflow triggers `workflow_dispatch` event on service repository
+6. Service's scorecard workflow runs automatically
+7. Results update in catalog after completion
+
+**Security:**
+- PAT never exposed in client-side code (stored in localStorage)
+- Proxy workflow validates all inputs
+- Only installed services can be triggered
+- Uses GitHub's native workflow dispatch API
+
+**Key Files:**
+- `.github/workflows/trigger-service-workflow.yml` - Proxy workflow for triggering services
+- `docs/app.js:908-1202` - Trigger functions and token management
+- `docs/app.js:300-360` - Service card trigger button
+- `docs/app.js:380-443` - Detail modal trigger button
+- `docs/index.html:73-78` - Bulk trigger button
+- `docs/styles.css:813-978` - Trigger button and toast notification styles
+
+**User Setup:**
+1. Create GitHub PAT with `workflow` scope
+2. Click any trigger button in catalog
+3. Enter PAT when prompted (stored for future use)
+4. Trigger workflows as needed
+
+**Token Management:**
+- Token stored in browser localStorage (key: `github_token`)
+- Clear token: Use browser console `localStorage.removeItem('github_token')`
+- Invalid tokens automatically cleared on 401 response
+
 ## Tech Stack
 
-Docker (multi-runtime), Bash, jq, shields.io (badges), vanilla HTML/CSS/JS (catalog), Web Crypto API (SHA256)
+Docker (multi-runtime), Bash, jq, shields.io (badges), vanilla HTML/CSS/JS (catalog), Web Crypto API (SHA256), GitHub Actions API (workflow dispatch)
