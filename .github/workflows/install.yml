@@ -255,8 +255,11 @@ jobs:
 
       - name: Create Pull Request
         env:
-          GH_TOKEN: ${{ secrets.installation-pat || secrets.github-token }}
+          GH_TOKEN_RAW: ${{ secrets.installation-pat || secrets.github-token }}
         run: |
+          # Sanitize token by removing any trailing whitespace/newlines
+          export GH_TOKEN=$(echo -n "$GH_TOKEN_RAW" | tr -d '\n\r\t ')
+
           # Download results to include in PR body
           RESULTS_FILE="${{ needs.run-scorecards.outputs.results-file }}"
 
