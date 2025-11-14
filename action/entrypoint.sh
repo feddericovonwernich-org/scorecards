@@ -39,6 +39,31 @@ echo "Commit: $GITHUB_SHA"
 echo
 
 # ============================================================================
+# Fetch PR Info (with fallback if not provided via environment)
+# ============================================================================
+
+# Fallback: Fetch PR info from GitHub if not provided via environment
+if [ -z "${PR_NUMBER:-}" ]; then
+    echo "PR info not provided, checking for existing installation PR..."
+    export GH_TOKEN="$GITHUB_TOKEN"
+
+    pr_data=$(gh pr list --repo "$SERVICE_ORG/$SERVICE_REPO" --label "scorecards-install" --state all --json number,state,url --limit 1 2>/dev/null || echo "[]")
+
+    if [ "$pr_data" != "[]" ]; then
+        PR_NUMBER=$(echo "$pr_data" | jq -r '.[0].number')
+        PR_STATE=$(echo "$pr_data" | jq -r '.[0].state')
+        PR_URL=$(echo "$pr_data" | jq -r '.[0].url')
+        echo -e "${GREEN}✓${NC} Found installation PR #$PR_NUMBER (state: $PR_STATE)"
+    else
+        echo "  No installation PR found"
+    fi
+else
+    echo -e "${GREEN}✓${NC} Using PR info from environment: PR #$PR_NUMBER ($PR_STATE)"
+fi
+
+echo
+
+# ============================================================================
 # Check Configuration File
 # ============================================================================
 
