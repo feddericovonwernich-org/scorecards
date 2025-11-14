@@ -348,9 +348,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [check-status, create-installation-pr-placeholder, run-scorecards]
     if: |
-      always() &&
       needs.check-status.outputs.installed == 'false' &&
-      (needs.check-status.outputs.pr-exists == 'true' || needs.create-installation-pr-placeholder.result == 'success') &&
+      needs.create-installation-pr-placeholder.result == 'success' &&
       needs.run-scorecards.result == 'success'
     steps:
       - name: Checkout service repository
