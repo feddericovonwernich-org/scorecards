@@ -19,6 +19,10 @@ A distributed scorecard system that measures service quality across an organizat
 
 **Flow:** Service CI → Run checks in Docker → Calculate score → Commit to central repo → Update catalog
 
+## Branch Strategy
+
+**main** - All code/docs changes go here. **catalog** - Auto-generated (GitHub Pages). Never push to catalog manually.
+
 ## Key Files
 
 - `action/entrypoint.sh` - Main action logic
