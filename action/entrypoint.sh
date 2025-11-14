@@ -389,6 +389,15 @@ if [ -n "$SCORECARDS_REPO" ]; then
             echo "First run for this service - will create initial entry"
         fi
 
+        # Check if PR state changed (override skip if it did)
+        if [ -n "$PR_NUMBER" ] && [ -n "$PR_STATE" ]; then
+            OLD_PR_STATE=$(jq -r '.installation_pr.state // ""' "registry/$SERVICE_ORG/$SERVICE_REPO.json" 2>/dev/null || echo "")
+            if [ "$OLD_PR_STATE" != "$PR_STATE" ]; then
+                echo "PR state changed: $OLD_PR_STATE → $PR_STATE - forcing catalog update"
+                SKIP_COMMIT=false
+            fi
+        fi
+
         # Write current checks hash to a well-known location for UI
         # This is done on every run (outside SKIP_COMMIT check) since it represents
         # the current state of checks, not service-specific results
