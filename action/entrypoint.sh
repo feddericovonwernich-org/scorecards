@@ -344,6 +344,7 @@ if [ -n "$SCORECARDS_REPO" ]; then
                 total_checks: .total_checks,
                 checks_hash: .checks_hash,
                 checks_count: .checks_count,
+                installed: .installed,
                 service: {
                     name: .service.name,
                     team: .service.team,
@@ -364,6 +365,7 @@ if [ -n "$SCORECARDS_REPO" ]; then
                 total_checks: .total_checks,
                 checks_hash: .checks_hash,
                 checks_count: .checks_count,
+                installed: .installed,
                 service: {
                     name: .service.name,
                     team: .service.team,
