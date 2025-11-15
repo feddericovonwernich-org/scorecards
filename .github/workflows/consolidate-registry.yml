@@ -57,10 +57,11 @@ jobs:
       - name: Check for changes
         id: check_changes
         run: |
-          if git diff --quiet registry/all-services.json; then
-            echo "changed=false" >> $GITHUB_OUTPUT
-          else
+          # Check if file is untracked (new) or modified
+          if [ -n "$(git status --porcelain registry/all-services.json)" ]; then
             echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Commit and push
