@@ -287,6 +287,15 @@ jobs:
           ref: ${{ inputs.scorecards-branch }}
           token: ${{ secrets.SCORECARDS_PAT }}
 
+      - name: Fetch default branch
+        id: fetch-branch
+        env:
+          GH_TOKEN: ${{ secrets.SCORECARDS_PAT || secrets.GITHUB_TOKEN }}
+        run: |
+          DEFAULT_BRANCH=$(gh api "repos/${{ inputs.org }}/${{ inputs.repo }}" --jq '.default_branch' 2>/dev/null || echo "main")
+          echo "default_branch=$DEFAULT_BRANCH" >> $GITHUB_OUTPUT
+          echo "Default branch: $DEFAULT_BRANCH"
+
       - name: Update registry with PR information
         run: |
           REGISTRY_FILE="registry/${{ inputs.org }}/${{ inputs.repo }}.json"
@@ -320,6 +329,7 @@ jobs:
             "org": "${{ inputs.org }}",
             "repo": "${{ inputs.repo }}",
             "installed": false,
+            "default_branch": "${{ steps.fetch-branch.outputs.default_branch }}",
             "installation_pr": {
               "number": ${{ needs.create-pr.outputs.pr-number }},
               "state": "${{ needs.create-pr.outputs.pr-state }}",

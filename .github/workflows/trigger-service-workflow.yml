@@ -57,21 +57,34 @@ jobs:
           # Try to trigger the workflow - first try scorecards.yml, then .github/workflows/scorecards.yml
           WORKFLOW_FILE="scorecards.yml"
 
+          # Read default branch from registry (with fallback to main)
+          REGISTRY_FILE="registry/${{ inputs.org }}/${{ inputs.repo }}.json"
+          DEFAULT_BRANCH=$(jq -r '.default_branch // "main"' "$REGISTRY_FILE")
+          echo "Using default branch: $DEFAULT_BRANCH"
+
           # Trigger the workflow dispatch event
+          # Try registry default branch first, then fallback to main/master
           if gh api \
             --method POST \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             "/repos/${{ inputs.org }}/${{ inputs.repo }}/actions/workflows/${WORKFLOW_FILE}/dispatches" \
+            -f ref="$DEFAULT_BRANCH" 2>/dev/null; then
+            echo "Successfully triggered workflow via $DEFAULT_BRANCH branch"
+          elif gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "/repos/${{ inputs.org }}/${{ inputs.repo }}/actions/workflows/${WORKFLOW_FILE}/dispatches" \
             -f ref='main' 2>/dev/null; then
-            echo "Successfully triggered workflow via main branch"
+            echo "Successfully triggered workflow via main branch (fallback)"
           elif gh api \
             --method POST \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             "/repos/${{ inputs.org }}/${{ inputs.repo }}/actions/workflows/${WORKFLOW_FILE}/dispatches" \
             -f ref='master' 2>/dev/null; then
-            echo "Successfully triggered workflow via master branch"
+            echo "Successfully triggered workflow via master branch (fallback)"
           else
             echo "Failed to trigger workflow - please check if the workflow file exists and the token has workflow permissions"
             exit 1
@@ -128,7 +141,17 @@ jobs:
             # Trigger the workflow
             WORKFLOW_FILE="scorecards.yml"
 
+            # Read default branch from registry (with fallback to main)
+            DEFAULT_BRANCH=$(jq -r '.default_branch // "main"' "$REGISTRY_FILE")
+
+            # Try registry default branch first, then fallback to main/master
             if gh api \
+              --method POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "/repos/$ORG/$REPO/actions/workflows/${WORKFLOW_FILE}/dispatches" \
+              -f ref="$DEFAULT_BRANCH" 2>/dev/null || \
+               gh api \
               --method POST \
               -H "Accept: application/vnd.github+json" \
               -H "X-GitHub-Api-Version: 2022-11-28" \
@@ -155,3 +178,7 @@ jobs:
           echo "Bulk trigger complete:"
           echo "  ✅ Success: $SUCCESS_COUNT"
           echo "  ❌ Failed: $FAIL_COUNT"
+
+          # Exit with success - the bulk operation itself succeeded
+          # Individual failures are informational only
+          exit 0

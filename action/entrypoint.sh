@@ -64,6 +64,18 @@ fi
 echo
 
 # ============================================================================
+# Fetch Default Branch
+# ============================================================================
+
+echo "Fetching default branch..."
+export GH_TOKEN="$GITHUB_TOKEN"
+
+DEFAULT_BRANCH=$(gh api "repos/$SERVICE_ORG/$SERVICE_REPO" --jq '.default_branch' 2>/dev/null || echo "main")
+echo -e "${GREEN}✓${NC} Default branch: $DEFAULT_BRANCH"
+
+echo
+
+# ============================================================================
 # Check Configuration File
 # ============================================================================
 
@@ -534,6 +546,7 @@ if [ -n "$SCORECARDS_REPO" ]; then
                 --arg checks_hash "$CHECKS_HASH"
                 --argjson checks_count "$CHECKS_COUNT"
                 --argjson installed "$INSTALLED"
+                --arg default_branch "$DEFAULT_BRANCH"
             )
 
             # Add PR info if available
@@ -555,6 +568,7 @@ if [ -n "$SCORECARDS_REPO" ]; then
                     checks_hash: $checks_hash,
                     checks_count: $checks_count,
                     installed: $installed,
+                    default_branch: $default_branch,
                     installation_pr: {
                         number: $pr_number,
                         state: $pr_state,
@@ -573,7 +587,8 @@ if [ -n "$SCORECARDS_REPO" ]; then
                     has_api: $has_api,
                     checks_hash: $checks_hash,
                     checks_count: $checks_count,
-                    installed: $installed
+                    installed: $installed,
+                    default_branch: $default_branch
                 }'
             fi
 
