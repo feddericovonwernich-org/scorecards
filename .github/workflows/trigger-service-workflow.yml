@@ -127,14 +127,14 @@ jobs:
 
             if [ ! -f "$REGISTRY_FILE" ]; then
               echo "  ⚠️  Service not found in registry, skipping"
-              ((FAIL_COUNT++))
+              FAIL_COUNT=$((FAIL_COUNT + 1))
               continue
             fi
 
             INSTALLED=$(jq -r '.installed // false' "$REGISTRY_FILE")
             if [ "$INSTALLED" != "true" ]; then
               echo "  ⚠️  Scorecards not installed, skipping"
-              ((FAIL_COUNT++))
+              FAIL_COUNT=$((FAIL_COUNT + 1))
               continue
             fi
 
@@ -164,10 +164,10 @@ jobs:
               "/repos/$ORG/$REPO/actions/workflows/${WORKFLOW_FILE}/dispatches" \
               -f ref='master' 2>/dev/null; then
               echo "  ✅ Successfully triggered workflow"
-              ((SUCCESS_COUNT++))
+              SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
             else
               echo "  ❌ Failed to trigger workflow"
-              ((FAIL_COUNT++))
+              FAIL_COUNT=$((FAIL_COUNT + 1))
             fi
 
             # Small delay to avoid rate limiting
