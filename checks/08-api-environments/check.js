@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 // Check: API Environment Configuration
 
-const fs = require('fs');
-const path = require('path');
-const yaml = require('yaml');
-const commonPaths = require('../lib/common-paths.js');
+import fs from 'fs';
+import path from 'path';
+import yaml from 'yaml';
+import commonPaths from '../lib/common-paths.js';
 
 const repoPath = process.env.SCORECARD_REPO_PATH || '.';
 

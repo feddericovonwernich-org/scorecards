@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // Check: Scorecard Config Quality
 
-const fs = require('fs');
-const path = require('path');
-const yaml = require('yaml');
+import fs from 'fs';
+import path from 'path';
+import yaml from 'yaml';
 
 const repoPath = process.env.SCORECARD_REPO_PATH || '.';
 const configPath = path.join(repoPath, '.scorecard', 'config.yml');

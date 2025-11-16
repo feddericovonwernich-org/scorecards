@@ -76,4 +76,4 @@ const commonPaths = {
   ]
 };
 
-module.exports = commonPaths;
+export default commonPaths;

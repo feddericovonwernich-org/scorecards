@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // Check: OpenAPI Specification Detection & Validation
 
-const fs = require('fs');
-const path = require('path');
-const commonPaths = require('../lib/common-paths.js');
+import fs from 'fs';
+import path from 'path';
+import commonPaths from '../lib/common-paths.js';
 
 const repoPath = process.env.SCORECARD_REPO_PATH || '.';
 
@@ -32,7 +32,7 @@ const specFile = foundFiles[0];
 async function validateSpec() {
     try {
         // Try to load swagger-parser
-        const SwaggerParser = require('@apidevtools/swagger-parser');
+        const SwaggerParser = (await import('@apidevtools/swagger-parser')).default;
 
         // Parse and validate the OpenAPI spec
         const api = await SwaggerParser.validate(specFile.fullPath);

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // Check: OpenAPI Quality Metrics
 
-const fs = require('fs');
-const path = require('path');
-const commonPaths = require('../lib/common-paths.js');
+import fs from 'fs';
+import path from 'path';
+import commonPaths from '../lib/common-paths.js';
 
 const repoPath = process.env.SCORECARD_REPO_PATH || '.';
 
@@ -29,7 +29,7 @@ const specFile = foundFiles[0];
 
 async function assessQuality() {
     try {
-        const SwaggerParser = require('@apidevtools/swagger-parser');
+        const SwaggerParser = (await import('@apidevtools/swagger-parser')).default;
 
         // Parse the OpenAPI spec (validation happens in check 06)
         const api = await SwaggerParser.parse(specFile.fullPath);

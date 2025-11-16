@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // Check: CI configuration existence
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 const repoPath = process.env.SCORECARD_REPO_PATH || '.';
 
