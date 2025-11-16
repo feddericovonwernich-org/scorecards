@@ -321,13 +321,22 @@ jobs:
 
             mv "$REGISTRY_FILE.tmp" "$REGISTRY_FILE"
           else
-            echo "Registry file doesn't exist yet, creating minimal entry..."
+            echo "Registry file doesn't exist yet, creating full registry entry..."
 
-            # Create a minimal registry entry with just the PR info
+            # Create a complete registry entry to prevent "new format" message on first run
+            TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
             cat > "$REGISTRY_FILE" << EOF
           {
             "org": "${{ inputs.org }}",
             "repo": "${{ inputs.repo }}",
+            "name": "${{ inputs.repo }}",
+            "team": "",
+            "score": 0,
+            "rank": "bronze",
+            "last_updated": "$TIMESTAMP",
+            "has_api": false,
+            "checks_hash": "",
+            "checks_count": 0,
             "installed": false,
             "default_branch": "${{ steps.fetch-branch.outputs.default_branch }}",
             "installation_pr": {

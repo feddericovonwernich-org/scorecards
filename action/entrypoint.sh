@@ -579,7 +579,7 @@ Checks: $PASSED_CHECKS/$TOTAL_CHECKS passed
 Commit: $GITHUB_SHA"
 
                 # Retry loop with exponential backoff to handle concurrent pushes
-                MAX_RETRIES=5
+                MAX_RETRIES=10
                 RETRY_COUNT=0
                 PUSH_SUCCESS=false
 
@@ -630,9 +630,12 @@ Commit: $GITHUB_SHA"
                                 git add "$REGISTRY_FILE"
                                 git commit --amend --no-edit
 
-                                # Exponential backoff with jitter (5-15 seconds)
-                                BACKOFF=$((5 + RETRY_COUNT * 2 + RANDOM % 5))
-                                echo "Retrying in ${BACKOFF}s..."
+                                # Progressive exponential backoff with jitter to prevent thundering herd
+                                # Base: 5s, increases by 5s per retry, plus 0-5s random jitter
+                                BASE_BACKOFF=$((5 + RETRY_COUNT * 5))
+                                JITTER=$((RANDOM % 6))
+                                BACKOFF=$((BASE_BACKOFF + JITTER))
+                                echo "Retrying in ${BACKOFF}s (attempt $((RETRY_COUNT + 1))/$MAX_RETRIES)..."
                                 sleep $BACKOFF
                             else
                                 echo -e "${YELLOW}⚠ Rebase failed${NC}"
