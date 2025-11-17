@@ -31,6 +31,9 @@ import * as workflowTriggers from './api/workflow-triggers.js';
 import * as auth from './services/auth.js';
 import * as staleness from './services/staleness.js';
 
+// Application initialization
+import * as appInit from './app-init.js';
+
 // Export modules to window for backward compatibility with app.js
 // This allows the existing app.js to use the modular functions
 window.ScorecardModules = {
@@ -53,7 +56,8 @@ window.ScorecardModules = {
     github,
     workflowTriggers,
     auth,
-    staleness
+    staleness,
+    appInit
 };
 
 // Export individual functions to global scope for easier access
@@ -167,6 +171,10 @@ window.installService = workflowTriggers.installService;
 window.triggerBulkWorkflows = workflowTriggers.triggerBulkWorkflows;
 window.handleBulkTrigger = workflowTriggers.handleBulkTrigger;
 
+// Application initialization
+window.filterAndRenderServices = appInit.filterAndRenderServices;
+window.refreshData = appInit.refreshData;
+
 // Log initialization
 console.log('✓ ES6 Modules loaded successfully');
 console.log('Available modules:', Object.keys(window.ScorecardModules));
@@ -253,6 +261,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Setup event listeners
     setupEventListeners();
 
+    // Initialize application (load services and render)
+    appInit.initializeApp();
+
     console.log('✓ Modal handlers and event listeners initialized');
 });
 
@@ -277,5 +288,6 @@ export {
     github,
     workflowTriggers,
     auth,
-    staleness
+    staleness,
+    appInit
 };
