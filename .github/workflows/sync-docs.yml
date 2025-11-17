@@ -31,12 +31,9 @@ jobs:
 
       - name: Sync catalog UI files
         run: |
-          # Copy catalog UI files from main to catalog branch root
+          # Sync entire docs directory from main to catalog branch
           # The catalog branch serves these files via GitHub Pages from /docs directory
-          cp -f main-repo/docs/index.html catalog-repo/
-          cp -f main-repo/docs/api-explorer.html catalog-repo/
-          cp -f main-repo/docs/app.js catalog-repo/
-          cp -f main-repo/docs/styles.css catalog-repo/
+          rsync -av --delete main-repo/docs/ catalog-repo/docs/
 
       - name: Commit and push to catalog
         run: |
@@ -45,7 +42,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add index.html api-explorer.html app.js styles.css
+          git add docs/
 
           if git diff --staged --quiet; then
             echo "No changes to catalog UI, skipping commit"
