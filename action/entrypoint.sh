@@ -128,10 +128,17 @@ else
     HAS_API="false"
 fi
 
-log_info "Service Name: $SERVICE_NAME"
-log_info "Team: ${TEAM_NAME:-<not set>}"
-log_info "Links: $(echo "$LINKS_JSON" | jq length) link(s)"
-log_info "Has API: $HAS_API"
+log_info "========================================"
+log_info "DEBUG: Configuration Variables"
+log_info "========================================"
+log_info "Service Name: [$SERVICE_NAME]"
+log_info "Team: [${TEAM_NAME:-<not set>}]"
+log_info "Has API: [$HAS_API]"
+log_info "LINKS_JSON length: ${#LINKS_JSON}"
+log_info "LINKS_JSON (first 200 chars): ${LINKS_JSON:0:200}"
+log_info "OPENAPI_JSON length: ${#OPENAPI_JSON}"
+log_info "OPENAPI_JSON (first 200 chars): ${OPENAPI_JSON:0:200}"
+echo
 
 # Check if scorecards workflow is installed
 INSTALLED="false"
@@ -195,6 +202,13 @@ RANK=$(jq -r '.rank' "$SCORE_FILE")
 PASSED_CHECKS=$(jq -r '.passed_checks' "$SCORE_FILE")
 TOTAL_CHECKS=$(jq -r '.total_checks' "$SCORE_FILE")
 
+log_info "========================================"
+log_info "DEBUG: Score Variables"
+log_info "========================================"
+log_info "SCORE: [$SCORE] (length: ${#SCORE})"
+log_info "RANK: [$RANK]"
+log_info "PASSED_CHECKS: [$PASSED_CHECKS] (length: ${#PASSED_CHECKS})"
+log_info "TOTAL_CHECKS: [$TOTAL_CHECKS] (length: ${#TOTAL_CHECKS})"
 echo
 
 # ============================================================================
@@ -219,11 +233,16 @@ log_info "Generating check suite hash..."
 # Use update-checks-hash.sh to generate the hash (single source of truth)
 CHECKS_HASH=$(bash "$ACTION_DIR/utils/update-checks-hash.sh" --hash-only)
 
-# Count the number of check directories
-CHECKS_COUNT=$(find "$CHECKS_DIR" -mindepth 1 -maxdepth 1 -type d | wc -l)
+# Count the number of check directories (trim whitespace from wc -l)
+CHECKS_COUNT=$(find "$CHECKS_DIR" -mindepth 1 -maxdepth 1 -type d | wc -l | xargs)
 
+log_info "========================================"
+log_info "DEBUG: Check Suite Variables"
+log_info "========================================"
 log_info "Checks hash: $CHECKS_HASH"
-log_info "Checks count: $CHECKS_COUNT"
+log_info "Checks count (raw): [$CHECKS_COUNT] (length: ${#CHECKS_COUNT})"
+log_info "Checks count (hex dump): $(echo -n "$CHECKS_COUNT" | od -A n -t x1)"
+echo
 
 # ============================================================================
 # Analyze Recent Contributors
@@ -237,6 +256,19 @@ if [ -z "$CONTRIBUTORS_JSON" ] || ! echo "$CONTRIBUTORS_JSON" | jq empty 2>/dev/
     CONTRIBUTORS_JSON="[]"
 fi
 
+log_info "========================================"
+log_info "DEBUG: Contributors JSON"
+log_info "========================================"
+log_info "CONTRIBUTORS_JSON length: ${#CONTRIBUTORS_JSON}"
+log_info "CONTRIBUTORS_JSON (first 500 chars): ${CONTRIBUTORS_JSON:0:500}"
+if echo "$CONTRIBUTORS_JSON" | jq empty 2>/dev/null; then
+    log_info "CONTRIBUTORS_JSON is valid JSON"
+    log_info "Contributors count: $(echo "$CONTRIBUTORS_JSON" | jq 'length')"
+else
+    log_error "CONTRIBUTORS_JSON is INVALID JSON"
+fi
+echo
+
 # ============================================================================
 # Create Final Results JSON
 # ============================================================================
@@ -249,6 +281,19 @@ if [ -z "$CHECKS_JSON" ] || ! echo "$CHECKS_JSON" | jq empty 2>/dev/null; then
     log_error "Results file is empty or contains invalid JSON"
     CHECKS_JSON="[]"
 fi
+
+log_info "========================================"
+log_info "DEBUG: Checks JSON"
+log_info "========================================"
+log_info "CHECKS_JSON length: ${#CHECKS_JSON}"
+log_info "CHECKS_JSON (first 500 chars): ${CHECKS_JSON:0:500}"
+if echo "$CHECKS_JSON" | jq empty 2>/dev/null; then
+    log_info "CHECKS_JSON is valid JSON"
+    log_info "Checks array length: $(echo "$CHECKS_JSON" | jq 'length')"
+else
+    log_error "CHECKS_JSON is INVALID JSON"
+fi
+echo
 
 # Group related data into associative arrays for cleaner function calls
 declare -A service_context=(
@@ -269,6 +314,26 @@ declare -A score_context=(
     [checks_count]="$CHECKS_COUNT"
     [installed]="$INSTALLED"
 )
+
+log_info "========================================"
+log_info "DEBUG: About to call build_results_json"
+log_info "========================================"
+log_info "All variables being passed:"
+log_info "  service_context[org]: ${service_context[org]}"
+log_info "  service_context[repo]: ${service_context[repo]}"
+log_info "  service_context[name]: ${service_context[name]}"
+log_info "  service_context[team]: ${service_context[team]}"
+log_info "  service_context[has_api]: ${service_context[has_api]}"
+log_info "  service_context[default_branch]: ${service_context[default_branch]}"
+log_info "  score_context[score]: ${score_context[score]}"
+log_info "  score_context[rank]: ${score_context[rank]}"
+log_info "  score_context[passed_checks]: ${score_context[passed_checks]}"
+log_info "  score_context[total_checks]: ${score_context[total_checks]}"
+log_info "  score_context[checks_hash]: ${score_context[checks_hash]}"
+log_info "  score_context[checks_count]: [${score_context[checks_count]}] (length: ${#score_context[checks_count]})"
+log_info "  score_context[installed]: ${score_context[installed]}"
+log_info "  TIMESTAMP: $TIMESTAMP"
+echo
 
 # Build final results using context arrays
 FINAL_RESULTS=$(build_results_json \
