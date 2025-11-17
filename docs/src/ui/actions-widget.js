@@ -5,6 +5,7 @@
 
 import { escapeHtml, formatDuration, formatInterval } from '../utils/formatting.js';
 import { showToast } from './toast.js';
+import { getToken } from '../services/auth.js';
 
 // Widget State
 let widgetOpen = false;
@@ -19,7 +20,7 @@ const WIDGET_CACHE_TTL = 15000; // 15 seconds cache
 
 /**
  * Initialize the widget
- * Uses global variables: githubPAT, REPO_OWNER, REPO_NAME
+ * Uses global variables: REPO_OWNER, REPO_NAME
  * @returns {void}
  */
 export function initializeActionsWidget() {
@@ -41,7 +42,7 @@ export function initializeActionsWidget() {
     }
 
     // Start polling if PAT is available
-    if (githubPAT) {
+    if (getToken()) {
         startWidgetPolling();
     }
 }
@@ -60,7 +61,7 @@ export function toggleActionsWidget() {
         toggle.classList.add('active');
 
         // Fetch data when opening if PAT is available
-        if (githubPAT) {
+        if (getToken()) {
             fetchWorkflowRuns();
         }
     } else {
@@ -71,7 +72,6 @@ export function toggleActionsWidget() {
 
 /**
  * Start polling for workflow runs
- * Uses global variables: githubPAT
  * @returns {void}
  */
 export function startWidgetPolling() {
@@ -111,11 +111,11 @@ export function stopWidgetPolling() {
 
 /**
  * Fetch workflow runs from GitHub Actions API
- * Uses global variables: githubPAT, REPO_OWNER, REPO_NAME
+ * Uses global variables: REPO_OWNER, REPO_NAME
  * @returns {Promise<void>}
  */
 export async function fetchWorkflowRuns() {
-    if (!githubPAT) {
+    if (!getToken()) {
         renderWidgetEmpty('no-pat');
         return;
     }
@@ -133,7 +133,7 @@ export async function fetchWorkflowRuns() {
             `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/runs?per_page=25&_t=${Date.now()}`,
             {
                 headers: {
-                    'Authorization': `token ${githubPAT}`,
+                    'Authorization': `token ${getToken()}`,
                     'Accept': 'application/vnd.github.v3+json'
                 },
                 cache: 'no-cache'
@@ -399,7 +399,6 @@ export async function refreshActionsWidget() {
 
 /**
  * Change polling interval
- * Uses global variables: githubPAT
  * @returns {void}
  */
 export function changePollingInterval() {
@@ -411,7 +410,7 @@ export function changePollingInterval() {
     currentPollingInterval = newInterval;
 
     // Restart polling with new interval (if PAT is available)
-    if (githubPAT) {
+    if (getToken()) {
         startWidgetPolling();
     }
 
@@ -460,12 +459,11 @@ function renderWidgetEmpty(reason, errorMessage = '') {
 /**
  * Handle PAT save - restart widget polling
  * This should be called after PAT is saved
- * Uses global variables: githubPAT
  * @returns {void}
  */
 export function handlePATSaved() {
     // Start widget polling if PAT was saved successfully
-    if (githubPAT) {
+    if (getToken()) {
         startWidgetPolling();
     }
 }
