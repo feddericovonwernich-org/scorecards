@@ -25,6 +25,10 @@ log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
+log_debug() {
+    echo -e "${BLUE}[DEBUG]${NC} $1"
+}
+
 # Error handling
 set_error_handling() {
     set -e

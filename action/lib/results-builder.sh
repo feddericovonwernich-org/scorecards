@@ -26,16 +26,16 @@ build_results_json() {
     local checks_count="${scr[checks_count]}"
     local installed="${scr[installed]}"
 
-    log_info "DEBUG [build_results_json]: Extracted values:"
-    log_info "  score=[$score], rank=[$rank]"
-    log_info "  passed_checks=[$passed_checks], total_checks=[$total_checks]"
-    log_info "  checks_hash=[$checks_hash]"
-    log_info "  checks_count=[$checks_count] (length: ${#checks_count})"
-    log_info "  installed=[$installed]"
-    log_info "  contributors_json length: ${#contributors_json}"
-    log_info "  checks_json length: ${#checks_json}"
-    log_info "  links_json length: ${#links_json}"
-    log_info "  openapi_json length: ${#openapi_json}"
+    log_debug "[build_results_json] Extracted values:"
+    log_debug "  score=[$score], rank=[$rank]"
+    log_debug "  passed_checks=[$passed_checks], total_checks=[$total_checks]"
+    log_debug "  checks_hash=[$checks_hash]"
+    log_debug "  checks_count=[$checks_count] (length: ${#checks_count})"
+    log_debug "  installed=[$installed]"
+    log_debug "  contributors_json length: ${#contributors_json}"
+    log_debug "  checks_json length: ${#checks_json}"
+    log_debug "  links_json length: ${#links_json}"
+    log_debug "  openapi_json length: ${#openapi_json}"
 
     # Build the complete results JSON
     jq -n \
