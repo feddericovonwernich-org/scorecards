@@ -69,6 +69,66 @@ export async function mockCatalogRequests(page) {
       await route.continue();
     }
   });
+
+  // Mock GitHub API rate_limit endpoint
+  await page.route('**/api.github.com/rate_limit', async (route) => {
+    const headers = route.request().headers();
+    const hasAuth = headers['authorization'] && headers['authorization'].startsWith('token ');
+
+    console.log('Mock intercepted: api.github.com/rate_limit', hasAuth ? '(authenticated)' : '(unauthenticated)');
+
+    await route.fulfill({
+      status: 200,
+      body: JSON.stringify({
+        rate: {
+          limit: hasAuth ? 5000 : 60,
+          remaining: hasAuth ? 4999 : 59,
+          reset: Math.floor(Date.now() / 1000) + 3600,
+          used: hasAuth ? 1 : 1
+        }
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  });
+
+  // Mock GitHub API user endpoint (for PAT validation)
+  await page.route('**/api.github.com/user', async (route) => {
+    const headers = route.request().headers();
+    const hasAuth = headers['authorization'] && headers['authorization'].startsWith('token ');
+
+    console.log('Mock intercepted: api.github.com/user', hasAuth ? '(authenticated)' : '(unauthenticated)');
+
+    if (hasAuth) {
+      await route.fulfill({
+        status: 200,
+        body: JSON.stringify({
+          login: 'testuser',
+          id: 12345,
+          name: 'Test User'
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+    } else {
+      await route.fulfill({
+        status: 401,
+        body: JSON.stringify({
+          message: 'Requires authentication'
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+    }
+  });
+
+  // CRITICAL FIX: Wait to ensure route handler is fully registered
+  // This prevents race condition where page.goto() happens before route is active
+  // Small delay (100ms) is sufficient for Playwright to complete route setup
+  await page.waitForTimeout(100);
 }
 
 /**
@@ -107,6 +167,8 @@ export async function openServiceModal(page, serviceName) {
   await page.getByText(serviceName, { exact: false }).first().click();
   // Wait for modal to open
   await page.waitForSelector('#service-modal', { state: 'visible' });
+  // Wait for check results to load (they load asynchronously after modal opens)
+  await page.waitForSelector('#service-modal .check-result', { state: 'visible', timeout: 5000 });
 }
 
 /**

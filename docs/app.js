@@ -2131,12 +2131,14 @@ function updateWidgetState() {
         unlockedIcon.style.display = 'none';
         lockedIcon.style.display = 'block';
         settingsBtn.title = 'Settings (PAT loaded)';
+        settingsBtn.setAttribute('aria-label', 'Settings (PAT loaded)');
     } else {
         // No PAT - show unlocked icon
         settingsBtn.classList.remove('has-token');
         unlockedIcon.style.display = 'block';
         lockedIcon.style.display = 'none';
         settingsBtn.title = 'Settings';
+        settingsBtn.setAttribute('aria-label', 'Settings');
     }
 }
 
