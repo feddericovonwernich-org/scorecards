@@ -132,7 +132,8 @@ function renderModalStats(data) {
 
         ${data.service.team ? `<p><strong>Team:</strong> ${escapeHtml(data.service.team)}</p>` : ''}
         <p><strong>Last Run:</strong> ${formatDate(data.timestamp)}</p>
-        <p><strong>Commit:</strong> <code>${data.commit_sha.substring(0, 7)}</code></p>
+        ${data.commit_sha ? `<p><strong>Commit:</strong> <code>${data.commit_sha.substring(0, 7)}</code></p>` : ''}
+        ${data.recent_contributors && data.recent_contributors.length > 0 && data.recent_contributors[0].last_commit_hash ? `<p><strong>Last Commit:</strong> <code>${data.recent_contributors[0].last_commit_hash}</code></p>` : ''}
         ${data.installation_pr && data.installation_pr.updated_at ? `
         <p><strong>PR Status Updated:</strong> ${formatRelativeTime(data.installation_pr.updated_at)}
             <span style="color: #999; font-size: 0.9em;" title="${new Date(data.installation_pr.updated_at).toLocaleString()}">(${new Date(data.installation_pr.updated_at).toLocaleString()})</span>
