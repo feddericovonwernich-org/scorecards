@@ -9,7 +9,7 @@ get_pr_info() {
 
     validate_params "get_pr_info" "org" "$org" "repo" "$repo" "token" "$github_token" || return 1
 
-    log_info "Fetching PR info for $org/$repo"
+    log_info "Fetching PR info for $org/$repo" >&2
 
     export GH_TOKEN="$github_token"
 
@@ -32,7 +32,7 @@ get_default_branch() {
 
     validate_params "get_default_branch" "org" "$org" "repo" "$repo" "token" "$github_token" || return 1
 
-    log_info "Fetching default branch for $org/$repo"
+    log_info "Fetching default branch for $org/$repo" >&2
 
     export GH_TOKEN="$github_token"
 
