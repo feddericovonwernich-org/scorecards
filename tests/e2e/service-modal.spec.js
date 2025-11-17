@@ -216,4 +216,86 @@ test.describe('Service Modal', () => {
     const refreshButton = modal.getByRole('button', { name: 'Refresh Data' });
     await expect(refreshButton).toBeVisible();
   });
+
+  test('should display check categories', async ({ page }) => {
+    await openServiceModal(page, 'test-repo-perfect');
+
+    const modal = page.locator('#service-modal');
+    const categories = modal.locator('.check-category');
+
+    const count = await categories.count();
+    expect(count).toBeGreaterThan(0); // Should have at least one category
+  });
+
+  test('should have all expected categories', async ({ page }) => {
+    await openServiceModal(page, 'test-repo-perfect');
+
+    const modal = page.locator('#service-modal');
+
+    // Check for expected categories (at minimum these should exist)
+    await expect(modal.locator('.category-name').filter({ hasText: 'Scorecards Setup' })).toBeVisible();
+    await expect(modal.locator('.category-name').filter({ hasText: 'Documentation' })).toBeVisible();
+  });
+
+  test('should show categories expanded by default', async ({ page }) => {
+    await openServiceModal(page, 'test-repo-perfect');
+
+    const modal = page.locator('#service-modal');
+    const categories = modal.locator('.check-category');
+
+    // Check that categories have the 'open' attribute
+    const firstCategory = categories.first();
+    const isOpen = await firstCategory.getAttribute('open');
+    expect(isOpen).not.toBeNull(); // 'open' attribute should be present
+  });
+
+  test('should display category pass/fail stats', async ({ page }) => {
+    await openServiceModal(page, 'test-repo-perfect');
+
+    const modal = page.locator('#service-modal');
+    const categoryStats = modal.locator('.category-stats');
+
+    const count = await categoryStats.count();
+    expect(count).toBeGreaterThan(0);
+
+    // Stats should be in format "X/Y passed"
+    await expect(categoryStats.first()).toContainText(/\d+\/\d+ passed/);
+  });
+
+  test('should be able to collapse and expand categories', async ({ page }) => {
+    await openServiceModal(page, 'test-repo-perfect');
+
+    const modal = page.locator('#service-modal');
+    const firstCategory = modal.locator('.check-category').first();
+    const firstCategoryHeader = firstCategory.locator('.check-category-header');
+
+    // Category should start expanded
+    let isOpen = await firstCategory.getAttribute('open');
+    expect(isOpen).not.toBeNull();
+
+    // Click to collapse
+    await firstCategoryHeader.click();
+    await page.waitForTimeout(100); // Wait for animation
+
+    isOpen = await firstCategory.getAttribute('open');
+    expect(isOpen).toBeNull(); // Should be collapsed now
+
+    // Click to expand again
+    await firstCategoryHeader.click();
+    await page.waitForTimeout(100);
+
+    isOpen = await firstCategory.getAttribute('open');
+    expect(isOpen).not.toBeNull(); // Should be expanded again
+  });
+
+  test('should show checks within categories', async ({ page }) => {
+    await openServiceModal(page, 'test-repo-perfect');
+
+    const modal = page.locator('#service-modal');
+    const firstCategory = modal.locator('.check-category').first();
+    const checksInCategory = firstCategory.locator('.check-result');
+
+    const count = await checksInCategory.count();
+    expect(count).toBeGreaterThan(0); // Each category should have at least one check
+  });
 });
