@@ -3,5 +3,5 @@
   "description": "Validates that .scorecard/config.yml contains meaningful service metadata beyond the basic template. Requires both team and description fields to be filled with actual content, ensuring the service is properly documented in the catalog.",
   "weight": 7,
   "timeout": 10,
-  "category": "documentation"
+  "category": "Scorecards Setup"
 }
