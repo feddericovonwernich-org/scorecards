@@ -1,10 +1,6 @@
 #!/bin/bash
 # File finding utilities
 
-# Source common utilities
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/common.sh"
-
 # Find README file
 find_readme() {
     local repo_path="${1:-.}"

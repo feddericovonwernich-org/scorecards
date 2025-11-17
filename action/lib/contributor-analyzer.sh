@@ -1,9 +1,6 @@
 #!/bin/bash
 # Contributor analysis from git history
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/common.sh"
-
 # Analyze recent contributors
 analyze_contributors() {
     local repo_path="$1"

@@ -1,9 +1,6 @@
 #!/bin/bash
 # Git operations with smart retry logic
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/common.sh"
-
 # Clone repository with retry
 git_clone_with_retry() {
     local repo_url="$1"

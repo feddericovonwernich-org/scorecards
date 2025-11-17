@@ -1,9 +1,6 @@
 #!/bin/bash
 # Setup and environment initialization
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/common.sh"
-
 # Setup cleanup trap for temporary directories
 setup_cleanup_trap() {
     local work_dir="$1"

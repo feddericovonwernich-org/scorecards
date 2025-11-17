@@ -1,9 +1,6 @@
 #!/bin/bash
 # GitHub API operations
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/common.sh"
-
 # Get PR information from GitHub
 get_pr_info() {
     local org="$1"

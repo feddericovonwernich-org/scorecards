@@ -1,9 +1,6 @@
 #!/bin/bash
 # Results reporting and JSON generation
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/common.sh"
-
 # Build complete results JSON
 build_results_json() {
     # Accept context arrays

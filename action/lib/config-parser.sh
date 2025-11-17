@@ -1,9 +1,6 @@
 #!/bin/bash
 # Configuration file parsing
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/common.sh"
-
 # Parse YAML field from config file
 # Usage: parse_yaml_field "config.yml" "service.links" "[]"
 #        parse_yaml_field "config.yml" "openapi" "null"
