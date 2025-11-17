@@ -7,25 +7,25 @@ analyze_contributors() {
     local commit_limit="${2:-20}"
 
     if [ ! -d "$repo_path/.git" ]; then
-        log_warning "Not a git repository: $repo_path"
+        log_warning "Not a git repository: $repo_path" >&2
         echo "[]"
         return 0
     fi
 
     if ! cd "$repo_path"; then
-        log_error "Failed to access repository: $repo_path"
+        log_error "Failed to access repository: $repo_path" >&2
         echo "[]"
         return 1
     fi
 
-    log_info "Analyzing recent $commit_limit contributors"
+    log_info "Analyzing recent $commit_limit contributors" >&2
 
     # Get commits data
     local commits_data
     commits_data=$(git log -"$commit_limit" --pretty=format:'%an|%ae|%ad|%h' --date=iso 2>/dev/null || echo "")
 
     if [ -z "$commits_data" ]; then
-        log_info "No git history available"
+        log_info "No git history available" >&2
         echo "[]"
         return 0
     fi
@@ -85,13 +85,13 @@ analyze_contributors() {
 
     # Ensure contributors_json is never empty
     if [ -z "$contributors_json" ]; then
-        log_warning "Failed to generate contributors JSON, returning empty array"
+        log_warning "Failed to generate contributors JSON, returning empty array" >&2
         contributors_json="[]"
     fi
 
     local contributors_count
     contributors_count=$(echo "$contributors_json" | jq 'length')
-    log_info "Found $contributors_count contributor(s) in last $commit_limit commits"
+    log_info "Found $contributors_count contributor(s) in last $commit_limit commits" >&2
 
     echo "$contributors_json"
 }

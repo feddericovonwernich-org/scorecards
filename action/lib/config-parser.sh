@@ -10,7 +10,7 @@ parse_yaml_field() {
     local default_value="$3"
 
     if ! command -v python3 &> /dev/null; then
-        log_warning "Python not available, cannot parse YAML field: $field_path"
+        log_warning "Python not available, cannot parse YAML field: $field_path" >&2
         echo "$default_value"
         return 1
     fi

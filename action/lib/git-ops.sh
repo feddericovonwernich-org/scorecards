@@ -104,12 +104,12 @@ build_registry_entry() {
     local pr_state="${prs[state]}"
     local pr_url="${prs[url]}"
 
-    log_debug "[build_registry_entry] Extracted values:"
-    log_debug "  score=[$score], rank=[$rank]"
-    log_debug "  checks_hash=[$checks_hash]"
-    log_debug "  checks_count=[$checks_count] (length: ${#checks_count})"
-    log_debug "  installed=[$installed]"
-    log_debug "  has_api=[$has_api]"
+    log_debug "[build_registry_entry] Extracted values:" >&2
+    log_debug "  score=[$score], rank=[$rank]" >&2
+    log_debug "  checks_hash=[$checks_hash]" >&2
+    log_debug "  checks_count=[$checks_count] (length: ${#checks_count})" >&2
+    log_debug "  installed=[$installed]" >&2
+    log_debug "  has_api=[$has_api]" >&2
 
     local jq_args=(
         -n
