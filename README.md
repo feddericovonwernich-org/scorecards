@@ -1,138 +1,114 @@
 # Scorecards
 
-A flexible, non-blocking scorecard system for measuring service quality and best practices across your organization.
+**Lightweight, GitHub-native quality measurement for service repositories.**
+
+Scorecards measures service quality against configurable standards and makes results visible in a centralized catalog—without the overhead of an enterprise developer portal.
+
+---
+
+## The Problem
+
+You want to improve service quality across your organization, but:
+
+- **Enterprise tools like Cortex cost $50K-$250K annually** and take weeks to set up
+- **Backstage requires 2-4 engineers** to build and maintain a custom platform
+- **Both require extensive per-service configuration** (YAML schemas, metadata migration)
+- **Time to value is measured in months**, not days
+
+Meanwhile, your services have inconsistent documentation, missing tests, and unclear ownership—but you don't have the budget or team for a full developer portal.
+
+## The Scorecards Solution
+
+Scorecards does one thing well: **measures service quality and makes it visible**.
+
+- ✅ **5-minute setup** - One installation script, runs on GitHub Actions + Pages
+- ✅ **Zero infrastructure** - No servers, databases, or maintenance overhead
+- ✅ **Works out-of-the-box** - No per-service configuration required
+- ✅ **Free** for GitHub users
+- ✅ **Non-blocking** - Never fails CI, encourages improvement
+
+**One-liner install for your organization:**
+
+```bash
+export GITHUB_TOKEN=your_github_pat && curl -fsSL https://raw.githubusercontent.com/feddericovonwernich/scorecards/main/scripts/install.sh | bash
+```
+
+Services get scored on:
+- Documentation quality (README, API docs)
+- Testing coverage and CI configuration
+- License, code of conduct, security policies
+- API standards (OpenAPI specs, environment configs)
+- Custom checks you define
+
+Results appear in a GitHub Pages catalog showing scores, trends, and improvement opportunities.
+
+## Scorecards vs. Enterprise Tools
+
+### What Makes Scorecards Different
+
+|  | Cortex | Backstage | **Scorecards** |
+|---|---|---|---|
+| **Setup time** | 2-4 weeks | 1-3 months | **5 minutes** |
+| **Infrastructure** | Enterprise hosting | Kubernetes + DB | **GitHub Pages** |
+| **Per-service config** | Required YAML | Required YAML | **Optional** |
+| **Maintenance team** | 1-2 engineers | 2-4 engineers | **None needed** |
+| **First results** | 4-6 weeks | 2-3 months | **Immediate** |
+| **Annual cost** | $50K-$250K+ | $300K-$600K | **Free** |
+
+### What Scorecards Doesn't Do (And That's OK)
+
+We're honest about our limitations. Scorecards is **not** a full developer portal:
+
+- ❌ **No service discovery** - Services must opt-in by adding the workflow
+- ❌ **No resource mapping** - Doesn't track cloud resources, dependencies, or infrastructure
+- ❌ **No scaffolding** - Doesn't create services from templates
+- ❌ **No incident management** - No PagerDuty/Opsgenie integration
+- ❌ **No real-time metrics** - Point-in-time checks, not live monitoring
+- ❌ **No RBAC/compliance** - Public catalog, relies on GitHub permissions
+
+If you need these features, use Cortex or Backstage. They're excellent tools for organizations that can invest in them.
+
+## When to Use Scorecards
+
+**Choose Scorecards if you:**
+- Want to start measuring quality **today** without a big project
+- Are a small/medium team (1-50 services) without dedicated platform engineers
+- Use GitHub and want to leverage existing Actions infrastructure
+- Need a lightweight solution or proof-of-concept before enterprise investment
+- Want to supplement existing tools with focused quality checks
+
+**Choose enterprise tools if you:**
+- Need comprehensive service catalog with automatic discovery
+- Require resource mapping, dependency tracking, and infrastructure visibility
+- Need RBAC, audit logs, and compliance features
+- Have the team and budget for a full internal developer platform
+- Manage 100+ services across multiple organizations
+
+**Or use both:** Many teams run Scorecards alongside Backstage or Cortex for specific quality measurements.
 
 ## Quick Start
 
-- **[Getting Started](documentation/getting-started.md)** - Install and configure Scorecards
-- **[Architecture](documentation/architecture/overview.md)** - How it works
-- **[Configuration](documentation/guides/configuration.md)** - Configure your repo
-- **[Check Catalog](documentation/reference/check-catalog.md)** - Available checks
-- **[Contributing](CONTRIBUTING.md)** - How to contribute
+### For Platform Teams
 
-## Overview
-
-Scorecards helps teams understand and improve their services by running automated checks against configurable quality standards. It integrates seamlessly into existing CI pipelines and provides a centralized catalog of all services with their scores and rankings.
-
-## Philosophy
-
-- **Non-blocking**: Never fails CI - scorecards are informational, not gatekeeping
-- **Zero-config**: Works out-of-the-box with sensible defaults
-- **Flexible**: Teams adopt at their own pace
-- **Transparent**: All results visible in a central catalog
-- **Extensible**: Easy to add new checks
-
-## Architecture
-
-```
-┌─────────────────────┐
-│  Service Repository │
-│  ┌───────────────┐  │
-│  │ Existing CI   │  │
-│  │ + Scorecard   │  │
-│  │   Action      │  │
-│  └───────┬───────┘  │
-│          │          │
-│  Optional:          │
-│  .scorecard/        │
-│    config.yml       │
-└──────────┼──────────┘
-           │
-           ▼
-┌─────────────────────────────────────┐
-│  Central Scorecards Repository      │
-│  ┌─────────────────────────────┐   │
-│  │ GitHub Action               │   │
-│  │  • Runs checks in Docker    │   │
-│  │  • Calculates score & rank  │   │
-│  │  • Generates badges         │   │
-│  │  • Stores results           │   │
-│  └─────────────────────────────┘   │
-│                                     │
-│  /checks/        - Check scripts    │
-│  /results/       - Service results  │
-│  /badges/        - Badge JSONs      │
-│  /registry/      - Service registry │
-│  /docs/          - Catalog UI       │
-└─────────────────────────────────────┘
-           │
-           ▼
-┌─────────────────────┐
-│  GitHub Pages       │
-│  Catalog            │
-│  • All services     │
-│  • Scores & ranks   │
-│  • Trends           │
-│  • Check details    │
-└─────────────────────┘
-```
-
-## Installation
-
-### For Platform/DevOps Teams
-
-Set up the central scorecards repository for your organization:
-
-#### One-Line Installation
+Set up the central scorecards system for your organization:
 
 ```bash
+# One-line installation
 export GITHUB_TOKEN=your_github_pat
 curl -fsSL https://raw.githubusercontent.com/feddericovonwernich/scorecards/main/scripts/install.sh | bash
 ```
 
-The installation script will:
-1. Validate prerequisites (git, gh CLI, jq)
-2. Prompt for your target repository (org/repo)
-3. Create the repository if it doesn't exist
-4. Set up the main branch with all system code
-5. Create the catalog branch for data storage
-6. Push both branches to your repository
-7. Customize documentation to reference your repository
-8. Configure GitHub Pages to host the catalog
-9. Provide next steps for service integration
+The script creates a repository with:
+- GitHub Action for running quality checks
+- Catalog UI hosted on GitHub Pages
+- Check definitions and scoring system
+- Results storage in the `catalog` branch
 
-#### Prerequisites
-
-- **git**: Version control
-- **gh**: [GitHub CLI](https://cli.github.com/)
-- **jq**: JSON processor
-- **GitHub Personal Access Token** with `repo` and `workflow` permissions
-
-#### Manual Installation
-
-If you prefer to set up manually:
-
-1. Clone or fork this repository to your organization
-2. Create an orphan `catalog` branch:
-   ```bash
-   git checkout --orphan catalog
-   git rm -rf .
-   git checkout main -- docs/
-   mkdir -p results badges registry
-   echo '[]' > registry/services.json
-   git add . && git commit -m "Initialize catalog branch"
-   git push -u origin catalog
-   ```
-3. Enable GitHub Pages: Settings → Pages → Source: `catalog` branch, `/` (root)
-4. Wait for Pages to deploy (check Settings → Pages for the URL)
-
-#### Customization
-
-After installation, you can:
-- Add custom checks in `checks/` directory
-- Customize the catalog UI in `docs/`
-- Adjust check weights in `checks/*/metadata.json`
-- Configure branch protection rules
-
-## Quick Start
+See [SYSTEM_OVERVIEW.md](SYSTEM_OVERVIEW.md#installation) for manual installation and customization.
 
 ### For Service Teams
 
-Once your platform team has installed the central scorecards repository, you can add scorecards to your service in two ways:
-
-#### Automated Installation (Recommended)
-
-The easiest way to get started! This "try before you buy" approach lets you see your scorecard results before committing to installation:
+Add scorecards to your service repository:
 
 ```yaml
 # .github/workflows/scorecards-check.yml
@@ -140,7 +116,7 @@ name: Scorecards Check
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Daily at midnight UTC
+    - cron: '0 0 * * *'  # Daily
   workflow_dispatch:
 
 jobs:
@@ -150,159 +126,56 @@ jobs:
       github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-What happens:
-1. 🔍 Calculates your scorecard score daily
-2. 📝 Creates an automated PR with scorecards workflow and config
-3. 📊 Shows results in Actions tab (even before merging)
-4. ✅ Respects your decision if you close the PR (won't spam you)
+This creates an automated PR with full scorecards configuration. Review, customize, and merge when ready.
 
-See [Usage Guide](documentation/guides/usage.md) for more information.
-
-#### Manual Installation
-
-If you prefer direct control, add this workflow to your service:
-
-```yaml
-# .github/workflows/scorecards.yml
-name: Scorecards
-
-on:
-  push:
-    branches: [main]
-
-jobs:
-  scorecards:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Run Scorecards
-        uses: feddericovonwernich/scorecards/action@main
-        with:
-          github-token: ${{ secrets.SCORECARDS_TOKEN }}
-          scorecards-repo: 'feddericovonwernich/scorecards'
-          scorecards-branch: 'catalog'  # optional, this is the default
-```
-
-**Setting up the Token:**
-
-Create a GitHub Personal Access Token with `repo` permissions and add it as a secret:
-
-1. Create token: [GitHub Settings → Tokens](https://github.com/settings/tokens/new)
-2. Select `repo` (full control of private repositories)
-3. Add as `SCORECARDS_TOKEN` secret in your service repository
-
-That's it! The next push to main will calculate your score and you'll appear in the catalog.
-
-### Optional Configuration
-
-Create `.scorecard/config.yml` in your repo for customization:
+**Optional:** Add service metadata in `.scorecard/config.yml`:
 
 ```yaml
 service:
-  name: "My Amazing Service"
+  name: "My Service"
   team: "Platform Team"
-  description: "Core API service handling user authentication"
-  links:
-    - name: "Documentation"
-      url: "https://docs.example.com/my-service"
-    - name: "Runbook"
-      url: "https://wiki.example.com/runbook"
-
-# For services with OpenAPI/Swagger specifications
-openapi:
-  spec_file: "openapi.yaml"  # Path to your OpenAPI spec file
-  branch: "main"  # Branch where the spec is located (optional, defaults to trying main/master)
-  environments:
-    production:
-      base_url: "https://api.example.com/v1"
-      description: "Production environment"
-    staging:
-      base_url: "https://staging-api.example.com/v1"
-      description: "Staging environment"
-    development:
-      base_url: "http://localhost:8000"
-      description: "Local development"
-
-custom:
-  criticality: "high"
-  environment: "production"
+  description: "Core API service"
 ```
 
-## Scoring System
+See the [Usage Guide](documentation/guides/usage.md) for detailed instructions.
 
-### How Scores Are Calculated
+## What's Inside
 
-Each check has a weight (defined in its `metadata.json`). Your score is:
+- **[Getting Started](documentation/getting-started.md)** - Quick start guide
+- **[SYSTEM_OVERVIEW.md](SYSTEM_OVERVIEW.md)** - Complete technical documentation
+- **[Usage Guide](documentation/guides/usage.md)** - Installation and daily usage
+- **[Configuration Guide](documentation/guides/configuration.md)** - Customize your setup
+- **[Check Catalog](documentation/reference/check-catalog.md)** - Available checks and how to add new ones
+- **[Architecture](documentation/architecture/overview.md)** - How the system works
 
-```
-score = (sum of passed check weights / sum of all check weights) × 100
-```
+## Contributing
 
-### Ranking
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-- **Platinum** (90-100): Exemplary
-- **Gold** (75-89): Excellent
-- **Silver** (50-74): Good
-- **Bronze** (0-49): Needs improvement
+To add a new check:
+1. Create a script in `checks/your-check/check.sh`
+2. Add metadata in `checks/your-check/metadata.json`
+3. Add tests
+4. Submit a PR
 
-## Badges
+See the [Check Development Guide](documentation/reference/check-catalog.md) for details.
 
-Add badges to your service's README (replace `your-org/your-repo` with your service's org and repo name):
+## Philosophy
 
-```markdown
-![Score](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/feddericovonwernich/scorecards/catalog/badges/your-org/your-repo/score.json)
-![Rank](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/feddericovonwernich/scorecards/catalog/badges/your-org/your-repo/rank.json)
-```
+Scorecards follows a simple philosophy:
 
-## Available Checks
+1. **Non-blocking** - Never fail CI, always provide information
+2. **Transparent** - All check code is visible and auditable
+3. **Lightweight** - No infrastructure overhead, leverages GitHub
+4. **Voluntary** - Teams adopt at their own pace
+5. **Simple** - Easy to understand, modify, and extend
 
-See [`checks/`](./checks/) directory for all checks. Each check is a simple script that:
-
-- Examines your repository
-- Returns exit code 0 (pass) or non-zero (fail)
-- Outputs details to stdout/stderr
-
-Current checks:
-- README existence and quality
-- LICENSE file
-- CI configuration
-- Test coverage
-- Documentation
-- OpenAPI specification (detection and validation)
-- OpenAPI quality metrics
-- API environment configuration
-
-## For Check Authors
-
-Want to add a new check? See [Adding Checks Guide](documentation/guides/adding-checks.md) for the development guide.
-
-## Catalog
-
-Visit the [Scorecards Catalog](https://feddericovonwernich.github.io/scorecards/) to see all services, their scores, and detailed check results.
-
-### Staleness Detection
-
-The catalog automatically detects when scorecards are outdated:
-
-- **STALE badges** appear on services that were scored with an older version of the check suite
-- A scorecard becomes stale when:
-  - New checks are added to the system
-  - Existing checks are modified (weights, code, metadata)
-  - Checks are removed
-- **Warning banners** in detail views explain the issue and recommend re-running workflows
-- Staleness is detected instantly at page load without background processes
-- Uses SHA256 hash of the entire check suite (IDs + metadata + implementation code)
-
-To update a stale scorecard, simply re-run the scorecard workflow on your service repository. The next run will use the latest check suite and clear the stale indicator.
-
-## Action Inputs
-
-| Input | Required | Default | Description |
-|-------|----------|---------|-------------|
-| `github-token` | Yes | - | GitHub token for API access and committing results |
-| `create-config-pr` | No | `false` | Create PR with config template if missing |
+We believe quality measurement should encourage improvement, not gate deployments.
 
 ## License
 
 MIT
+
+---
+
+**Not sure if Scorecards is right for you?** Check out [SYSTEM_OVERVIEW.md](SYSTEM_OVERVIEW.md) for detailed technical documentation, or compare with [Cortex](https://www.cortex.io/) and [Backstage](https://backstage.io/) to see which solution fits your needs.

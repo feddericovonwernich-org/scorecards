@@ -59,9 +59,9 @@ test.describe('Search and Filters', () => {
     const count = await getServiceCount(page);
     expect(count).toBe(expectedStats.ranks.gold);
 
-    // Should show test-repo-perfect
+    // Should show test-repo-stale (highest Gold score: 80)
     const serviceCard = page.locator('.service-card').first();
-    await expect(serviceCard).toContainText('test-repo-perfect');
+    await expect(serviceCard).toContainText('test-repo-stale');
     await expect(serviceCard).toContainText('Gold');
   });
 
@@ -134,24 +134,24 @@ test.describe('Search and Filters', () => {
     const apiStat = page.locator('.stat-card').filter({ hasText: 'With API' });
     await expect(apiStat).toBeVisible();
 
-    // Current test data has 0 services with API
-    await expect(apiStat).toContainText('0');
+    // Current test data has 1 service with API (test-repo-stale)
+    await expect(apiStat).toContainText('1');
   });
 
   test('should show "Stale" filter', async ({ page }) => {
     const staleStat = page.locator('.stat-card').filter({ hasText: 'Stale' });
     await expect(staleStat).toBeVisible();
 
-    // Current test data has 0 stale services
-    await expect(staleStat).toContainText('0');
+    // Current test data has 1 stale service (test-repo-stale)
+    await expect(staleStat).toContainText('1');
   });
 
   test('should show "Installed" filter', async ({ page }) => {
     const installedStat = page.locator('.stat-card').filter({ hasText: 'Installed' });
     await expect(installedStat).toBeVisible();
 
-    // Current test data has 0 installed services
-    await expect(installedStat).toContainText('0');
+    // Current test data has 1 installed service (test-repo-stale)
+    await expect(installedStat).toContainText('1');
   });
 
   test('should handle search with no results', async ({ page }) => {
