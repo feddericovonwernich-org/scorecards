@@ -299,3 +299,28 @@ test.describe('Service Modal', () => {
     expect(count).toBeGreaterThan(0); // Each category should have at least one check
   });
 });
+
+test.describe('Stale Scorecard Check Results (Case-Insensitive Categories)', () => {
+  test.beforeEach(async ({ page }) => {
+    await mockCatalogRequests(page);
+    await page.goto('/');
+    await waitForCatalogLoad(page);
+  });
+
+  test('should group checks by category with case-insensitive matching', async ({ page }) => {
+    // Use test-repo-perfect which has checks with title-case categories
+    await openServiceModal(page, 'test-repo-perfect');
+
+    const modal = page.locator('#service-modal');
+
+    // Verify categories are displayed and grouped correctly
+    const categories = modal.locator('.check-category');
+    const categoryCount = await categories.count();
+    expect(categoryCount).toBeGreaterThan(0);
+
+    // Verify specific categories are present
+    // The fix ensures these display even if the data has different case
+    await expect(modal.locator('.category-name').filter({ hasText: 'Documentation' })).toBeVisible();
+    await expect(modal.locator('.category-name').filter({ hasText: 'Scorecards Setup' })).toBeVisible();
+  });
+});
