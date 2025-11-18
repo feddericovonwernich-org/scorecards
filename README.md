@@ -88,6 +88,8 @@ If you need these features, use Cortex or Backstage. They're excellent tools for
 
 ### For Platform Teams
 
+#### Central System Installation
+
 Set up the central scorecards system for your organization:
 
 ```bash
@@ -102,9 +104,48 @@ The script creates a repository with:
 - Check definitions and scoring system
 - Results storage in the `catalog` branch
 
-**Optional automated onboarding:** If you have unified CI, you can use the install action to automatically onboard services and create configuration PRs for them. See [Usage Guide](documentation/guides/usage.md) for details.
-
 See [SYSTEM_OVERVIEW.md](SYSTEM_OVERVIEW.md#installation) for manual installation and customization.
+
+#### Automated Service Onboarding (Optional)
+
+If you have a unified CI system or want to proactively onboard services, you can use the **install reusable workflow** to automatically add scorecards to service repositories.
+
+**How it works:**
+
+The install workflow runs in service repositories and:
+1. Calculates the service's current scorecard score
+2. Creates an automated PR with scorecards configuration files
+3. Shows results in the PR description (even before merging)
+4. Respects the service team's decision if they close the PR
+
+This "try before you buy" approach lets service teams see their scores before committing to installation.
+
+**Example workflow to add to your unified CI template:**
+
+```yaml
+# .github/workflows/scorecards-check.yml
+name: Scorecards Check
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Daily at midnight UTC
+  workflow_dispatch:
+
+jobs:
+  scorecards:
+    uses: feddericovonwernich/scorecards/.github/workflows/install.yml@main
+    secrets:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+**Benefits:**
+- Service teams see their scores immediately without installation
+- Automated PR creation reduces onboarding friction
+- Non-intrusive: respects team decisions, won't create duplicate PRs
+- Scores are still calculated daily even if PR is closed
+- Platform teams can track adoption and quality across all services
+
+See the [Usage Guide](documentation/guides/usage.md) for detailed instructions on automated onboarding.
 
 ### For Service Teams
 
