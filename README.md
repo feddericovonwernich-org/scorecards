@@ -102,6 +102,8 @@ The script creates a repository with:
 - Check definitions and scoring system
 - Results storage in the `catalog` branch
 
+**Optional automated onboarding:** If you have unified CI, you can use the install action to automatically onboard services and create configuration PRs for them. See [Usage Guide](documentation/guides/usage.md) for details.
+
 See [SYSTEM_OVERVIEW.md](SYSTEM_OVERVIEW.md#installation) for manual installation and customization.
 
 ### For Service Teams
@@ -109,8 +111,8 @@ See [SYSTEM_OVERVIEW.md](SYSTEM_OVERVIEW.md#installation) for manual installatio
 Add scorecards to your service repository:
 
 ```yaml
-# .github/workflows/scorecards-check.yml
-name: Scorecards Check
+# .github/workflows/scorecards.yml
+name: Scorecards
 
 on:
   schedule:
@@ -119,12 +121,18 @@ on:
 
 jobs:
   scorecards:
-    uses: feddericovonwernich/scorecards/.github/workflows/install.yml@main
-    secrets:
-      github-token: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Scorecards
+        uses: feddericovonwernich/scorecards/action@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          scorecards-repo: 'feddericovonwernich/scorecards'
 ```
 
-This creates an automated PR with full scorecards configuration. Review, customize, and merge when ready.
+That's it! The workflow runs daily, calculates your score, and reports results to the catalog.
 
 **Optional:** Add service metadata in `.scorecard/config.yml`:
 
