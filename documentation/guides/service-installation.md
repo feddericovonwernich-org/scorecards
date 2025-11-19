@@ -13,96 +13,7 @@ Before you begin, ensure:
 - You can modify your repository's workflow files
 - The central Scorecards system is set up by your platform team
 
-## Installation Methods
-
-There are two ways to integrate Scorecards into your service:
-
-1. **Automated Installation** (Recommended) - Try before you buy approach
-2. **Manual Integration** - Direct action integration
-
-## Method 1: Automated Installation (Recommended)
-
-The easiest way to get started is with the automated installation workflow. This approach lets you:
-
-- ✅ See your scorecard results daily before committing to installation
-- ✅ Get an automated PR with all necessary files
-- ✅ Review and customize before merging
-- ✅ Continue seeing results even if you close the PR
-
-### Step 1: Add the Installation Workflow
-
-Create `.github/workflows/scorecards-check.yml` in your repository:
-
-```yaml
-name: Scorecards Check
-
-on:
-  schedule:
-    - cron: '0 0 * * *'  # Daily at midnight UTC
-  workflow_dispatch:
-
-jobs:
-  scorecards:
-    uses: feddericovonwernich/scorecards/.github/workflows/install.yml@main
-    secrets:
-      github-token: ${{ secrets.GITHUB_TOKEN }}
-```
-
-### Step 2: Trigger the Workflow
-
-Either:
-- Wait for the daily schedule to trigger it automatically
-- Or manually trigger it via GitHub Actions UI:
-  1. Go to Actions tab
-  2. Select "Scorecards Check"
-  3. Click "Run workflow"
-
-### Step 3: Review the Installation PR
-
-The workflow will:
-1. Calculate your current scorecard score
-2. Create a PR with:
-   - `.github/workflows/scorecards.yml` (scheduled workflow)
-   - `.scorecard/config.yml` (service metadata template)
-3. Show your current score and results in the PR description
-
-### Step 4: Merge When Ready
-
-Review the PR, customize the config file if needed, then merge. After merging:
-- Scorecards will run daily and push results to the central catalog
-- Your service will appear in the catalog
-- Quality badges will be generated
-
-### What if I Close the PR?
-
-No problem! If you close the PR without merging:
-- The workflow respects your decision and won't create another PR
-- Scorecards continue running daily
-- Results are available in the Actions tab
-- You get insights without formal installation
-
-### After Installation
-
-Once the PR is merged, add a `SCORECARDS_PAT` secret:
-
-1. Create a Personal Access Token (PAT) with `repo` scope:
-   - Go to GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
-   - Click "Generate new token (classic)"
-   - Select `repo` scope
-   - Generate and copy the token
-
-2. Add it to your repository secrets:
-   - Go to repository Settings → Secrets and variables → Actions
-   - Click "New repository secret"
-   - Name: `SCORECARDS_PAT`
-   - Value: Paste your PAT
-   - Click "Add secret"
-
-3. This allows pushing results to the central catalog
-
-## Method 2: Manual Integration
-
-If you prefer to set up Scorecards manually:
+## Installation
 
 ### Step 1: Add Scorecard Action to CI
 
@@ -134,7 +45,20 @@ jobs:
 
 ### Step 2: Add SCORECARDS_PAT Secret
 
-Follow the same PAT creation steps from the automated installation method above.
+1. Create a Personal Access Token (PAT) with `repo` scope:
+   - Go to GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
+   - Click "Generate new token (classic)"
+   - Select `repo` scope
+   - Generate and copy the token
+
+2. Add it to your repository secrets:
+   - Go to repository Settings → Secrets and variables → Actions
+   - Click "New repository secret"
+   - Name: `SCORECARDS_PAT`
+   - Value: Paste your PAT
+   - Click "Add secret"
+
+3. This allows pushing results to the central catalog
 
 ### Step 3: Push to Default Branch
 
