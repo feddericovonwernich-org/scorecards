@@ -70,13 +70,15 @@ Add scorecard badges to your README to show your score and rank:
 ```markdown
 # My Service
 
-![Scorecard Score](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/feddericovonwernich/scorecards/catalog/badges/your-org/your-repo/score.json)
-![Scorecard Rank](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/feddericovonwernich/scorecards/catalog/badges/your-org/your-repo/rank.json)
+![Scorecard Score](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/YOUR-ORG/scorecards/catalog/badges/your-org/your-repo/score.json)
+![Scorecard Rank](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/YOUR-ORG/scorecards/catalog/badges/your-org/your-repo/rank.json)
 
 ...rest of your README...
 ```
 
-Replace `your-org` and `your-repo` with your service's organization and repository names.
+Replace the following in the URLs above:
+- `YOUR-ORG/scorecards` - Your organization's central scorecards repository (e.g., `acme-corp/scorecards`)
+- `your-org/your-repo` - Your service's organization and repository name (e.g., `acme-corp/payment-service`)
 
 ## Understanding Your Score
 
