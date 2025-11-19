@@ -19,6 +19,8 @@ Before you begin, ensure:
 
 Create `.github/workflows/scorecards.yml` in your repository:
 
+> **Important:** Replace `your-org/scorecards` with your organization's central scorecards repository (set up by your platform team), not the template repository.
+
 ```yaml
 name: Scorecards
 
@@ -40,8 +42,11 @@ jobs:
         uses: feddericovonwernich/scorecards/action@main
         with:
           github-token: ${{ secrets.SCORECARDS_PAT }}
-          scorecards-repo: 'feddericovonwernich/scorecards'  # Central scorecards repo
+          scorecards-repo: 'your-org/scorecards'  # Replace with YOUR organization's scorecards repo
 ```
+
+**What to customize:**
+- `scorecards-repo`: Your organization's central scorecards repository (e.g., `acme-corp/scorecards`)
 
 ### Step 2: Add SCORECARDS_PAT Secret
 
