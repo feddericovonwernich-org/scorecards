@@ -147,7 +147,7 @@ The workflow runs daily and reports results to the catalog.
 
 ### Reference
 - **[Usage Guide](documentation/guides/usage.md)** - Action inputs, outputs, badges, and troubleshooting
-- **[Check Catalog](documentation/guides/check-development-guide.md)** - Available checks and how to add new ones
+- **[Check Development Guide](documentation/guides/check-development-guide.md)** - How to create custom checks
 - **[Architecture](documentation/architecture/overview.md)** - How the system works
 - **[SYSTEM_OVERVIEW.md](SYSTEM_OVERVIEW.md)** - Complete technical reference
 

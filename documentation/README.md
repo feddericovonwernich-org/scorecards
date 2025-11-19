@@ -8,7 +8,7 @@ Welcome to the Scorecards documentation!
 - [Service Installation](guides/service-installation.md) - Add Scorecards to your service
 - [Configuration Guide](guides/configuration.md) - Configure your repository
 - [Usage Guide](guides/usage.md) - Action inputs, outputs, and troubleshooting
-- [Check Catalog](guides/check-development-guide.md) - All available checks and development guide
+- [Check Development Guide](guides/check-development-guide.md) - Guide for creating custom checks
 - [Architecture Overview](architecture/overview.md) - How Scorecards works
 - [Contributing](../CONTRIBUTING.md) - Contribute to Scorecards
 
@@ -24,7 +24,7 @@ Welcome to the Scorecards documentation!
 - **[Usage](guides/usage.md)** - Action inputs, outputs, badges, and troubleshooting
 
 ### Reference
-- **[Check Catalog](guides/check-development-guide.md)** - Check development guide and catalog
+- **[Check Development Guide](guides/check-development-guide.md)** - How to create custom checks
 - **[Reference](reference/README.md)** - Score tiers, categories, and file formats
 
 ### Development

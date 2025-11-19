@@ -133,5 +133,5 @@ After installation:
 
 - [Usage Guide](usage.md) - Action inputs, outputs, and advanced usage
 - [Configuration Guide](configuration.md) - Complete configuration options
-- [Check Catalog](check-development-guide.md) - All available checks
+- [Check Development Guide](check-development-guide.md) - How to create custom checks
 - [Platform Installation Guide](platform-installation.md) - For platform teams

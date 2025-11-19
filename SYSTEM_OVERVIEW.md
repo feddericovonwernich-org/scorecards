@@ -12,7 +12,7 @@ This document contains detailed technical documentation, architecture details, a
 - **[Service Installation](documentation/guides/service-installation.md)** - Add Scorecards to your service
 - **[Architecture](documentation/architecture/overview.md)** - How it works
 - **[Configuration](documentation/guides/configuration.md)** - Configure your repo
-- **[Check Catalog](documentation/guides/check-development-guide.md)** - Available checks
+- **[Check Development Guide](documentation/guides/check-development-guide.md)** - How to create custom checks
 - **[Contributing](CONTRIBUTING.md)** - How to contribute
 
 ## Overview
