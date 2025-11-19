@@ -196,44 +196,6 @@ The catalog UI automatically reflects the updated score.
 3. Staleness indicator shown if service's checks_hash doesn't match current-checks-hash.txt
 4. User can expand row to see detailed check results
 
-## Triggers
-
-### Automatic Triggers
-
-- **Scheduled**: Daily cron job at midnight UTC (0 0 * * *) - default in template
-- **On Push**: Every push to main or master branch triggers scoring
-- **On PR**: Pull requests get preview scores (catalog not updated)
-
-### Manual Triggers
-
-- **Single Service**: Via trigger-service-workflow.yml (workflow_dispatch)
-- **Bulk Services**: Trigger multiple services at once
-- **UI Button**: Catalog UI can trigger workflows (requires GitHub PAT)
-
-## Performance
-
-**Typical Run Time**: 2-5 minutes depending on number of checks
-
-**Factors**:
-- Number of checks (currently ~15)
-- Check complexity (e.g., test coverage analysis is slower)
-- Docker build time (~1-2 minutes)
-- Repository size (clone time)
-
-## Error Handling
-
-- **Check Failures**: Individual check failures don't fail the workflow
-- **Timeout**: Checks have per-check timeout (default 30s, configurable)
-- **Non-blocking**: Scoring never fails CI - always exits 0
-- **Retry**: Git push retries on conflicts (3 attempts with backoff)
-
-## Security
-
-- **Read-only Repository Access**: Checks never modify service repo
-- **Docker Isolation**: Checks run in isolated container
-- **No Secrets Required**: Works with default GITHUB_TOKEN
-- **Branch Protection**: Catalog branch can have protection rules
-
 ## Related Documentation
 
 - [Check Execution Flow](check-execution-flow.md) - Deep dive into how checks run
