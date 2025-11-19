@@ -141,7 +141,7 @@ on:
 
 ### 2. Calculate Checks Hash
 
-**Implementation**: `action/utils/update-checks-hash.sh` lines 20-80
+**Implementation**: `action/utils/update-checks-hash.sh`
 
 **Process**:
 ```bash
@@ -172,7 +172,7 @@ abc123def456789fedcba987654321deadbeef0123456789abcdef0123456789
 
 ### 3. Export Check Metadata
 
-**Implementation**: `action/utils/update-checks-hash.sh` lines 85-140
+**Implementation**: `action/utils/update-checks-hash.sh`
 
 **Generated JSON** (`current-checks.json`):
 ```json
@@ -209,7 +209,7 @@ abc123def456789fedcba987654321deadbeef0123456789abcdef0123456789
 
 ### 4. Commit to Catalog Branch
 
-**Implementation**: `update-checks-hash.yml` lines 30-45
+**Implementation**: `.github/workflows/update-checks-hash.yml`
 
 **Files Written**:
 1. `current-checks-hash.txt` - Single line with hash

@@ -79,7 +79,7 @@ The scoring workflow can be triggered in multiple ways:
 
 The action clones the service repository to analyze its contents.
 
-**Implementation**: `action/entrypoint.sh` lines 97-121
+**Implementation**: `action/entrypoint.sh`
 
 **Details**:
 - Clones to `$GITHUB_WORKSPACE`
@@ -90,7 +90,7 @@ The action clones the service repository to analyze its contents.
 
 Creates multi-runtime Docker image with all check dependencies.
 
-**Implementation**: `action/entrypoint.sh` lines 149-157
+**Implementation**: `action/entrypoint.sh`
 
 **Runtimes Included**:
 - Node.js 20
@@ -160,7 +160,7 @@ Creates badge JSON for shields.io endpoint.
 
 Writes results to catalog branch.
 
-**Implementation**: `action/entrypoint.sh` lines 340-364 (update_catalog function)
+**Implementation**: `action/entrypoint.sh` (update_catalog function)
 
 **Files Created/Updated**:
 - `registry/{org}/{repo}.json` - Service metadata and score
@@ -179,7 +179,7 @@ Writes results to catalog branch.
 
 Commits are pushed to the catalog branch with retry logic.
 
-**Implementation**: `action/utils/git-ops.sh` lines 189-239
+**Implementation**: `action/utils/git-ops.sh`
 
 **Features**:
 - Exponential backoff retry (3 attempts)

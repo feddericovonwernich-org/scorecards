@@ -120,7 +120,7 @@ This document describes how service repositories are onboarded to the scorecards
 
 ### 2. Checkout Target Repository
 
-**Implementation**: `install.yml` lines 20-30
+**Implementation**: `.github/workflows/install.yml`
 
 ```yaml
 - name: Checkout target repository
@@ -137,7 +137,7 @@ This document describes how service repositories are onboarded to the scorecards
 
 ### 3. Generate Workflow File
 
-**Implementation**: `install.yml` lines 50-95
+**Implementation**: `.github/workflows/install.yml`
 
 **Generated File**: `.github/workflows/scorecards.yml`
 
@@ -172,7 +172,7 @@ jobs:
 
 ### 4. Generate Config Template
 
-**Implementation**: `install.yml` lines 100-120
+**Implementation**: `.github/workflows/install.yml`
 
 **Generated File**: `.scorecard/config.yml`
 
@@ -205,7 +205,7 @@ If not provided, attempts to extract from:
 
 ### 5. Create Branch & Push
 
-**Implementation**: `install.yml` lines 125-155
+**Implementation**: `.github/workflows/install.yml`
 
 **Branch Name**: `scorecards-installation`
 
@@ -225,7 +225,7 @@ git push origin scorecards-installation
 
 ### 6. Create Pull Request
 
-**Implementation**: `install.yml` lines 160-195
+**Implementation**: `.github/workflows/install.yml`
 
 **GitHub API Call**:
 ```bash
@@ -272,7 +272,7 @@ EOF
 
 ### 7. Track PR in Registry
 
-**Implementation**: `install.yml` lines 200-250
+**Implementation**: `.github/workflows/install.yml`
 
 **Creates Registry Entry**:
 ```json

@@ -101,7 +101,7 @@ This document describes how individual quality checks are discovered, executed, 
 
 ### 1. Discover Checks
 
-**Implementation**: `action/scripts/run-checks.sh` line 40
+**Implementation**: `action/scripts/run-checks.sh`
 
 ```bash
 check_dirs=$(find "$CHECKS_DIR" -mindepth 1 -maxdepth 1 -type d | sort)
@@ -118,7 +118,7 @@ check_dirs=$(find "$CHECKS_DIR" -mindepth 1 -maxdepth 1 -type d | sort)
 
 ### 2. Parse Metadata
 
-**Implementation**: `action/scripts/run-checks.sh` lines 56-67
+**Implementation**: `action/scripts/run-checks.sh`
 
 **metadata.json Structure**:
 ```json
@@ -143,7 +143,7 @@ check_dirs=$(find "$CHECKS_DIR" -mindepth 1 -maxdepth 1 -type d | sort)
 
 ### 3. Build Docker Image
 
-**Implementation**: `action/entrypoint.sh` lines 149-157
+**Implementation**: `action/entrypoint.sh`
 
 **Dockerfile**: `action/Dockerfile`
 
@@ -166,7 +166,7 @@ RUN apt-get install -y nodejs bash grep sed awk jq curl git
 
 ### 4. Run Check
 
-**Implementation**: `action/scripts/run-checks.sh` lines 109-117
+**Implementation**: `action/scripts/run-checks.sh`
 
 **Executor Selection**:
 ```bash
@@ -206,7 +206,7 @@ docker run --rm \
 
 ### 5. Parse Results
 
-**Implementation**: `action/scripts/run-checks.sh` lines 130-138
+**Implementation**: `action/scripts/run-checks.sh`
 
 **Exit Code Interpretation**:
 - **0**: Check passed → award full weight
