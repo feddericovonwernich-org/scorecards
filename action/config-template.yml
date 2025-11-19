@@ -20,11 +20,3 @@ service:
       url: "https://example.com/runbook"
       # description is optional
     # Add more links as needed
-
-# Custom fields - add any metadata relevant to your organization
-custom:
-  # Examples:
-  # criticality: "high"  # low, medium, high, critical
-  # environment: "production"  # dev, staging, production
-  # language: "python"
-  # framework: "django"

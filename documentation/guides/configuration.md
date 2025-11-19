@@ -31,15 +31,6 @@ service:
       url: "https://drive.google.com/diagrams/auth-arch"
     - name: "Dashboard"
       url: "https://grafana.example.com/d/auth-service"
-
-custom:
-  criticality: "high"
-  environment: "production"
-  language: "python"
-  framework: "fastapi"
-  database: "postgresql"
-  oncall_rotation: "identity-team"
-  slack_channel: "#identity-team"
 ```
 
 ## Schema Reference
@@ -105,28 +96,6 @@ service:
       url: "https://grafana.example.com/dashboard"
 ```
 
-### `custom` (optional)
-
-Free-form custom fields. You can add any metadata relevant to your organization.
-
-These fields appear in the service detail view in the catalog.
-
-**Default:** Empty
-
-```yaml
-custom:
-  # Example fields - use whatever makes sense for your org
-  criticality: "high"           # low, medium, high, critical
-  environment: "production"     # dev, staging, production
-  language: "python"
-  framework: "django"
-  database: "postgresql"
-  oncall_rotation: "platform-team"
-  slack_channel: "#platform-alerts"
-  cost_center: "engineering"
-  compliance: ["SOC2", "HIPAA"]
-```
-
 ## Common Patterns
 
 ### Minimal Configuration
@@ -154,42 +123,6 @@ service:
       url: "https://wiki.example.com/payments-runbook"
     - name: "Architecture"
       url: "https://wiki.example.com/payments-architecture"
-```
-
-### Operational Metadata
-
-Include operational details:
-
-```yaml
-service:
-  name: "User Service"
-  team: "Core Platform"
-  description: "User management and profile service"
-
-custom:
-  criticality: "high"
-  environment: "production"
-  oncall_rotation: "platform-oncall"
-  slack_channel: "#platform-alerts"
-  pagerduty_service: "user-service"
-  dashboard: "https://grafana.example.com/user-service"
-```
-
-### Technology Stack
-
-Document your tech stack:
-
-```yaml
-service:
-  name: "Analytics Engine"
-  team: "Data Platform"
-
-custom:
-  language: "python"
-  framework: "apache-spark"
-  database: "clickhouse"
-  message_queue: "kafka"
-  deployment: "kubernetes"
 ```
 
 ## Best Practices
@@ -233,13 +166,7 @@ links:
     url: "https://github.com/org/repo/blob/main/API.md"  # ❌ Might be outdated
 ```
 
-### 4. Use Consistent Custom Field Names
-
-Coordinate with your organization to use consistent field names across services.
-
-For example, if you use `criticality`, use it everywhere. Don't mix `criticality`, `priority`, `importance`, etc.
-
-### 5. Validate Your YAML
+### 4. Validate Your YAML
 
 Before committing, validate your YAML syntax:
 
@@ -272,23 +199,7 @@ service:
       url: ""
     - name: "Runbook"
       url: ""
-
-# Custom fields - add whatever makes sense for your org
-custom:
-  # Examples:
-  # criticality: ""
-  # environment: ""
-  # language: ""
-  # framework: ""
 ```
-
-## Future Enhancements
-
-Future versions of scorecards may support:
-- Check-specific configuration (enable/disable specific checks)
-- Custom weight overrides
-- Service-specific thresholds
-- Custom check parameters
 
 ## Questions?
 
