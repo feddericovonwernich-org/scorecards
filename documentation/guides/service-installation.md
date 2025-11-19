@@ -78,6 +78,8 @@ After the first run:
 2. Find your service in the list
 3. See your score, rank, and detailed check results
 
+> For details on understanding your score, adding badges, and improving results, see the [Usage Guide](usage.md).
+
 ## Optional: Add Service Metadata
 
 For better visibility in the catalog, create a config file with service metadata.
@@ -108,63 +110,15 @@ custom:
 
 See [Configuration Guide](configuration.md) for all available options.
 
-## Understanding Your Score
-
-Scorecards calculates your service score based on weighted checks:
-
-### Score Tiers
-
-- **Platinum** (90-100): Exemplary - Best practices across all areas
-- **Gold** (75-89): Excellent - Strong quality with minor gaps
-- **Silver** (50-74): Good - Solid foundation, room for improvement
-- **Bronze** (0-49): Needs improvement - Missing key quality practices
-
-### Improving Your Score
-
-1. **View detailed results** in the catalog or Actions output
-2. **Identify failing checks** and their requirements
-3. **Prioritize high-weight checks** for maximum impact
-4. **Make improvements** to your repository
-5. **Re-run the workflow** to see updated scores
-
-Remember: Scorecards never fail CI. The goal is to encourage improvement, not block deployments.
-
-## Adding Badges to Your README
-
-Show off your score with badges in your README.md:
-
-```markdown
-![Score](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/feddericovonwernich/scorecards/catalog/badges/your-org/your-repo/score.json)
-![Rank](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/feddericovonwernich/scorecards/catalog/badges/your-org/your-repo/rank.json)
-```
-
-Replace `your-org/your-repo` with your repository's organization and name.
-
 ## Troubleshooting
 
-### Workflow Not Running
+If you run into issues during installation:
 
-- Check that the workflow file is in `.github/workflows/`
-- Verify GitHub Actions is enabled for your repository
-- Try manually triggering via Actions tab → Run workflow
+- **Workflow not running**: Check that the file is in `.github/workflows/` and GitHub Actions is enabled
+- **Permission errors**: Ensure `SCORECARDS_PAT` secret has `repo` scope and hasn't expired
+- **Results not appearing**: Verify the central scorecards repo URL is correct in your workflow
 
-### Results Not Appearing in Catalog
-
-- Verify `SCORECARDS_PAT` secret is set with `repo` scope
-- Check workflow run logs for errors
-- Ensure the central scorecards repo URL is correct in your workflow
-
-### Permission Errors
-
-- Ensure your PAT has the `repo` scope
-- Verify the token hasn't expired
-- Check that the central scorecards repository allows pushes from your organization
-
-### Scores Not Updating
-
-- Scorecards runs on a schedule (daily by default)
-- Manually trigger the workflow to force an update
-- Check that recent commits are on the branch specified in the workflow
+For comprehensive troubleshooting and usage help, see the [Usage Guide](usage.md).
 
 ## Next Steps
 
