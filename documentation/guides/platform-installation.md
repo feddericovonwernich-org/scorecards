@@ -231,5 +231,5 @@ After setting up the central system:
 
 - [Service Installation Guide](service-installation.md) - For service teams
 - [Configuration Guide](configuration.md) - Configure .scorecard/config.yml
-- [Check Development Guide](check-development-guide.md) - Available checks and how to create new ones
+- [Check Development Guide](check-development-guide.md) - How to create custom checks
 - [Architecture Overview](../architecture/overview.md) - How Scorecards works
