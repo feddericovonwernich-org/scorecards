@@ -66,7 +66,7 @@ git push -u origin catalog
 ### Step 3: Enable GitHub Pages
 
 1. Go to repository Settings → Pages
-2. Set Source to `catalog` branch, `/` (root)
+2. Set Source to `catalog` branch, `/docs`
 3. Wait for Pages to deploy (check Settings → Pages for the URL)
 
 ### Step 4: Verify Installation
@@ -97,7 +97,7 @@ Modify the catalog UI in the `docs/` directory:
 
 - `docs/index.html` - Main catalog page
 - `docs/styles.css` - Styling
-- `docs/script.js` - JavaScript functionality
+- `docs/app.js` - JavaScript functionality
 
 ### Adjust Check Weights
 
@@ -196,7 +196,7 @@ After setting up the central system:
 ### GitHub Pages Not Deploying
 
 - Check Settings → Pages shows the `catalog` branch is selected
-- Verify the `catalog` branch has content in the root directory
+- Verify the `catalog` branch has the `/docs` directory with catalog UI files
 - Wait 2-3 minutes for initial deployment
 
 ### Services Not Appearing in Catalog

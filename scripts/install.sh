@@ -459,12 +459,12 @@ print_info "Enabling GitHub Pages on catalog branch..."
 # Enable Pages using GitHub API
 gh api -X POST "/repos/$FULL_REPO/pages" \
     -f source[branch]=catalog \
-    -f source[path]=/ \
+    -f source[path]=/docs \
     2>/dev/null || {
     print_warning "Pages might already be configured, attempting to update..."
     gh api -X PUT "/repos/$FULL_REPO/pages" \
         -f source[branch]=catalog \
-        -f source[path]=/ \
+        -f source[path]=/docs \
         2>/dev/null || print_warning "Could not configure Pages via API (might need manual setup)"
 }
 
