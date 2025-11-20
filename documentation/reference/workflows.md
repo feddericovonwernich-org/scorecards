@@ -444,7 +444,7 @@ The system uses three types of tokens:
 2. **SCORECARDS_CATALOG_TOKEN** (required) - Writes results to catalog branch (`repo` scope)
 3. **SCORECARDS_WORKFLOW_TOKEN** (optional) - Creates PRs with workflow files (`repo`, `workflow` scopes)
 
-**See [Token Requirements Guide](../guides/token-requirements.md) for setup instructions and detailed explanations.**
+**See [Token Requirements Guide](token-requirements.md) for setup instructions and detailed explanations.**
 
 ## Quick Reference
 

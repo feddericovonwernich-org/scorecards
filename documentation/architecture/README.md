@@ -5,7 +5,6 @@ Technical documentation for how the Scorecards system works.
 ## Core Documentation
 
 - **[Overview](overview.md)** - System architecture, components, security model
-- **[Workflows](workflows.md)** - GitHub Actions workflows and automation
 - **[Catalog UI](catalog-ui.md)** - Frontend architecture and features
 
 ## Data Flow Diagrams

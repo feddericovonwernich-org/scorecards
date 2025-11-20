@@ -6,7 +6,7 @@ Welcome to the Scorecards documentation!
 
 - [Platform Installation](guides/platform-installation.md) - Set up Scorecards for your organization
 - [Service Installation](guides/service-installation.md) - Add Scorecards to your service
-- [Configuration Guide](guides/configuration.md) - Configure your repository
+- [Configuration Guide](reference/configuration.md) - Configure your repository
 - [Usage Guide](guides/usage.md) - Action inputs, outputs, and troubleshooting
 - [Check Development Guide](guides/check-development-guide.md) - Guide for creating custom checks
 - [Architecture Overview](architecture/overview.md) - How Scorecards works
@@ -20,12 +20,14 @@ Welcome to the Scorecards documentation!
 ### Guides
 - **[Platform Installation](guides/platform-installation.md)** - Set up Scorecards for your organization
 - **[Service Installation](guides/service-installation.md)** - Add Scorecards to your service
-- **[Configuration](guides/configuration.md)** - Configure .scorecard/config.yml
 - **[Usage](guides/usage.md)** - Action inputs, outputs, badges, and troubleshooting
+- **[Check Development Guide](guides/check-development-guide.md)** - How to create custom checks
 
 ### Reference
-- **[Check Development Guide](guides/check-development-guide.md)** - How to create custom checks
-- **[Reference](reference/README.md)** - Score tiers, categories, and file formats
+- **[Configuration](reference/configuration.md)** - Configure .scorecard/config.yml
+- **[Token Requirements](reference/token-requirements.md)** - GitHub token scopes and permissions
+- **[Workflows](reference/workflows.md)** - GitHub Actions workflow specifications
+- **[Quick Reference](reference/README.md)** - Score tiers, categories, and file formats
 
 ### Development
 - **[Contributing](../CONTRIBUTING.md)** - How to contribute

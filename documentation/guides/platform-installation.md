@@ -43,7 +43,7 @@ Before running the installation script, ensure you have:
   - `SCORECARDS_CATALOG_TOKEN` with `repo` scope (required)
   - `SCORECARDS_WORKFLOW_TOKEN` with `repo` and `workflow` scopes (optional, for automated installation)
 
-See [Token Requirements Guide](token-requirements.md) for token creation instructions.
+See [Token Requirements Guide](../reference/token-requirements.md) for token creation instructions.
 
 ## Manual Installation
 
@@ -236,6 +236,6 @@ After setting up the central system:
 ## Additional Resources
 
 - [Service Installation Guide](service-installation.md) - For service teams
-- [Configuration Guide](configuration.md) - Configure .scorecard/config.yml
+- [Configuration Guide](../reference/configuration.md) - Configure .scorecard/config.yml
 - [Check Development Guide](check-development-guide.md) - How to create custom checks
 - [Architecture Overview](../architecture/overview.md) - How Scorecards works

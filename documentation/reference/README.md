@@ -4,10 +4,9 @@ Complete reference documentation for Scorecards.
 
 ## Documents
 
-- **[Check Development Guide](../guides/check-development-guide.md)** - Guide for creating custom quality checks
-- **[Config Schema](config-schema.md)** - .scorecard/config.yml schema and options
-- **[Metadata Schema](metadata-schema.md)** - Check metadata.json schema
-- **[API](api.md)** - GitHub API usage and interactions
+- **[Configuration](configuration.md)** - .scorecard/config.yml schema and options
+- **[Token Requirements](token-requirements.md)** - GitHub token scopes and permissions
+- **[Workflows](workflows.md)** - GitHub Actions workflow specifications
 
 ## Quick References
 
@@ -38,7 +37,7 @@ Complete reference documentation for Scorecards.
 - Important checks (CI, Tests): 7-8 points
 - Nice-to-have checks: 3-5 points
 
-See [Check Development Guide](../guides/check-development-guide.md) for guidance on creating checks.
+See [Check Development Guide](../guides/check-development-guide.md) for creating custom checks and [Configuration](configuration.md) for service metadata.
 
 ## File Formats
 
@@ -80,4 +79,4 @@ Individual check results stored in `results.json`:
 }
 ```
 
-See [API](api.md) for complete schema documentation.
+See [Configuration](configuration.md) for complete schema documentation.

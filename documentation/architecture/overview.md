@@ -122,7 +122,7 @@ The system uses GitHub Actions workflows for automation across three categories:
 - **trigger-service-workflow.yml** - Remote workflow triggering
 - **consolidate-registry.yml** - Registry aggregation
 
-**See [Workflows](workflows.md) for detailed documentation on each workflow's triggers, inputs, outputs, and implementation.**
+**See [Workflows](../reference/workflows.md) for detailed documentation on each workflow's triggers, inputs, outputs, and implementation.**
 
 ## Data Flow
 
@@ -187,14 +187,14 @@ When checks are modified, a SHA256 hash is generated and stored in the catalog b
 - Tokens stored as GitHub Secrets (encrypted at rest)
 - Tokens never exposed in logs or workflow outputs
 - Scoped to minimum required permissions
-- See [Token Requirements Guide](../guides/token-requirements.md) for details
+- See [Token Requirements Guide](../reference/token-requirements.md) for details
 
 ## Related Documentation
 
 ### Architecture Docs
 
 - [Catalog UI](catalog-ui.md) - Frontend architecture and features
-- [Workflows](workflows.md) - Detailed workflow documentation and patterns
+- [Workflows](../reference/workflows.md) - Detailed workflow documentation and patterns
 
 ### Flow Diagrams
 

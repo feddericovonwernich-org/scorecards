@@ -108,7 +108,7 @@ custom:
 - Useful links directly in the catalog
 - Improved searchability and organization
 
-See [Configuration Guide](configuration.md) for all available options.
+See [Configuration Guide](../reference/configuration.md) for all available options.
 
 ## Troubleshooting
 
@@ -132,6 +132,6 @@ After installation:
 ## Additional Resources
 
 - [Usage Guide](usage.md) - Action inputs, outputs, and advanced usage
-- [Configuration Guide](configuration.md) - Complete configuration options
+- [Configuration Guide](../reference/configuration.md) - Complete configuration options
 - [Check Development Guide](check-development-guide.md) - How to create custom checks
 - [Platform Installation Guide](platform-installation.md) - For platform teams
