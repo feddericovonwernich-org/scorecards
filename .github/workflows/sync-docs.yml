@@ -27,7 +27,7 @@ jobs:
         with:
           ref: catalog
           path: catalog-repo
-          token: ${{ secrets.SCORECARDS_CATALOG_TOKEN }}
+          token: ${{ secrets.SCORECARDS_CATALOG_TOKEN || secrets.SCORECARDS_WORKFLOW_TOKEN }}
 
       - name: Sync catalog UI files
         run: |
