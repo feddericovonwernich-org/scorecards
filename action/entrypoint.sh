@@ -18,7 +18,8 @@ source "$SCRIPT_DIR/lib/results-builder.sh"
 # Configuration and Environment
 # ============================================================================
 
-GITHUB_TOKEN="${INPUT_GITHUB_TOKEN}"
+# Sanitize token by removing any trailing whitespace/newlines
+GITHUB_TOKEN=$(echo -n "${INPUT_GITHUB_TOKEN}" | tr -d '\n\r\t ')
 SCORECARDS_REPO="${INPUT_SCORECARDS_REPO}"
 SCORECARDS_BRANCH="${INPUT_SCORECARDS_BRANCH:-catalog}"
 
