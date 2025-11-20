@@ -378,14 +378,25 @@ Commit: $(git rev-parse HEAD | head -c 7)"
         fi
     fi
 
-    # Update current-checks metadata
-    echo "$checks_hash" > "current-checks-hash.txt"
-    build_checks_metadata "$checks_hash" "$checks_count" > "current-checks.json"
+    # Update current-checks metadata (only if hash or count changed)
+    local old_checks_hash=""
+    local old_checks_count=""
 
-    git add current-checks.json current-checks-hash.txt
+    if [ -f "current-checks.json" ]; then
+        old_checks_hash=$(jq -r '.checks_hash // ""' current-checks.json 2>/dev/null || echo "")
+        old_checks_count=$(jq -r '.checks_count // ""' current-checks.json 2>/dev/null || echo "")
+    fi
 
-    if ! git diff --staged --quiet; then
-        log_info "Check suite changed - committing metadata..."
+    # Only update if hash or count changed
+    if [ "$old_checks_hash" != "$checks_hash" ] || [ "$old_checks_count" != "$checks_count" ]; then
+        log_info "Check suite changed - updating metadata..."
+        log_info "Old hash: $old_checks_hash (count: $old_checks_count)"
+        log_info "New hash: $checks_hash (count: $checks_count)"
+
+        echo "$checks_hash" > "current-checks-hash.txt"
+        build_checks_metadata "$checks_hash" "$checks_count" > "current-checks.json"
+
+        git add current-checks.json current-checks-hash.txt
         git commit -m "Update check suite metadata
 
 Checks hash: $checks_hash
@@ -394,6 +405,8 @@ Checks count: $checks_count"
         if ! git_push_simple "$central_repo_dir" "$scorecards_branch" "$work_dir/git-push-checks.log"; then
             log_warning "Failed to push check suite metadata"
         fi
+    else
+        log_debug "Check suite unchanged (hash: $checks_hash, count: $checks_count) - skipping metadata update"
     fi
 
     log_success "Catalog update complete"
