@@ -78,7 +78,24 @@ After the first run:
 2. Find your service in the list
 3. See your score, rank, and detailed check results
 
-> For details on understanding your score, adding badges, and improving results, see the [Usage Guide](usage.md).
+### Step 5: Add Badges to Your README (Optional)
+
+Show your quality score directly in your README:
+
+```markdown
+# My Service
+
+![Scorecard Score](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/YOUR-ORG/scorecards/catalog/badges/your-org/your-repo/score.json)
+![Scorecard Rank](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/YOUR-ORG/scorecards/catalog/badges/your-org/your-repo/rank.json)
+
+...rest of your README...
+```
+
+**Replace the following:**
+- `YOUR-ORG/scorecards` - Your organization's central scorecards repository (e.g., `acme-corp/scorecards`)
+- `your-org/your-repo` - Your service's organization and repository name (e.g., `acme-corp/payment-service`)
+
+The badges update automatically when your score changes.
 
 ## Optional: Add Service Metadata
 
@@ -112,13 +129,85 @@ See [Configuration Guide](../reference/configuration.md) for all available optio
 
 ## Troubleshooting
 
-If you run into issues during installation:
+### Workflow not running
 
-- **Workflow not running**: Check that the file is in `.github/workflows/` and GitHub Actions is enabled
-- **Permission errors**: Ensure `SCORECARDS_PAT` secret has `repo` scope and hasn't expired
-- **Results not appearing**: Verify the central scorecards repo URL is correct in your workflow
+Check that the file is in `.github/workflows/` and GitHub Actions is enabled for your repository.
 
-For comprehensive troubleshooting and usage help, see the [Usage Guide](usage.md).
+### Action fails with "Permission denied"
+
+Ensure your token has write access to the central scorecards repository:
+
+1. Create a PAT with `repo` scope (GitHub Settings → Developer settings → Personal access tokens)
+2. Add it as a repository secret named `SCORECARDS_PAT`
+3. Use it in your workflow:
+   ```yaml
+   github-token: ${{ secrets.SCORECARDS_PAT }}
+   ```
+
+### Service doesn't appear in catalog
+
+1. Check that the action ran successfully in the Actions tab
+2. Verify that `scorecards-repo` is set correctly in your workflow
+3. Check that results were committed to the catalog branch in the central repository
+4. Wait a few minutes for GitHub Pages to update
+
+### Checks failing unexpectedly
+
+View detailed check results in the catalog:
+1. Visit the catalog page
+2. Click on your service card
+3. Review each check's output and error messages
+
+### Want to improve your score?
+
+1. Review failing checks in the catalog
+2. Read each check's description to understand what it validates
+3. Fix issues in your repository
+4. Push changes to trigger a new scorecard run
+
+## Advanced Patterns
+
+### Running scorecards on pull requests
+
+You can run scorecards on PRs without committing results to the catalog:
+
+```yaml
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  scorecard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Scorecards (PR Check)
+        uses: feddericovonwernich/scorecards/action@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Don't set scorecards-repo to avoid committing on PRs
+```
+
+This gives contributors immediate feedback on quality before merging.
+
+### Using action outputs
+
+Access scorecard results in subsequent workflow steps:
+
+```yaml
+- name: Run Scorecards
+  id: scorecard
+  uses: feddericovonwernich/scorecards/action@main
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+
+- name: Comment on PR
+  run: |
+    echo "Score: ${{ steps.scorecard.outputs.score }}"
+    echo "Rank: ${{ steps.scorecard.outputs.rank }}"
+```
+
+See the [Action Reference](../reference/action-reference.md) for all available outputs.
 
 ## Next Steps
 
@@ -131,7 +220,7 @@ After installation:
 
 ## Additional Resources
 
-- [Usage Guide](usage.md) - Action inputs, outputs, and advanced usage
+- [Action Reference](../reference/action-reference.md) - Action inputs, outputs, and advanced usage
 - [Configuration Guide](../reference/configuration.md) - Complete configuration options
 - [Check Development Guide](check-development-guide.md) - How to create custom checks
 - [Platform Installation Guide](platform-installation.md) - For platform teams

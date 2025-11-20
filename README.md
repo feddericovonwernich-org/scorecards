@@ -159,7 +159,7 @@ The workflow runs daily and reports results to the catalog.
 - **[Configuration Guide](documentation/guides/configuration.md)** - Customize your setup
 
 ### Reference
-- **[Usage Guide](documentation/guides/usage.md)** - Action inputs, outputs, badges, and troubleshooting
+- **[Action Reference](documentation/reference/action-reference.md)** - Action inputs, outputs, badges, and troubleshooting
 - **[Check Development Guide](documentation/guides/check-development-guide.md)** - How to create custom checks
 - **[Architecture](documentation/architecture/overview.md)** - System design and flows
 - **[Token Requirements](documentation/reference/token-requirements.md)** - PAT setup and scopes

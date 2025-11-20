@@ -7,7 +7,7 @@
 
 ## Using Scorecards
 
-- **[Usage Guide](guides/usage.md)** - Day-to-day operations
+- **[Action Reference](reference/action-reference.md)** - Action inputs, outputs, and badges
 - **[Configuration](reference/configuration.md)** - Configure .scorecard/config.yml
 - **[Check Development](guides/check-development-guide.md)** - Create custom checks
 

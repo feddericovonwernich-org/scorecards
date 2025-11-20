@@ -7,5 +7,4 @@
 
 ## Guides
 
-- **[Usage](usage.md)** - Day-to-day usage and troubleshooting
 - **[Check Development](check-development-guide.md)** - Create custom quality checks
