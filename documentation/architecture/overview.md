@@ -154,10 +154,40 @@ When checks are modified, a SHA256 hash is generated and stored in the catalog b
 
 ## Security Model
 
+### Code Access and Execution
+
 - **Read-only**: Checks never modify the repository being scored
-- **Isolated**: Checks run in Docker containers
-- **Timeouts**: All checks have maximum execution time
-- **Non-blocking**: Never fails CI, only reports
+- **Isolated**: Checks run in Docker containers within GitHub Actions runners
+- **Timeouts**: All checks have maximum execution time limits
+- **Non-blocking**: Never fails CI, only reports results
+- **GitHub-native**: All execution happens within GitHub Actions infrastructure
+  - No external systems read your code
+  - Runs within your organization's GitHub environment
+  - Uses GitHub's security model and access controls
+
+### Data Visibility
+
+**Catalog UI (GitHub Pages):**
+- **Public repositories** → Catalog is publicly accessible
+- **Private repositories** → Depends on your GitHub plan:
+  - With **GitHub Enterprise**: Pages can be restricted to organization members
+  - Without Enterprise: Pages are **publicly accessible** even though the repo is private
+
+**Important**: If you're using a private scorecards repository, verify your GitHub Pages settings:
+- Go to Repository Settings → Pages → Visibility
+- Ensure it matches your security requirements
+
+**Results Storage:**
+- Stored in `catalog` branch of the scorecards repository
+- Access controlled by repository permissions
+- Only users with repository access can view raw results files
+
+### Token Security
+
+- Tokens stored as GitHub Secrets (encrypted at rest)
+- Tokens never exposed in logs or workflow outputs
+- Scoped to minimum required permissions
+- See [Token Requirements Guide](../guides/token-requirements.md) for details
 
 ## Performance
 
