@@ -292,10 +292,11 @@ export async function getVisibleServiceNames(page) {
  * @param {Object} options - Mock options
  * @param {number} options.status - HTTP status code (default: 204 for success)
  * @param {boolean} options.requireAuth - Whether to require authorization header (default: true)
+ * @param {number} options.delay - Delay in ms before responding (default: 0, useful for testing loading states)
  */
-export async function mockWorkflowDispatch(page, { status = 204, requireAuth = true } = {}) {
+export async function mockWorkflowDispatch(page, { status = 204, requireAuth = true, delay = 0 } = {}) {
   const pattern = '**/api.github.com/repos/**/actions/workflows/*/dispatches';
-  console.log('Setting up workflow dispatch mock with pattern:', pattern);
+  console.log('Setting up workflow dispatch mock with pattern:', pattern, delay > 0 ? `(${delay}ms delay)` : '');
 
   await page.route(pattern, async (route) => {
     const headers = route.request().headers();
@@ -316,6 +317,11 @@ export async function mockWorkflowDispatch(page, { status = 204, requireAuth = t
         },
       });
       return;
+    }
+
+    // Apply delay if specified (useful for testing loading states)
+    if (delay > 0) {
+      await new Promise(resolve => setTimeout(resolve, delay));
     }
 
     // Return the configured status

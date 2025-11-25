@@ -69,6 +69,8 @@ test.describe('Reload Button', () => {
   });
 
   test('should show tooltips on hover in different states', async ({ page }) => {
+    // Re-mock with delay to test loading state
+    await mockWorkflowDispatch(page, { delay: 300 });
     await setGitHubPAT(page, 'test-token-12345');
 
     const staleCard = page.locator('.service-card').filter({ hasText: 'test-repo-stale' });
@@ -126,6 +128,8 @@ test.describe('Reload Button', () => {
   });
 
   test('should apply spinning animation during loading', async ({ page }) => {
+    // Re-mock with delay to test loading state
+    await mockWorkflowDispatch(page, { delay: 300 });
     await setGitHubPAT(page, 'test-token-12345');
 
     const staleCard = page.locator('.service-card').filter({ hasText: 'test-repo-stale' });
