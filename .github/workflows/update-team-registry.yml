@@ -189,10 +189,7 @@ jobs:
             commit_msg="Update team: $team_id"
           fi
 
-          git commit -m "$commit_msg
-
-Updated by: ${{ github.actor }}
-Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          git commit -m "$commit_msg" -m "Updated by: ${{ github.actor }}" -m "Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
           git push
 
