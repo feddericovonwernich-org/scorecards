@@ -17,6 +17,9 @@ build_results_json() {
     local service_repo="${svc_ref[repo]}"
     local service_name="${svc_ref[name]}"
     local team_name="${svc_ref[team]}"
+    local team_all="${svc_ref[team_all]:-[]}"
+    local team_source="${svc_ref[team_source]:-none}"
+    local team_discovered_at="${svc_ref[team_discovered_at]:-}"
 
     local score="${scr_ref[score]}"
     local rank="${scr_ref[rank]}"
@@ -38,11 +41,15 @@ build_results_json() {
     log_debug "  openapi_json length: ${#openapi_json}" >&2
 
     # Build the complete results JSON
+    # Note: team is now an object with primary, all, source, last_discovered
     jq -n \
         --arg service_org "$service_org" \
         --arg service_repo "$service_repo" \
         --arg service_name "$service_name" \
-        --arg team "$team_name" \
+        --arg team_primary "$team_name" \
+        --argjson team_all "$team_all" \
+        --arg team_source "$team_source" \
+        --arg team_discovered_at "$team_discovered_at" \
         --argjson score "$score" \
         --arg rank "$rank" \
         --argjson passed_checks "$passed_checks" \
@@ -60,7 +67,12 @@ build_results_json() {
                 org: $service_org,
                 repo: $service_repo,
                 name: $service_name,
-                team: $team,
+                team: (if $team_primary != "" then {
+                    primary: $team_primary,
+                    all: $team_all,
+                    source: $team_source,
+                    last_discovered: (if $team_discovered_at != "" then $team_discovered_at else null end)
+                } else null end),
                 links: $links,
                 openapi: (if $openapi != null then $openapi else null end)
             },

@@ -76,7 +76,66 @@ get_service_name() {
     fi
 }
 
-# Parse team name from config
+# Parse team configuration from config
+# Returns JSON: { name: "...", override_discovery: bool, additional_teams: [...] }
+# Supports both string format: team: "My Team"
+# And object format: team: { name: "...", override_discovery: true, additional_teams: [...] }
+parse_team_config() {
+    local repo_path="$1"
+    local config_file="$repo_path/.scorecard/config.yml"
+
+    if [ ! -f "$config_file" ]; then
+        echo '{"name": null, "override_discovery": false, "additional_teams": []}'
+        return 0
+    fi
+
+    if ! command -v python3 &> /dev/null; then
+        log_warning "Python not available, cannot parse team config" >&2
+        echo '{"name": null, "override_discovery": false, "additional_teams": []}'
+        return 1
+    fi
+
+    python3 -c "
+import yaml, json, sys
+
+try:
+    with open('$config_file', 'r') as f:
+        config = yaml.safe_load(f) or {}
+
+    # Get service.team or top-level team
+    service = config.get('service', {})
+    team_config = service.get('team') if isinstance(service, dict) else None
+
+    # Fallback to top-level team
+    if team_config is None:
+        team_config = config.get('team')
+
+    result = {
+        'name': None,
+        'override_discovery': False,
+        'additional_teams': []
+    }
+
+    if team_config is None:
+        pass
+    elif isinstance(team_config, str):
+        # Simple string format: team: \"My Team\"
+        result['name'] = team_config if team_config else None
+    elif isinstance(team_config, dict):
+        # Object format: team: { name: \"...\", override_discovery: true, ... }
+        result['name'] = team_config.get('name')
+        result['override_discovery'] = bool(team_config.get('override_discovery', False))
+        additional = team_config.get('additional_teams', [])
+        if isinstance(additional, list):
+            result['additional_teams'] = [t for t in additional if isinstance(t, str)]
+
+    print(json.dumps(result))
+except Exception as e:
+    print(json.dumps({'name': None, 'override_discovery': False, 'additional_teams': []}))
+" 2>/dev/null || echo '{"name": null, "override_discovery": false, "additional_teams": []}'
+}
+
+# Parse team name from config (backward compatible wrapper)
 get_team_name() {
     local repo_path="$1"
     local config_file="$repo_path/.scorecard/config.yml"
@@ -86,8 +145,48 @@ get_team_name() {
         return 0
     fi
 
-    # Parse team name
-    grep "team:" "$config_file" | sed 's/.*team: *"\?\([^"]*\)"\?.*/\1/' || echo ""
+    local team_config
+    team_config=$(parse_team_config "$repo_path")
+
+    echo "$team_config" | jq -r '.name // ""'
+}
+
+# Check if team discovery should be overridden by manual config
+should_override_discovery() {
+    local repo_path="$1"
+    local config_file="$repo_path/.scorecard/config.yml"
+
+    if [ ! -f "$config_file" ]; then
+        return 1  # false - don't override
+    fi
+
+    local team_config
+    team_config=$(parse_team_config "$repo_path")
+
+    local override
+    override=$(echo "$team_config" | jq -r '.override_discovery')
+
+    if [ "$override" = "true" ]; then
+        return 0  # true - override discovery
+    fi
+
+    return 1  # false - allow discovery
+}
+
+# Get additional teams from config
+get_additional_teams() {
+    local repo_path="$1"
+    local config_file="$repo_path/.scorecard/config.yml"
+
+    if [ ! -f "$config_file" ]; then
+        echo "[]"
+        return 0
+    fi
+
+    local team_config
+    team_config=$(parse_team_config "$repo_path")
+
+    echo "$team_config" | jq -c '.additional_teams // []'
 }
 
 # Parse links array from config (requires Python for YAML array parsing)

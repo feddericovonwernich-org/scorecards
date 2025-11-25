@@ -1,0 +1,71 @@
+{
+  "teams": {
+    "platform": {
+      "id": "platform",
+      "name": "Platform",
+      "description": "Platform engineering team",
+      "aliases": ["plat", "infra"],
+      "metadata": {
+        "slack_channel": "#platform-eng",
+        "oncall_rotation": "platform-oncall"
+      },
+      "statistics": {
+        "serviceCount": 2,
+        "averageScore": 78,
+        "staleCount": 1,
+        "installedCount": 1,
+        "rankDistribution": {
+          "platinum": 0,
+          "gold": 2,
+          "silver": 0,
+          "bronze": 0
+        }
+      }
+    },
+    "frontend": {
+      "id": "frontend",
+      "name": "Frontend",
+      "description": "Frontend development team",
+      "aliases": ["fe", "ui"],
+      "metadata": {
+        "slack_channel": "#frontend"
+      },
+      "statistics": {
+        "serviceCount": 2,
+        "averageScore": 63,
+        "staleCount": 0,
+        "installedCount": 0,
+        "rankDistribution": {
+          "platinum": 0,
+          "gold": 0,
+          "silver": 2,
+          "bronze": 0
+        }
+      }
+    },
+    "backend": {
+      "id": "backend",
+      "name": "Backend",
+      "description": "Backend services team",
+      "aliases": ["be", "api"],
+      "metadata": {
+        "slack_channel": "#backend",
+        "oncall_rotation": "backend-oncall"
+      },
+      "statistics": {
+        "serviceCount": 2,
+        "averageScore": 63,
+        "staleCount": 0,
+        "installedCount": 0,
+        "rankDistribution": {
+          "platinum": 0,
+          "gold": 0,
+          "silver": 2,
+          "bronze": 0
+        }
+      }
+    }
+  },
+  "generated_at": "2025-11-16T19:00:52Z",
+  "count": 3
+}

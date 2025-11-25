@@ -1,0 +1,199 @@
+name: Update Team Registry
+
+on:
+  workflow_dispatch:
+    inputs:
+      team_id:
+        description: 'Team ID (e.g., platform-engineering)'
+        required: true
+        type: string
+      action:
+        description: 'Action to perform'
+        required: true
+        type: choice
+        options:
+          - update
+          - create
+      name:
+        description: 'Display name for the team'
+        required: false
+        type: string
+      description:
+        description: 'Team description'
+        required: false
+        type: string
+      aliases:
+        description: 'Comma-separated list of aliases'
+        required: false
+        type: string
+      slack_channel:
+        description: 'Slack channel (e.g., #platform-eng)'
+        required: false
+        type: string
+      oncall_rotation:
+        description: 'On-call rotation name'
+        required: false
+        type: string
+
+# Only allow one team update at a time
+concurrency:
+  group: update-team-${{ github.event.inputs.team_id }}
+  cancel-in-progress: false
+
+jobs:
+  update-team:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout catalog branch
+        uses: actions/checkout@v4
+        with:
+          ref: catalog
+          token: ${{ secrets.SCORECARDS_CATALOG_TOKEN || secrets.SCORECARDS_WORKFLOW_TOKEN }}
+
+      - name: Validate inputs
+        id: validate
+        run: |
+          team_id="${{ github.event.inputs.team_id }}"
+          action="${{ github.event.inputs.action }}"
+
+          # Validate team_id format
+          if [[ ! "$team_id" =~ ^[a-z0-9-]+$ ]]; then
+            echo "Error: team_id must be lowercase alphanumeric with hyphens only"
+            exit 1
+          fi
+
+          team_file="teams/${team_id}.json"
+
+          if [ "$action" = "update" ] && [ ! -f "$team_file" ]; then
+            echo "Error: Team file does not exist: $team_file"
+            echo "Use action 'create' to create a new team"
+            exit 1
+          fi
+
+          if [ "$action" = "create" ] && [ -f "$team_file" ]; then
+            echo "Warning: Team file already exists, will update instead"
+          fi
+
+          echo "team_file=$team_file" >> $GITHUB_OUTPUT
+          echo "team_id=$team_id" >> $GITHUB_OUTPUT
+
+      - name: Update team file
+        run: |
+          mkdir -p teams
+
+          team_id="${{ steps.validate.outputs.team_id }}"
+          team_file="${{ steps.validate.outputs.team_file }}"
+          action="${{ github.event.inputs.action }}"
+
+          # Parse inputs
+          name="${{ github.event.inputs.name }}"
+          description="${{ github.event.inputs.description }}"
+          aliases="${{ github.event.inputs.aliases }}"
+          slack_channel="${{ github.event.inputs.slack_channel }}"
+          oncall_rotation="${{ github.event.inputs.oncall_rotation }}"
+
+          timestamp="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+          # Convert aliases to JSON array
+          if [ -n "$aliases" ]; then
+            aliases_json=$(echo "$aliases" | tr ',' '\n' | sed 's/^ *//' | sed 's/ *$//' | jq -R . | jq -s .)
+          else
+            aliases_json="[]"
+          fi
+
+          # Build metadata object
+          metadata_json="{}"
+          if [ -n "$slack_channel" ]; then
+            metadata_json=$(echo "$metadata_json" | jq --arg v "$slack_channel" '.slack_channel = $v')
+          fi
+          if [ -n "$oncall_rotation" ]; then
+            metadata_json=$(echo "$metadata_json" | jq --arg v "$oncall_rotation" '.oncall_rotation = $v')
+          fi
+
+          if [ -f "$team_file" ]; then
+            # Update existing file
+            echo "Updating existing team: $team_id"
+            existing=$(cat "$team_file")
+
+            # Update only provided fields
+            updated="$existing"
+
+            if [ -n "$name" ]; then
+              updated=$(echo "$updated" | jq --arg v "$name" '.name = $v')
+            fi
+
+            if [ -n "$description" ]; then
+              updated=$(echo "$updated" | jq --arg v "$description" '.description = $v')
+            fi
+
+            if [ -n "$aliases" ]; then
+              updated=$(echo "$updated" | jq --argjson v "$aliases_json" '.aliases = $v')
+            fi
+
+            # Merge metadata
+            if [ "$metadata_json" != "{}" ]; then
+              updated=$(echo "$updated" | jq --argjson m "$metadata_json" '.metadata = (.metadata // {}) + $m')
+            fi
+
+            updated=$(echo "$updated" | jq --arg t "$timestamp" '.last_modified = $t')
+
+            echo "$updated" | jq '.' > "$team_file"
+          else
+            # Create new team file
+            echo "Creating new team: $team_id"
+
+            # Use team_id as name if not provided
+            if [ -z "$name" ]; then
+              name="$team_id"
+            fi
+
+            jq -n \
+              --arg id "$team_id" \
+              --arg name "$name" \
+              --arg description "$description" \
+              --argjson aliases "$aliases_json" \
+              --argjson metadata "$metadata_json" \
+              --arg auto_created "$timestamp" \
+              '{
+                id: $id,
+                name: $name,
+                description: (if $description != "" then $description else null end),
+                aliases: $aliases,
+                metadata: $metadata,
+                auto_created: $auto_created
+              }' > "$team_file"
+          fi
+
+          echo "Team file updated:"
+          cat "$team_file"
+
+      - name: Commit and push
+        run: |
+          team_id="${{ steps.validate.outputs.team_id }}"
+          action="${{ github.event.inputs.action }}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add teams/
+
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          if [ "$action" = "create" ]; then
+            commit_msg="Create team: $team_id"
+          else
+            commit_msg="Update team: $team_id"
+          fi
+
+          git commit -m "$commit_msg
+
+Updated by: ${{ github.actor }}
+Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          git push
+
+          echo "Team registry updated successfully"

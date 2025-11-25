@@ -10,6 +10,7 @@ source "$SCRIPT_DIR/lib/common.sh"
 source "$SCRIPT_DIR/lib/setup.sh"
 source "$SCRIPT_DIR/lib/github-api.sh"
 source "$SCRIPT_DIR/lib/config-parser.sh"
+source "$SCRIPT_DIR/lib/team-discovery.sh"
 source "$SCRIPT_DIR/lib/contributor-analyzer.sh"
 source "$SCRIPT_DIR/lib/git-ops.sh"
 source "$SCRIPT_DIR/lib/results-builder.sh"
@@ -93,7 +94,12 @@ fi
 
 if [ "$HAS_CONFIG" = "true" ]; then
     SERVICE_NAME=$(get_service_name "$GITHUB_WORKSPACE" "$SERVICE_REPO")
-    TEAM_NAME=$(get_team_name "$GITHUB_WORKSPACE")
+    MANUAL_TEAM=$(get_team_name "$GITHUB_WORKSPACE")
+    OVERRIDE_DISCOVERY="false"
+    if should_override_discovery "$GITHUB_WORKSPACE"; then
+        OVERRIDE_DISCOVERY="true"
+    fi
+    CONFIG_ADDITIONAL_TEAMS=$(get_additional_teams "$GITHUB_WORKSPACE")
     LINKS_JSON=$(parse_links_array "$GITHUB_WORKSPACE")
     OPENAPI_JSON=$(parse_openapi_config "$GITHUB_WORKSPACE")
 
@@ -115,10 +121,54 @@ if [ "$HAS_CONFIG" = "true" ]; then
     fi
 else
     SERVICE_NAME="$SERVICE_REPO"
-    TEAM_NAME=""
+    MANUAL_TEAM=""
+    OVERRIDE_DISCOVERY="false"
+    CONFIG_ADDITIONAL_TEAMS="[]"
     LINKS_JSON="[]"
     OPENAPI_JSON="null"
     HAS_API="false"
+fi
+
+# ============================================================================
+# Team Discovery (manual config > CODEOWNERS > GitHub API)
+# ============================================================================
+
+log_info "Discovering team ownership..."
+
+# If override_discovery is set and manual team exists, skip discovery
+if [ "$OVERRIDE_DISCOVERY" = "true" ] && [ -n "$MANUAL_TEAM" ]; then
+    log_info "Team discovery overridden by config - using manual team only"
+    TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    TEAM_DISCOVERY_JSON=$(jq -n \
+        --arg primary "$MANUAL_TEAM" \
+        --argjson additional "$CONFIG_ADDITIONAL_TEAMS" \
+        --arg timestamp "$TIMESTAMP" \
+        '{
+            primary: $primary,
+            all: ([$primary] + $additional | unique),
+            source: "manual",
+            last_discovered: $timestamp
+        }')
+else
+    TEAM_DISCOVERY_JSON=$(discover_team "$GITHUB_WORKSPACE" "$SERVICE_ORG" "$SERVICE_REPO" "$GITHUB_TOKEN" "$MANUAL_TEAM")
+
+    # Merge additional teams from config if present
+    if [ "$CONFIG_ADDITIONAL_TEAMS" != "[]" ]; then
+        TEAM_DISCOVERY_JSON=$(echo "$TEAM_DISCOVERY_JSON" | jq \
+            --argjson additional "$CONFIG_ADDITIONAL_TEAMS" \
+            '.all = (.all + $additional | unique)')
+    fi
+fi
+
+# Extract team fields from discovery result
+TEAM_NAME=$(echo "$TEAM_DISCOVERY_JSON" | jq -r '.primary // ""')
+TEAM_ALL_JSON=$(echo "$TEAM_DISCOVERY_JSON" | jq -c '.all // []')
+TEAM_SOURCE=$(echo "$TEAM_DISCOVERY_JSON" | jq -r '.source // "none"')
+TEAM_DISCOVERED_AT=$(echo "$TEAM_DISCOVERY_JSON" | jq -r '.last_discovered // ""')
+
+log_info "Team: ${TEAM_NAME:-<not discovered>} (source: $TEAM_SOURCE)"
+if [ "$TEAM_ALL_JSON" != "[]" ] && [ "$TEAM_ALL_JSON" != '["'"$TEAM_NAME"'"]' ]; then
+    log_info "Additional teams: $TEAM_ALL_JSON"
 fi
 
 log_debug "========================================"
@@ -294,6 +344,9 @@ declare -A service_context=(
     [repo]="$SERVICE_REPO"
     [name]="$SERVICE_NAME"
     [team]="$TEAM_NAME"
+    [team_all]="$TEAM_ALL_JSON"
+    [team_source]="$TEAM_SOURCE"
+    [team_discovered_at]="$TEAM_DISCOVERED_AT"
     [has_api]="$HAS_API"
     [default_branch]="$DEFAULT_BRANCH"
 )
@@ -316,6 +369,9 @@ log_debug "  service_context[org]: ${service_context[org]}"
 log_debug "  service_context[repo]: ${service_context[repo]}"
 log_debug "  service_context[name]: ${service_context[name]}"
 log_debug "  service_context[team]: ${service_context[team]}"
+log_debug "  service_context[team_all]: ${service_context[team_all]}"
+log_debug "  service_context[team_source]: ${service_context[team_source]}"
+log_debug "  service_context[team_discovered_at]: ${service_context[team_discovered_at]}"
 log_debug "  service_context[has_api]: ${service_context[has_api]}"
 log_debug "  service_context[default_branch]: ${service_context[default_branch]}"
 log_debug "  score_context[score]: ${score_context[score]}"

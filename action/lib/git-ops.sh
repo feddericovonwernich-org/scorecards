@@ -91,6 +91,9 @@ build_registry_entry() {
     local repo="${svc_ref[repo]}"
     local name="${svc_ref[name]}"
     local team="${svc_ref[team]}"
+    local team_all="${svc_ref[team_all]:-[]}"
+    local team_source="${svc_ref[team_source]:-none}"
+    local team_discovered_at="${svc_ref[team_discovered_at]:-}"
     local has_api="${svc_ref[has_api]}"
     local default_branch="${svc_ref[default_branch]}"
 
@@ -116,7 +119,10 @@ build_registry_entry() {
         --arg org "$org"
         --arg repo "$repo"
         --arg name "$name"
-        --arg team "$team"
+        --arg team_primary "$team"
+        --argjson team_all "$team_all"
+        --arg team_source "$team_source"
+        --arg team_discovered_at "$team_discovered_at"
         --argjson score "$score"
         --arg rank "$rank"
         --arg timestamp "$timestamp"
@@ -138,7 +144,12 @@ build_registry_entry() {
             org: $org,
             repo: $repo,
             name: $name,
-            team: $team,
+            team: (if $team_primary != "" then {
+                primary: $team_primary,
+                all: $team_all,
+                source: $team_source,
+                last_discovered: (if $team_discovered_at != "" then $team_discovered_at else null end)
+            } else null end),
             score: $score,
             rank: $rank,
             last_updated: $timestamp,
@@ -158,7 +169,12 @@ build_registry_entry() {
             org: $org,
             repo: $repo,
             name: $name,
-            team: $team,
+            team: (if $team_primary != "" then {
+                primary: $team_primary,
+                all: $team_all,
+                source: $team_source,
+                last_discovered: (if $team_discovered_at != "" then $team_discovered_at else null end)
+            } else null end),
             score: $score,
             rank: $rank,
             last_updated: $timestamp,

@@ -21,7 +21,34 @@ export const expectedStats = {
     silver: 4,
     bronze: 3,
   },
+  teams: 3, // platform, frontend, backend
 };
+
+// Expected team data
+export const expectedTeams = {
+  platform: {
+    name: 'Platform',
+    serviceCount: 2,
+    services: ['test-repo-perfect', 'test-repo-stale'],
+  },
+  frontend: {
+    name: 'Frontend',
+    serviceCount: 2,
+    services: ['test-repo-edge-cases', 'test-repo-javascript'],
+  },
+  backend: {
+    name: 'Backend',
+    serviceCount: 2,
+    services: ['test-repo-install-test', 'test-repo-python'],
+  },
+};
+
+// Services without team
+export const servicesWithoutTeam = [
+  'test-repo-empty',
+  'test-repo-minimal',
+  'test-repo-no-docs',
+];
 
 // Expected service data
 export const expectedServices = [
