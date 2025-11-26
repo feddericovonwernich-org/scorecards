@@ -97,3 +97,23 @@ When adding new code, follow this structure:
 - `docs/src/ui/` - UI components and rendering
 - `docs/src/services/` - Business logic (auth, theme, staleness)
 - `docs/src/utils/` - Reusable utility functions
+
+### Local Development Testing
+
+**IMPORTANT: Always test with a fresh browser context and clean up servers.**
+
+When testing local frontend changes:
+- ✅ DO: Close the browser tab and open a new one (or use incognito)
+- ✅ DO: Start a fresh HTTP server on a NEW port if caching persists
+- ✅ DO: Kill leftover background servers before starting new ones
+- ✅ DO: Check Network tab for `200 OK` (not `304 Not Modified`)
+- ❌ DON'T: Assume refreshing the page loads new code (ES modules are cached)
+- ❌ DON'T: Leave multiple HTTP servers running on different ports
+
+**Quick cleanup command:**
+```bash
+# Kill all Python HTTP servers
+pkill -f "python3 -m http.server"
+```
+
+**Reason**: ES module cache is separate from HTTP cache. Even with browser refresh, the same port may serve cached modules. A fresh browser context or new port ensures you're testing the actual changes.
