@@ -1,0 +1,7 @@
+{
+  "name": "CODEOWNERS Quality",
+  "description": "Validates that the CODEOWNERS file contains valid syntax with properly formatted ownership rules. Ensures code review automation will work correctly.",
+  "weight": 10,
+  "timeout": 10,
+  "category": "Configuration & Compliance"
+}

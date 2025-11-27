@@ -1,0 +1,7 @@
+{
+  "name": "CODEOWNERS File",
+  "description": "Checks that the repository has a CODEOWNERS file. CODEOWNERS enables automated code review assignment and clarifies maintenance responsibilities.",
+  "weight": 8,
+  "timeout": 10,
+  "category": "Configuration & Compliance"
+}
