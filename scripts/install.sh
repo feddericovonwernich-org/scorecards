@@ -463,16 +463,25 @@ print_header "Step 8: Configuring GitHub Pages"
 print_info "Enabling GitHub Pages on catalog branch..."
 
 # Enable Pages using GitHub API
-gh api -X POST "/repos/$FULL_REPO/pages" \
+PAGES_CONFIGURED=false
+if gh api -X POST "/repos/$FULL_REPO/pages" \
     --input - <<< '{"source":{"branch":"catalog","path":"/docs"}}' \
-    2>/dev/null || {
+    2>/dev/null; then
+    PAGES_CONFIGURED=true
+else
     print_warning "Pages might already be configured, attempting to update..."
-    gh api -X PUT "/repos/$FULL_REPO/pages" \
+    if gh api -X PUT "/repos/$FULL_REPO/pages" \
         --input - <<< '{"source":{"branch":"catalog","path":"/docs"}}' \
-        2>/dev/null || print_warning "Could not configure Pages via API (might need manual setup)"
-}
+        2>/dev/null; then
+        PAGES_CONFIGURED=true
+    else
+        print_warning "Could not configure Pages via API (might need manual setup)"
+    fi
+fi
 
-print_success "GitHub Pages configured"
+if [ "$PAGES_CONFIGURED" = true ]; then
+    print_success "GitHub Pages configured"
+fi
 
 # Get Pages URL
 PAGES_URL="https://$REPO_OWNER.github.io/$REPO_NAME"
