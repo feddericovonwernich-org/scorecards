@@ -486,8 +486,9 @@ ${BLUE}2. Add scorecards to your services:${NC}
 
    ${YELLOW}name: Scorecards
    on:
-     push:
-       branches: [main]
+     schedule:
+       - cron: '0 0 * * *'  # Daily
+     workflow_dispatch:
 
    jobs:
      scorecards:
@@ -498,15 +499,15 @@ ${BLUE}2. Add scorecards to your services:${NC}
          - name: Run Scorecards
            uses: $FULL_REPO/action@main
            with:
-             github-token: \${{ secrets.SCORECARDS_TOKEN }}
+             github-token: \${{ secrets.SCORECARDS_CATALOG_TOKEN }}
              scorecards-repo: '$FULL_REPO'
              scorecards-branch: 'catalog'${NC}
 
 ${BLUE}3. Create a Personal Access Token for services:${NC}
    - Go to: https://github.com/settings/tokens/new
-   - Name: "Scorecards Bot"
+   - Name: "Scorecards Catalog Token"
    - Permissions: repo (full control)
-   - Add as SCORECARDS_TOKEN secret in each service repository
+   - Add as SCORECARDS_CATALOG_TOKEN secret in each service repository
 
 ${BLUE}4. Add badges to service READMEs:${NC}
    ${YELLOW}![Scorecard]($PAGES_URL/badges/ORG/REPO/score.json)
