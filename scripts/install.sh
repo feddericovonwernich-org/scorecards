@@ -151,9 +151,9 @@ else
 
     # Create repository
     if [ "$REPO_OWNER" = "$GITHUB_USER" ]; then
-        gh repo create "$REPO_NAME" $VISIBILITY --confirm
+        gh repo create "$REPO_NAME" $VISIBILITY
     else
-        gh repo create "$FULL_REPO" $VISIBILITY --confirm
+        gh repo create "$FULL_REPO" $VISIBILITY
     fi
     print_success "Repository created: $FULL_REPO"
     REPO_EXISTS=false
@@ -364,14 +364,10 @@ print_success "Catalog branch created"
 # Step 6: Push to target repository
 print_header "Step 6: Pushing to GitHub"
 
-# Add target repository as remote
-REPO_URL="https://github.com/$FULL_REPO.git"
+# Add target repository as remote with embedded token
+REPO_URL="https://$GITHUB_TOKEN@github.com/$FULL_REPO.git"
 git remote remove origin 2>/dev/null || true
 git remote add origin "$REPO_URL"
-
-# Configure git to use the token
-git config credential.helper store
-echo "https://$GITHUB_TOKEN@github.com" | git credential approve
 
 print_info "Pushing main branch..."
 git checkout main
