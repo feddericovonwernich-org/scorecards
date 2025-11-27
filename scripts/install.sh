@@ -101,7 +101,7 @@ print_header "Step 2: Repository Setup"
 echo "Enter the repository name for your scorecards instance."
 echo "Format: 'org/repo' or just 'repo' (for personal account)"
 echo ""
-read -p "Repository: " REPO_INPUT
+read -p "Repository: " REPO_INPUT < /dev/tty
 
 # Parse org/repo
 if [[ "$REPO_INPUT" == *"/"* ]]; then
@@ -117,7 +117,7 @@ print_info "Target repository: $FULL_REPO"
 
 # Confirm with user
 echo ""
-read -p "Is this correct? (y/n) " -n 1 -r
+read -p "Is this correct? (y/n) " -n 1 -r < /dev/tty
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     print_error "Installation cancelled"
@@ -131,7 +131,7 @@ print_info "Checking if repository exists..."
 if gh repo view "$FULL_REPO" &> /dev/null; then
     print_warning "Repository $FULL_REPO already exists"
     echo ""
-    read -p "Do you want to use this existing repository? (y/n) " -n 1 -r
+    read -p "Do you want to use this existing repository? (y/n) " -n 1 -r < /dev/tty
     echo ""
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
         print_error "Installation cancelled"
@@ -141,7 +141,7 @@ if gh repo view "$FULL_REPO" &> /dev/null; then
 else
     print_info "Repository does not exist. Creating it..."
     echo ""
-    read -p "Should this be a private repository? (y/n) " -n 1 -r
+    read -p "Should this be a private repository? (y/n) " -n 1 -r < /dev/tty
     echo ""
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         VISIBILITY="--private"
