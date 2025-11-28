@@ -1,9 +1,17 @@
-/* Check Results */
+/* ==============================================
+   CHECK RESULTS - Premium Design
+   ============================================== */
+
 .check-result {
-    padding: 16px;
-    border-radius: 8px;
-    margin-bottom: 12px;
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-3);
     border-left: 4px solid;
+    transition: all var(--duration-fast) var(--ease-in-out-smooth);
+}
+
+.check-result:hover {
+    transform: translateX(4px);
 }
 
 .check-result.pass {
@@ -17,52 +25,68 @@
 }
 
 .check-name {
-    font-weight: 600;
-    margin-bottom: 4px;
+    font-family: var(--font-family-primary);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--space-1);
+    color: var(--color-text);
 }
 
 .check-description {
-    font-size: 0.9rem;
+    font-size: var(--text-sm);
     color: var(--color-text-muted);
-    margin-bottom: 8px;
+    margin-bottom: var(--space-2);
+    line-height: var(--leading-relaxed);
 }
 
 .check-output {
-    font-family: monospace;
-    font-size: 0.85rem;
-    background: var(--color-bg);
-    padding: 8px;
-    border-radius: 4px;
-    margin-top: 8px;
+    font-family: var(--font-family-mono);
+    font-size: var(--text-sm);
+    background: var(--color-surface-tertiary);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    margin-top: var(--space-2);
+    border: 1px solid var(--color-border);
+    overflow-x: auto;
 }
 
-/* Check Category Panels */
+/* ==============================================
+   CHECK CATEGORY PANELS - Accordion Style
+   ============================================== */
+
 .check-categories {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--space-4);
 }
 
 .check-category {
     background: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-radius: 8px;
+    border-radius: var(--radius-xl);
     overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--duration-normal) var(--ease-in-out-smooth);
+}
+
+.check-category:hover {
+    box-shadow: var(--shadow-md);
 }
 
 .check-category-header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 16px;
+    gap: var(--space-3);
+    padding: var(--space-4);
     background: var(--color-category-header-bg);
     border-bottom: 1px solid var(--color-border);
     cursor: pointer;
     user-select: none;
-    font-weight: 600;
-    font-size: 1rem;
+    font-family: var(--font-family-primary);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-semibold);
     list-style: none;
-    transition: background 0.2s;
+    transition: background var(--duration-fast) var(--ease-in-out-smooth);
 }
 
 .check-category-header:hover {
@@ -74,9 +98,11 @@
 }
 
 .category-arrow {
-    font-size: 0.75rem;
-    transition: transform 0.2s;
+    font-size: var(--text-sm);
+    transition: transform var(--duration-fast) var(--ease-out-expo);
     color: var(--color-text-muted);
+    width: 16px;
+    text-align: center;
 }
 
 .check-category:not([open]) .category-arrow {
@@ -88,11 +114,13 @@
     color: var(--color-text);
 }
 
+/* Category Stats Badge */
 .category-stats {
-    font-size: 0.875rem;
-    font-weight: 500;
-    padding: 4px 12px;
-    border-radius: 12px;
+    font-family: var(--font-family-primary);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
 }
 
 .category-stats.all-passed {
@@ -105,8 +133,21 @@
     color: var(--color-category-stats-fail-text);
 }
 
+/* Category Content */
 .check-category-content {
-    padding: 16px;
+    padding: var(--space-4);
+    animation: expandIn var(--duration-normal) var(--ease-out-expo);
+}
+
+@keyframes expandIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .check-category-content .check-result:last-child {

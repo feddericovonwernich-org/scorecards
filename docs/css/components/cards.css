@@ -1,11 +1,36 @@
-/* Stat Cards */
+/* ==============================================
+   STAT CARDS - Premium Design
+   ============================================== */
+
 .stat-card {
     background: var(--color-surface);
-    padding: 20px;
-    border-radius: 12px;
+    padding: var(--space-6);
+    border-radius: var(--radius-xl);
     text-align: center;
-    box-shadow: 0 2px 8px var(--color-shadow);
-    transition: all 0.2s, background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--duration-normal) var(--ease-out-expo),
+                background-color 0.3s ease,
+                box-shadow 0.3s ease,
+                border-color 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Subtle top highlight */
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.5) 50%,
+        transparent 100%
+    );
+    opacity: 0.5;
 }
 
 .stat-card.filterable {
@@ -14,120 +39,189 @@
 }
 
 .stat-card.filterable:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px var(--color-shadow-hover);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-border-strong);
 }
 
 .stat-card.filterable.active {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
-    border: 2px solid var(--color-active-border);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg), 0 0 0 2px var(--color-active-border);
+    border-color: var(--color-active-border);
     background: var(--color-active-bg);
 }
 
 .stat-card.filterable.exclude {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(231, 76, 60, 0.3);
-    border: 2px solid var(--color-exclude-border);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg), 0 0 0 2px var(--color-exclude-border);
+    border-color: var(--color-exclude-border);
     background: var(--color-exclude-bg);
 }
 
-.stat-card.rank-platinum { border-left: 3px solid var(--color-platinum); }
-.stat-card.rank-gold { border-left: 3px solid var(--color-gold); }
-.stat-card.rank-silver { border-left: 3px solid var(--color-silver); }
-.stat-card.rank-bronze { border-left: 3px solid var(--color-bronze); }
-.stat-card.filter-api { border-left: 3px solid var(--color-link); }
-.stat-card.filter-stale { border-left: 3px solid #f39c12; }
-.stat-card.filter-installed { border-left: 3px solid #9b59b6; }
+/* Rank accent borders */
+.stat-card.rank-platinum { border-left: 4px solid var(--color-platinum); }
+.stat-card.rank-gold { border-left: 4px solid var(--color-gold); }
+.stat-card.rank-silver { border-left: 4px solid var(--color-silver); }
+.stat-card.rank-bronze { border-left: 4px solid var(--color-bronze); }
+.stat-card.filter-api { border-left: 4px solid var(--color-link); }
+.stat-card.filter-stale { border-left: 4px solid var(--color-warning); }
+.stat-card.filter-installed { border-left: 4px solid #8B5CF6; }
 
 .stat-value {
-    font-size: 2rem;
-    font-weight: bold;
-    margin-bottom: 5px;
+    font-family: var(--font-family-primary);
+    font-size: var(--text-4xl);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--tracking-tight);
+    line-height: 1;
+    margin-bottom: var(--space-2);
+    color: var(--color-text);
 }
 
 .stat-label {
+    font-family: var(--font-family-primary);
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-semibold);
     color: var(--color-text-muted);
-    font-size: 0.9rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: var(--tracking-widest);
 }
 
+/* Rank-colored values */
 .stat-card.rank-platinum .stat-value { color: var(--color-platinum); }
 .stat-card.rank-gold .stat-value { color: var(--color-gold); }
 .stat-card.rank-silver .stat-value { color: var(--color-silver); }
 .stat-card.rank-bronze .stat-value { color: var(--color-bronze); }
 
-/* Service Cards */
+/* ==============================================
+   SERVICE CARDS - Premium Design
+   ============================================== */
+
 .service-card {
     background: var(--color-surface);
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: 0 2px 8px var(--color-shadow);
-    transition: all 0.3s, background-color 0.3s ease, box-shadow 0.3s ease;
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--duration-slow) var(--ease-out-expo),
+                background-color 0.3s ease,
+                box-shadow 0.3s ease;
     cursor: pointer;
-    border-left: 4px solid transparent;
+    position: relative;
+    overflow: hidden;
 }
+
+/* Top accent line */
+.service-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--color-border);
+    transition: all var(--duration-normal) var(--ease-in-out-smooth);
+}
+
+.service-card.rank-platinum::before { background: var(--color-platinum); }
+.service-card.rank-gold::before { background: var(--color-gold); }
+.service-card.rank-silver::before { background: var(--color-silver); }
+.service-card.rank-bronze::before { background: var(--color-bronze); }
 
 .service-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px var(--color-shadow-hover);
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--color-border-strong);
 }
 
-.service-card.rank-platinum { border-left-color: var(--color-platinum); }
-.service-card.rank-gold { border-left-color: var(--color-gold); }
-.service-card.rank-silver { border-left-color: var(--color-silver); }
-.service-card.rank-bronze { border-left-color: var(--color-bronze); }
+/* Subtle rank glow on hover */
+.service-card.rank-platinum:hover {
+    box-shadow: var(--shadow-xl), 0 8px 32px rgba(14, 165, 233, 0.15);
+}
+
+.service-card.rank-gold:hover {
+    box-shadow: var(--shadow-xl), 0 8px 32px rgba(234, 179, 8, 0.15);
+}
+
+.service-card.rank-silver:hover {
+    box-shadow: var(--shadow-xl), 0 8px 32px rgba(107, 114, 128, 0.15);
+}
+
+.service-card.rank-bronze:hover {
+    box-shadow: var(--shadow-xl), 0 8px 32px rgba(234, 88, 12, 0.15);
+}
 
 .service-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 16px;
+    margin-bottom: var(--space-4);
+    gap: var(--space-4);
 }
 
 .service-header > div:first-child {
     flex: 1;
     min-width: 0;
-    margin-right: 12px;
 }
 
 .service-title-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: var(--space-1);
 }
 
 .service-name {
-    font-size: 1.3rem;
-    font-weight: 600;
+    font-family: var(--font-family-primary);
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--tracking-tight);
     color: var(--color-text);
+    line-height: var(--leading-tight);
 }
 
 .service-org {
-    font-size: 0.85rem;
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
     color: var(--color-text-muted);
 }
 
+/* Score badge */
 .score-badge {
-    font-size: 1.5rem;
-    font-weight: bold;
-    padding: 4px 12px;
-    border-radius: 8px;
-    background: var(--color-bg);
+    font-family: var(--font-family-primary);
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-bold);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-secondary);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    flex-shrink: 0;
 }
 
 .service-meta {
-    font-size: 0.9rem;
+    font-size: var(--text-sm);
     color: var(--color-text-muted);
-    margin-top: 12px;
-    padding-top: 12px;
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
     border-top: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
 }
 
 .pr-status-timestamp {
-    font-size: 0.85rem;
+    font-size: var(--text-xs);
     color: var(--color-text-muted);
     font-style: italic;
-    margin-top: 4px;
+    margin-top: var(--space-1);
+}
+
+/* ==============================================
+   LOADING STATE
+   ============================================== */
+
+.loading {
+    text-align: center;
+    padding: var(--space-12);
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
 }

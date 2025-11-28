@@ -1,12 +1,22 @@
-/* Controls */
+/* ==============================================
+   CONTROLS - Premium Filter Bar
+   ============================================== */
+
 .controls {
     background: var(--color-surface);
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    margin-bottom: 30px;
+    padding: var(--space-5);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: var(--space-8);
     display: flex;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: var(--space-4);
     align-items: center;
+    transition: all var(--duration-normal) var(--ease-in-out-smooth);
+}
+
+.controls:focus-within {
+    border-color: var(--color-border-strong);
+    box-shadow: var(--shadow-md);
 }
