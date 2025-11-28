@@ -165,6 +165,8 @@ TEAM_NAME=$(echo "$TEAM_DISCOVERY_JSON" | jq -r '.primary // ""')
 TEAM_ALL_JSON=$(echo "$TEAM_DISCOVERY_JSON" | jq -c '.all // []')
 TEAM_SOURCE=$(echo "$TEAM_DISCOVERY_JSON" | jq -r '.source // "none"')
 TEAM_DISCOVERED_AT=$(echo "$TEAM_DISCOVERY_JSON" | jq -r '.last_discovered // ""')
+TEAM_GITHUB_ORG=$(echo "$TEAM_DISCOVERY_JSON" | jq -r '.github_org // ""')
+TEAM_GITHUB_SLUG=$(echo "$TEAM_DISCOVERY_JSON" | jq -r '.github_slug // ""')
 
 log_info "Team: ${TEAM_NAME:-<not discovered>} (source: $TEAM_SOURCE)"
 if [ "$TEAM_ALL_JSON" != "[]" ] && [ "$TEAM_ALL_JSON" != '["'"$TEAM_NAME"'"]' ]; then
@@ -347,6 +349,8 @@ declare -A service_context=(
     [team_all]="$TEAM_ALL_JSON"
     [team_source]="$TEAM_SOURCE"
     [team_discovered_at]="$TEAM_DISCOVERED_AT"
+    [team_github_org]="$TEAM_GITHUB_ORG"
+    [team_github_slug]="$TEAM_GITHUB_SLUG"
     [has_api]="$HAS_API"
     [default_branch]="$DEFAULT_BRANCH"
 )

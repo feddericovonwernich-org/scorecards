@@ -136,9 +136,20 @@ jobs:
               team_file="teams/${team_id}.json"
               if [ ! -f "$team_file" ]; then
                 echo "Creating new team: $team_id"
+
+                # Extract github_org and github_slug from team_json (if present)
+                github_org=""
+                github_slug=""
+                if echo "$team_json" | jq -e 'type == "object"' > /dev/null 2>&1; then
+                  github_org=$(echo "$team_json" | jq -r '.github_org // empty')
+                  github_slug=$(echo "$team_json" | jq -r '.github_slug // empty')
+                fi
+
                 jq -n \
                   --arg id "$team_id" \
                   --arg name "$team_name" \
+                  --arg github_org "$github_org" \
+                  --arg github_slug "$github_slug" \
                   --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
                   '{
                     id: $id,
@@ -146,6 +157,8 @@ jobs:
                     description: null,
                     aliases: [],
                     metadata: {},
+                    github_org: (if $github_org != "" then $github_org else null end),
+                    github_slug: (if $github_slug != "" then $github_slug else null end),
                     auto_created: $timestamp
                   }' > "$team_file"
 

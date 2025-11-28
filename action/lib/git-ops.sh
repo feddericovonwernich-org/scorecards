@@ -94,6 +94,8 @@ build_registry_entry() {
     local team_all="${svc_ref[team_all]:-[]}"
     local team_source="${svc_ref[team_source]:-none}"
     local team_discovered_at="${svc_ref[team_discovered_at]:-}"
+    local team_github_org="${svc_ref[team_github_org]:-}"
+    local team_github_slug="${svc_ref[team_github_slug]:-}"
     local has_api="${svc_ref[has_api]}"
     local default_branch="${svc_ref[default_branch]}"
 
@@ -123,6 +125,8 @@ build_registry_entry() {
         --argjson team_all "$team_all"
         --arg team_source "$team_source"
         --arg team_discovered_at "$team_discovered_at"
+        --arg team_github_org "$team_github_org"
+        --arg team_github_slug "$team_github_slug"
         --argjson score "$score"
         --arg rank "$rank"
         --arg timestamp "$timestamp"
@@ -148,7 +152,9 @@ build_registry_entry() {
                 primary: $team_primary,
                 all: $team_all,
                 source: $team_source,
-                last_discovered: (if $team_discovered_at != "" then $team_discovered_at else null end)
+                last_discovered: (if $team_discovered_at != "" then $team_discovered_at else null end),
+                github_org: (if $team_github_org != "" then $team_github_org else null end),
+                github_slug: (if $team_github_slug != "" then $team_github_slug else null end)
             } else null end),
             score: $score,
             rank: $rank,
@@ -173,7 +179,9 @@ build_registry_entry() {
                 primary: $team_primary,
                 all: $team_all,
                 source: $team_source,
-                last_discovered: (if $team_discovered_at != "" then $team_discovered_at else null end)
+                last_discovered: (if $team_discovered_at != "" then $team_discovered_at else null end),
+                github_org: (if $team_github_org != "" then $team_github_org else null end),
+                github_slug: (if $team_github_slug != "" then $team_github_slug else null end)
             } else null end),
             score: $score,
             rank: $rank,
