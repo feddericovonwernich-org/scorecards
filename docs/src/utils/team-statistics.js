@@ -77,6 +77,7 @@ export function calculateSingleTeamStats(services, isStaleCheck, checksHash) {
  */
 export function calculateTeamStats(services, isStaleCheck, checksHash) {
     const teamServices = {};
+    const teamGitHubInfo = {};
 
     // Group services by primary team
     services.forEach(service => {
@@ -85,6 +86,13 @@ export function calculateTeamStats(services, isStaleCheck, checksHash) {
 
         if (!teamServices[team]) {
             teamServices[team] = [];
+            // Extract GitHub info from first service with this team
+            if (service.team && typeof service.team === 'object') {
+                teamGitHubInfo[team] = {
+                    github_org: service.team.github_org || null,
+                    github_slug: service.team.github_slug || null,
+                };
+            }
         }
         teamServices[team].push(service);
     });
@@ -95,6 +103,9 @@ export function calculateTeamStats(services, isStaleCheck, checksHash) {
         teamStats[team] = {
             name: team,
             ...calculateSingleTeamStats(services, isStaleCheck, checksHash),
+            // Include GitHub linking info
+            github_org: teamGitHubInfo[team]?.github_org || null,
+            github_slug: teamGitHubInfo[team]?.github_slug || null,
         };
     });
 
