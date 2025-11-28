@@ -5,12 +5,79 @@
 
 import { capitalize, escapeHtml } from '../utils/formatting.js';
 import { getTeamName, getDominantRank, calculateTeamStats } from '../utils/team-statistics.js';
+import { fetchTeamMembers, getTeamUrl } from '../api/github-teams.js';
+import { hasToken } from '../services/auth.js';
+import { openSettings } from './settings.js';
+import { getIcon } from '../config/icons.js';
+
+/**
+ * Render GitHub team section HTML
+ * @param {Object} team - Team object
+ * @param {Array|null} members - Array of members or null if not authenticated
+ * @returns {string} HTML string
+ */
+function renderGitHubSection(team, members) {
+    const teamUrl = getTeamUrl(team.github_org, team.github_slug);
+
+    // Not authenticated
+    if (members === null) {
+        return `
+            <div class="team-github-section">
+                <a href="${escapeHtml(teamUrl)}" target="_blank" class="team-github-link">
+                    ${getIcon('github')} ${escapeHtml(team.github_slug)}
+                    ${getIcon('externalLink')}
+                </a>
+                <div class="team-github-signin">
+                    <button class="btn-link" onclick="window.openSettingsForTeam()">
+                        Sign in to view team members
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    // Authenticated but no members or error
+    if (!members || members.length === 0) {
+        return `
+            <div class="team-github-section">
+                <a href="${escapeHtml(teamUrl)}" target="_blank" class="team-github-link">
+                    ${getIcon('github')} ${escapeHtml(team.github_slug)}
+                    ${getIcon('externalLink')}
+                </a>
+                <div class="team-members-empty">No members found or unable to access team</div>
+            </div>
+        `;
+    }
+
+    // Has members
+    const membersHtml = members.map(m => `
+        <a href="${escapeHtml(m.url)}" target="_blank" class="team-member" title="${escapeHtml(m.login)}">
+            <img src="${escapeHtml(m.avatar_url)}&s=48" alt="${escapeHtml(m.login)}" class="team-member-avatar">
+            <span class="team-member-name">@${escapeHtml(m.login)}</span>
+        </a>
+    `).join('');
+
+    return `
+        <div class="team-github-section">
+            <a href="${escapeHtml(teamUrl)}" target="_blank" class="team-github-link">
+                ${getIcon('github')} ${escapeHtml(team.github_slug)}
+                ${getIcon('externalLink')}
+            </a>
+            <div class="team-members">
+                <span class="members-label">Members (${members.length}):</span>
+                <div class="members-grid">
+                    ${membersHtml}
+                </div>
+            </div>
+        </div>
+    `;
+}
 
 /**
  * Show team detail modal
  * @param {string} teamName - Name of the team to show
  */
-export function showTeamModal(teamName) {
+export async function showTeamModal(teamName) {
     // Lazily compute team data if not already available
     if (!window.allTeams || window.allTeams.length === 0) {
         const services = window.allServices || [];
@@ -111,6 +178,7 @@ export function showTeamModal(teamName) {
         <div class="tabs">
             <button class="tab-btn active" data-tab="services" onclick="switchTeamModalTab('services')">Services</button>
             <button class="tab-btn" data-tab="distribution" onclick="switchTeamModalTab('distribution')">Distribution</button>
+            <button class="tab-btn" data-tab="github" onclick="switchTeamModalTab('github')">GitHub</button>
         </div>
 
         <div class="team-tab-content tab-content active" id="team-tab-services">
@@ -124,14 +192,35 @@ export function showTeamModal(teamName) {
                 ${rankBars}
             </div>
         </div>
+
+        <div class="team-tab-content tab-content" id="team-tab-github">
+            ${team.github_org && team.github_slug ? `
+                <div class="team-github-section team-github-loading">
+                    <span class="loading-spinner"></span> Loading GitHub team...
+                </div>
+            ` : `
+                <div class="team-not-linked">
+                    Not linked to a GitHub team
+                </div>
+            `}
+        </div>
     `;
 
     modal.classList.remove('hidden');
+
+    // Fetch GitHub team members asynchronously if team is linked
+    if (team.github_org && team.github_slug) {
+        const members = await fetchTeamMembers(team.github_org, team.github_slug);
+        const section = document.getElementById('team-tab-github');
+        if (section) {
+            section.innerHTML = renderGitHubSection(team, members);
+        }
+    }
 }
 
 /**
  * Switch tabs within the team modal
- * @param {string} tabName - Tab to switch to ('services' or 'distribution')
+ * @param {string} tabName - Tab to switch to ('services', 'distribution', or 'github')
  */
 export function switchTeamModalTab(tabName) {
     // Update tab buttons
@@ -159,3 +248,4 @@ export function closeTeamModal() {
 window.showTeamDetail = showTeamModal;
 window.closeTeamModal = closeTeamModal;
 window.switchTeamModalTab = switchTeamModalTab;
+window.openSettingsForTeam = openSettings;

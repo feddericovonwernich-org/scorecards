@@ -861,6 +861,139 @@
     color: var(--color-link-btn);
 }
 
+/* GitHub Team Section */
+.team-github-section {
+    margin: 1rem 0;
+    padding: 1rem;
+    background: var(--color-surface-secondary);
+    border-radius: 8px;
+}
+
+.team-github-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-link);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.team-github-link:hover {
+    text-decoration: underline;
+}
+
+.team-github-link svg {
+    flex-shrink: 0;
+}
+
+/* Loading State */
+.team-github-loading {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-text-muted);
+    font-size: 14px;
+}
+
+.team-github-loading .loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--color-border);
+    border-top-color: var(--color-accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Members Grid */
+.team-members {
+    margin-top: 1rem;
+}
+
+.members-label {
+    display: block;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.members-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.team-member {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: var(--color-text);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.team-member:hover {
+    background: var(--color-surface-hover);
+}
+
+.team-member-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.team-member-name {
+    font-size: 0.875rem;
+}
+
+/* Empty Members State */
+.team-members-empty {
+    margin-top: 0.75rem;
+    color: var(--color-text-muted);
+    font-size: 13px;
+    font-style: italic;
+}
+
+/* Sign In Prompt */
+.team-github-signin {
+    margin-top: 0.75rem;
+}
+
+.team-github-signin .btn-link {
+    background: none;
+    border: none;
+    color: var(--color-link);
+    font-size: 13px;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+}
+
+.team-github-signin .btn-link:hover {
+    color: var(--color-link-hover);
+}
+
+/* Not Linked State */
+.team-not-linked {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--color-surface-secondary);
+    border-radius: 8px;
+    color: var(--color-text-muted);
+    margin: 1rem 0;
+    font-size: 14px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .team-dropdown-menu {

@@ -26,12 +26,13 @@ find_codeowners_file() {
 
 # Extract team references from an owner string
 # Input: "@org/team-a @org/team-b @user"
-# Output: JSON array of team slugs ["team-a", "team-b"]
+# Output: JSON object with teams and org: {"teams": ["team-a", "team-b"], "org": "org-name"}
 extract_teams_from_owners() {
     local owners="$1"
 
     # Extract @org/team patterns and get the team part
     local teams=()
+    local github_org=""
 
     # Use grep to find all @org/team patterns
     local team_matches
@@ -39,6 +40,10 @@ extract_teams_from_owners() {
 
     if [ -n "$team_matches" ]; then
         while IFS= read -r match; do
+            # Extract org (part between @ and /)
+            if [ -z "$github_org" ]; then
+                github_org=$(echo "$match" | sed 's/@\([^/]*\)\/.*/\1/')
+            fi
             # Extract team slug (part after /)
             local team_slug
             team_slug=$(echo "$match" | sed 's/@[^/]*\///')
@@ -48,7 +53,7 @@ extract_teams_from_owners() {
         done <<< "$team_matches"
     fi
 
-    # If no teams found, try individual users as fallback
+    # If no teams found, try individual users as fallback (no org in this case)
     if [ ${#teams[@]} -eq 0 ]; then
         local user_matches
         user_matches=$(echo "$owners" | grep -oE '@[^[:space:]]+' | grep -v '/' || echo "")
@@ -64,11 +69,14 @@ extract_teams_from_owners() {
         fi
     fi
 
-    # Output as JSON array
+    # Output as JSON object with teams array and org
     if [ ${#teams[@]} -eq 0 ]; then
-        echo "[]"
+        jq -n '{teams: [], org: null}'
     else
-        printf '%s\n' "${teams[@]}" | jq -R . | jq -s .
+        local teams_json
+        teams_json=$(printf '%s\n' "${teams[@]}" | jq -R . | jq -s .)
+        jq -n --argjson teams "$teams_json" --arg org "$github_org" \
+            '{teams: $teams, org: (if $org == "" then null else $org end)}'
     fi
 }
 
@@ -132,27 +140,34 @@ parse_codeowners_for_root() {
     log_info "Found owners: $final_owners" >&2
 
     # Extract teams from owners string
-    local teams_json
-    teams_json=$(extract_teams_from_owners "$final_owners")
+    local extract_result
+    extract_result=$(extract_teams_from_owners "$final_owners")
 
     local all_teams
-    all_teams=$(echo "$teams_json" | jq -c '.')
+    all_teams=$(echo "$extract_result" | jq -c '.teams')
+
+    local github_org
+    github_org=$(echo "$extract_result" | jq -r '.org // empty')
 
     local primary_team
-    primary_team=$(echo "$teams_json" | jq -r '.[0] // empty')
+    primary_team=$(echo "$extract_result" | jq -r '.teams[0] // empty')
 
     if [ -z "$primary_team" ]; then
-        echo '{"primary": null, "all": [], "source": "codeowners"}'
+        echo '{"primary": null, "all": [], "source": "codeowners", "github_org": null, "github_slug": null}'
         return 1
     fi
 
+    # github_slug is the primary team slug when org is available
     jq -n \
         --arg primary "$primary_team" \
         --argjson all "$all_teams" \
+        --arg org "$github_org" \
         '{
             primary: $primary,
             all: $all,
-            source: "codeowners"
+            source: "codeowners",
+            github_org: (if $org == "" then null else $org end),
+            github_slug: (if $org == "" then null else $primary end)
         }'
 }
 
@@ -207,17 +222,20 @@ get_teams_from_github_api() {
     all_teams=$(echo "$sorted_teams" | jq -c '[.[].slug]')
 
     if [ -z "$primary_team" ]; then
-        echo '{"primary": null, "all": [], "source": "github_api"}'
+        echo '{"primary": null, "all": [], "source": "github_api", "github_org": null, "github_slug": null}'
         return 1
     fi
 
     jq -n \
         --arg primary "$primary_team" \
         --argjson all "$all_teams" \
+        --arg org "$org" \
         '{
             primary: $primary,
             all: $all,
-            source: "github_api"
+            source: "github_api",
+            github_org: $org,
+            github_slug: $primary
         }'
 }
 
@@ -244,6 +262,8 @@ discover_team() {
                 primary: $primary,
                 all: [$primary],
                 source: "manual",
+                github_org: null,
+                github_slug: null,
                 last_discovered: $timestamp
             }'
         return 0
@@ -283,6 +303,8 @@ discover_team() {
             primary: null,
             all: [],
             source: "none",
+            github_org: null,
+            github_slug: null,
             last_discovered: $timestamp
         }'
 }
