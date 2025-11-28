@@ -76,7 +76,7 @@ get_json_output() {
 @test "extract_teams_from_owners - extracts single team" {
     run extract_teams_from_owners "@org/my-team"
     [ "$status" -eq 0 ]
-    result=$(echo "$output" | jq -r '.[0]')
+    result=$(echo "$output" | jq -r '.teams[0]')
     [ "$result" = "my-team" ]
 }
 
@@ -84,12 +84,12 @@ get_json_output() {
     run extract_teams_from_owners "@org/team-a @org/team-b @org/team-c"
     [ "$status" -eq 0 ]
 
-    length=$(echo "$output" | jq 'length')
+    length=$(echo "$output" | jq '.teams | length')
     [ "$length" -eq 3 ]
 
-    team1=$(echo "$output" | jq -r '.[0]')
-    team2=$(echo "$output" | jq -r '.[1]')
-    team3=$(echo "$output" | jq -r '.[2]')
+    team1=$(echo "$output" | jq -r '.teams[0]')
+    team2=$(echo "$output" | jq -r '.teams[1]')
+    team3=$(echo "$output" | jq -r '.teams[2]')
 
     [ "$team1" = "team-a" ]
     [ "$team2" = "team-b" ]
@@ -101,7 +101,7 @@ get_json_output() {
     [ "$status" -eq 0 ]
 
     # Should extract team first, user is fallback only when no teams
-    team=$(echo "$output" | jq -r '.[0]')
+    team=$(echo "$output" | jq -r '.teams[0]')
     [ "$team" = "my-team" ]
 }
 
@@ -109,11 +109,11 @@ get_json_output() {
     run extract_teams_from_owners "@user1 @user2"
     [ "$status" -eq 0 ]
 
-    length=$(echo "$output" | jq 'length')
+    length=$(echo "$output" | jq '.teams | length')
     [ "$length" -eq 2 ]
 
-    user1=$(echo "$output" | jq -r '.[0]')
-    user2=$(echo "$output" | jq -r '.[1]')
+    user1=$(echo "$output" | jq -r '.teams[0]')
+    user2=$(echo "$output" | jq -r '.teams[1]')
 
     [ "$user1" = "user1" ]
     [ "$user2" = "user2" ]
@@ -122,15 +122,16 @@ get_json_output() {
 @test "extract_teams_from_owners - returns empty array for empty input" {
     run extract_teams_from_owners ""
     [ "$status" -eq 0 ]
-    [ "$output" = "[]" ]
+    teams_length=$(echo "$output" | jq '.teams | length')
+    [ "$teams_length" -eq 0 ]
 }
 
 @test "extract_teams_from_owners - handles different org names" {
     run extract_teams_from_owners "@company/platform-team @other-org/backend-team"
     [ "$status" -eq 0 ]
 
-    team1=$(echo "$output" | jq -r '.[0]')
-    team2=$(echo "$output" | jq -r '.[1]')
+    team1=$(echo "$output" | jq -r '.teams[0]')
+    team2=$(echo "$output" | jq -r '.teams[1]')
 
     [ "$team1" = "platform-team" ]
     [ "$team2" = "backend-team" ]
