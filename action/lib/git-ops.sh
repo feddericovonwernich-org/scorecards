@@ -85,6 +85,7 @@ build_registry_entry() {
     local -n scr_ref=$2
     local -n prs_ref=$3
     local timestamp="$4"
+    local check_results="${5:-{}}"  # Optional: compact check results map
 
     # Extract values
     local org="${svc_ref[org]}"
@@ -135,6 +136,7 @@ build_registry_entry() {
         --argjson checks_count "$checks_count"
         --argjson installed "$installed"
         --arg default_branch "$default_branch"
+        --argjson check_results "$check_results"
     )
 
     local jq_filter
@@ -162,6 +164,7 @@ build_registry_entry() {
             has_api: $has_api,
             checks_hash: $checks_hash,
             checks_count: $checks_count,
+            check_results: $check_results,
             installed: $installed,
             default_branch: $default_branch,
             installation_pr: {
@@ -189,6 +192,7 @@ build_registry_entry() {
             has_api: $has_api,
             checks_hash: $checks_hash,
             checks_count: $checks_count,
+            check_results: $check_results,
             installed: $installed,
             default_branch: $default_branch
         }'
@@ -207,6 +211,7 @@ git_push_with_smart_retry() {
     local -n scr_ref=$6
     local -n prs_ref=$7
     local timestamp="$8"
+    local check_results="${9:-{}}"  # Optional: compact check results map
 
     cd "$repo_path" || return 1
 
@@ -233,7 +238,7 @@ git_push_with_smart_retry() {
                     # Rebase successful - regenerate registry file
                     log_info "Rebase successful, regenerating registry entry..."
 
-                    build_registry_entry "$5" "$6" "$7" "$timestamp" > "$registry_file"
+                    build_registry_entry "$5" "$6" "$7" "$timestamp" "$check_results" > "$registry_file"
 
                     git add "$registry_file"
                     git commit --amend --no-edit
@@ -375,9 +380,15 @@ update_catalog() {
         cp "$score_badge_file" "badges/$service_org/$service_repo/score.json"
         cp "$rank_badge_file" "badges/$service_org/$service_repo/rank.json"
 
+        # Extract check_results map from results.json for compact registry storage
+        # Format: {"01-readme": "pass", "02-license": "fail", ...}
+        local check_results
+        check_results=$(jq -c '[.checks[] | {(.check_id): .status}] | add // {}' "$output_dir/final-results.json" 2>/dev/null || echo '{}')
+        log_debug "Extracted check_results: $check_results" >&2
+
         # Build registry entry
         local registry_file="registry/$service_org/$service_repo.json"
-        build_registry_entry "$1" "$2" "$4" "$timestamp" > "$registry_file"
+        build_registry_entry "$1" "$2" "$4" "$timestamp" "$check_results" > "$registry_file"
 
         # Commit and push
         git add results/ badges/ registry/
@@ -395,7 +406,7 @@ Commit: $(git rev-parse HEAD | head -c 7)"
 
             # Push with smart retry
             if ! git_push_with_smart_retry "$central_repo_dir" "$scorecards_branch" "$registry_file" "$work_dir" \
-                "$1" "$2" "$4" "$timestamp"; then
+                "$1" "$2" "$4" "$timestamp" "$check_results"; then
                 log_error "Failed to push catalog updates"
                 return 1
             fi

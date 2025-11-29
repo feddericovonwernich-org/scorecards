@@ -13,6 +13,8 @@ import { getCssVar } from './utils/css.js';
 import { initTeamFilter, updateTeamFilter, filterByTeam } from './ui/team-filter.js';
 import { initTeamDashboard } from './ui/team-dashboard.js';
 import { getTeamName } from './utils/team-statistics.js';
+import { initCheckFilter, updateCheckFilter, filterByChecks } from './ui/check-filter.js';
+import { initCheckAdoptionDashboard } from './ui/check-adoption-dashboard.js';
 
 /**
  * Filter and render services based on active filters
@@ -24,6 +26,9 @@ export function filterAndRenderServices() {
 
     // Apply team filter first
     services = filterByTeam(services);
+
+    // Apply check filters (must pass / must fail)
+    services = filterByChecks(services);
 
     // Then apply other filters
     window.filteredServices = services.filter(service => {
@@ -123,6 +128,9 @@ export async function refreshData() {
         // Update team filter with new services
         updateTeamFilter(services);
 
+        // Update check filter with new data
+        updateCheckFilter();
+
         // Update UI
         updateStats();
         filterAndRenderServices();
@@ -188,8 +196,16 @@ export async function initializeApp() {
             filterAndRenderServices();
         });
 
+        // Initialize check filter
+        initCheckFilter(() => {
+            filterAndRenderServices();
+        });
+
         // Initialize team dashboard
         initTeamDashboard(isServiceStale);
+
+        // Initialize check adoption dashboard
+        initCheckAdoptionDashboard();
 
         // Initialize UI
         updateStats();

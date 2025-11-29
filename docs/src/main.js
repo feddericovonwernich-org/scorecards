@@ -16,6 +16,7 @@ import * as cssUtils from './utils/css.js';
 import * as animation from './utils/animation.js';
 import * as statistics from './utils/statistics.js';
 import * as teamStatistics from './utils/team-statistics.js';
+import * as checkStatistics from './utils/check-statistics.js';
 import * as durationTracker from './utils/duration-tracker.js';
 
 // UI modules
@@ -34,11 +35,14 @@ import * as teamFilter from './ui/team-filter.js';
 import * as teamDashboard from './ui/team-dashboard.js';
 import * as teamEditModal from './ui/team-edit-modal.js';
 import * as teamModal from './ui/team-modal.js';
+import * as checkFilter from './ui/check-filter.js';
+import * as checkAdoptionDashboard from './ui/check-adoption-dashboard.js';
 
 // API modules
 import * as registry from './api/registry.js';
 import * as github from './api/github.js';
 import * as workflowTriggers from './api/workflow-triggers.js';
+import * as checks from './api/checks.js';
 
 // Service modules
 import * as auth from './services/auth.js';
@@ -63,6 +67,7 @@ window.ScorecardModules = {
     animation,
     statistics,
     teamStatistics,
+    checkStatistics,
     durationTracker,
     // UI
     toast,
@@ -80,10 +85,13 @@ window.ScorecardModules = {
     teamDashboard,
     teamEditModal,
     teamModal,
+    checkFilter,
+    checkAdoptionDashboard,
     // API
     registry,
     github,
     workflowTriggers,
+    checks,
     // Services
     auth,
     staleness,
@@ -246,6 +254,19 @@ window.initTeamEditModal = teamEditModal.initTeamEditModal;
 window.openTeamEditModal = teamEditModal.openTeamEditModal;
 window.openCreateTeamModal = teamEditModal.openCreateTeamModal;
 window.closeTeamEditModal = teamEditModal.closeTeamEditModal;
+
+// Check filter functions
+window.initCheckFilter = checkFilter.initCheckFilter;
+window.updateCheckFilter = checkFilter.updateCheckFilter;
+window.filterByChecks = checkFilter.filterByChecks;
+window.getCheckFilterState = checkFilter.getCheckFilterState;
+window.setCheckFilterState = checkFilter.setCheckFilterState;
+window.getActiveFilterCount = checkFilter.getActiveFilterCount;
+
+// Check adoption dashboard functions
+window.initCheckAdoptionDashboard = checkAdoptionDashboard.initCheckAdoptionDashboard;
+window.openCheckAdoptionDashboard = checkAdoptionDashboard.openCheckAdoptionDashboard;
+window.closeCheckAdoptionDashboard = checkAdoptionDashboard.closeCheckAdoptionDashboard;
 
 // Registry team functions
 window.loadTeams = registry.loadTeams;
@@ -720,6 +741,7 @@ export {
     animation,
     statistics,
     teamStatistics,
+    checkStatistics,
     durationTracker,
     // UI
     toast,
@@ -737,10 +759,13 @@ export {
     teamDashboard,
     teamEditModal,
     teamModal,
+    checkFilter,
+    checkAdoptionDashboard,
     // API
     registry,
     github,
     workflowTriggers,
+    checks,
     // Services
     auth,
     staleness,

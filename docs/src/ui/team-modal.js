@@ -9,6 +9,12 @@ import { fetchTeamMembers, getTeamUrl } from '../api/github-teams.js';
 import { hasToken } from '../services/auth.js';
 import { openSettings } from './settings.js';
 import { getIcon } from '../config/icons.js';
+import { loadChecks, getAllChecks } from '../api/checks.js';
+import { calculateCheckAdoptionByTeam } from '../utils/check-statistics.js';
+
+// State for check adoption tab
+let currentTeamServices = [];
+let selectedCheckId = null;
 
 /**
  * Render GitHub team section HTML
@@ -178,6 +184,7 @@ export async function showTeamModal(teamName) {
         <div class="tabs">
             <button class="tab-btn active" data-tab="services" onclick="switchTeamModalTab('services')">Services</button>
             <button class="tab-btn" data-tab="distribution" onclick="switchTeamModalTab('distribution')">Distribution</button>
+            <button class="tab-btn" data-tab="adoption" onclick="switchTeamModalTab('adoption')">Check Adoption</button>
             <button class="tab-btn" data-tab="github" onclick="switchTeamModalTab('github')">GitHub</button>
         </div>
 
@@ -190,6 +197,12 @@ export async function showTeamModal(teamName) {
         <div class="team-tab-content tab-content" id="team-tab-distribution">
             <div class="rank-distribution-detail">
                 ${rankBars}
+            </div>
+        </div>
+
+        <div class="team-tab-content tab-content" id="team-tab-adoption">
+            <div class="check-adoption-loading">
+                <span class="loading-spinner"></span> Loading check data...
             </div>
         </div>
 
@@ -206,6 +219,9 @@ export async function showTeamModal(teamName) {
         </div>
     `;
 
+    // Store team services for check adoption tab
+    currentTeamServices = teamServices;
+
     modal.classList.remove('hidden');
 
     // Fetch GitHub team members asynchronously if team is linked
@@ -220,7 +236,7 @@ export async function showTeamModal(teamName) {
 
 /**
  * Switch tabs within the team modal
- * @param {string} tabName - Tab to switch to ('services', 'distribution', or 'github')
+ * @param {string} tabName - Tab to switch to ('services', 'distribution', 'adoption', or 'github')
  */
 export function switchTeamModalTab(tabName) {
     // Update tab buttons
@@ -232,7 +248,134 @@ export function switchTeamModalTab(tabName) {
     document.querySelectorAll('#team-modal .team-tab-content').forEach(content => {
         content.classList.toggle('active', content.id === `team-tab-${tabName}`);
     });
+
+    // Load check adoption data when switching to adoption tab
+    if (tabName === 'adoption') {
+        loadCheckAdoptionTab();
+    }
 }
+
+/**
+ * Load and render check adoption tab content
+ */
+async function loadCheckAdoptionTab() {
+    const section = document.getElementById('team-tab-adoption');
+    if (!section) return;
+
+    try {
+        // Load checks metadata
+        const checksData = await loadChecks();
+        const checks = checksData.checks || [];
+
+        if (checks.length === 0) {
+            section.innerHTML = '<div class="empty-state">No check metadata available</div>';
+            return;
+        }
+
+        // Default to first check if none selected
+        if (!selectedCheckId) {
+            selectedCheckId = checks[0].id;
+        }
+
+        renderCheckAdoptionContent(section, checks);
+    } catch (error) {
+        console.error('Failed to load check adoption:', error);
+        section.innerHTML = '<div class="empty-state">Failed to load check data</div>';
+    }
+}
+
+/**
+ * Render check adoption content
+ */
+function renderCheckAdoptionContent(section, checks) {
+    const services = currentTeamServices;
+    const selectedCheck = checks.find(c => c.id === selectedCheckId) || checks[0];
+
+    // Calculate adoption for selected check
+    const teamStats = calculateCheckAdoptionByTeam(services, selectedCheckId);
+    const currentTeamName = services[0] ? (getTeamName(services[0]) || 'No Team') : 'No Team';
+    const stats = teamStats[currentTeamName] || { passing: 0, failing: 0, total: 0, percentage: 0, services: [] };
+
+    // Build check selector options
+    const checkOptions = checks.map(check => `
+        <option value="${check.id}" ${check.id === selectedCheckId ? 'selected' : ''}>
+            ${escapeHtml(check.name)}
+        </option>
+    `).join('');
+
+    // Build passing/failing service lists
+    const passingServices = stats.services.filter(s => s.checkStatus === 'pass');
+    const failingServices = stats.services.filter(s => s.checkStatus !== 'pass');
+
+    const passingList = passingServices.length > 0
+        ? passingServices.map(s => `
+            <div class="adoption-service-item passing" onclick="window.showServiceDetail('${s.org}', '${s.repo}')">
+                <span class="service-name">${escapeHtml(s.name)}</span>
+                <span class="service-score rank-${s.rank}">${Math.round(s.score)}</span>
+            </div>
+        `).join('')
+        : '<div class="empty-list">No passing services</div>';
+
+    const failingList = failingServices.length > 0
+        ? failingServices.map(s => `
+            <div class="adoption-service-item failing" onclick="window.showServiceDetail('${s.org}', '${s.repo}')">
+                <span class="service-name">${escapeHtml(s.name)}</span>
+                <span class="service-score rank-${s.rank}">${Math.round(s.score)}</span>
+            </div>
+        `).join('')
+        : '<div class="empty-list">No failing services</div>';
+
+    section.innerHTML = `
+        <div class="check-adoption-content">
+            <div class="check-selector">
+                <label for="team-check-select">Select Check:</label>
+                <select id="team-check-select" onchange="window.changeTeamCheck(this.value)">
+                    ${checkOptions}
+                </select>
+            </div>
+
+            <div class="check-info">
+                <p class="check-description">${escapeHtml(selectedCheck.description || '')}</p>
+            </div>
+
+            <div class="adoption-progress">
+                <div class="progress-header">
+                    <span class="progress-label">Adoption Rate</span>
+                    <span class="progress-value">${stats.percentage}% (${stats.passing}/${stats.total} services)</span>
+                </div>
+                <div class="progress-bar-large">
+                    <div class="progress-fill ${stats.percentage >= 80 ? 'high' : stats.percentage >= 50 ? 'medium' : 'low'}" style="width: ${stats.percentage}%"></div>
+                </div>
+            </div>
+
+            <div class="adoption-lists">
+                <div class="adoption-column passing">
+                    <h4>Passing (${passingServices.length})</h4>
+                    <div class="adoption-service-list">
+                        ${passingList}
+                    </div>
+                </div>
+                <div class="adoption-column failing">
+                    <h4>Failing (${failingServices.length})</h4>
+                    <div class="adoption-service-list">
+                        ${failingList}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Change selected check in team modal
+ */
+export function changeTeamCheck(checkId) {
+    selectedCheckId = checkId;
+    loadCheckAdoptionTab();
+}
+
+// Expose to window
+window.changeTeamCheck = changeTeamCheck;
 
 /**
  * Close team detail modal

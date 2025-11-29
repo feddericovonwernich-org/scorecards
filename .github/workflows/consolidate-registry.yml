@@ -170,6 +170,97 @@ jobs:
 
           echo "Created $new_teams_created new team files"
 
+      - name: Generate all-checks.json metadata
+        run: |
+          # Generate consolidated check metadata from checks/*/metadata.json
+          echo "Generating all-checks.json..."
+
+          # Check if we have the checks directory (it's on main branch, not catalog)
+          # We need to fetch it from the default branch
+          git fetch origin main --depth=1 || git fetch origin master --depth=1 || true
+
+          # Create temp directory for checks metadata
+          mkdir -p /tmp/checks-metadata
+
+          # Try to get checks from main/master branch
+          if git show origin/main:checks/ > /dev/null 2>&1; then
+            checks_ref="origin/main"
+          elif git show origin/master:checks/ > /dev/null 2>&1; then
+            checks_ref="origin/master"
+          else
+            echo "Could not find checks directory on main or master branch"
+            # Create minimal all-checks.json
+            jq -n '{
+              version: "1.0.0",
+              generated_at: (now | todate),
+              checks: [],
+              categories: []
+            }' > all-checks.json
+            exit 0
+          fi
+
+          echo "Using checks from $checks_ref"
+
+          # Get list of check directories
+          check_dirs=$(git ls-tree --name-only "$checks_ref" checks/ | sort)
+
+          # Build checks array
+          checks_json="[]"
+          categories_set=""
+
+          for check_dir in $check_dirs; do
+            check_id=$(basename "$check_dir")
+
+            # Skip if not a directory with metadata
+            if ! git show "$checks_ref:$check_dir/metadata.json" > /dev/null 2>&1; then
+              continue
+            fi
+
+            # Read metadata
+            metadata=$(git show "$checks_ref:$check_dir/metadata.json")
+
+            # Extract fields and add check_id
+            check_json=$(echo "$metadata" | jq --arg id "$check_id" '{
+              id: $id,
+              name: .name,
+              description: .description,
+              category: .category,
+              weight: .weight
+            }')
+
+            # Add to checks array
+            checks_json=$(echo "$checks_json" | jq --argjson check "$check_json" '. + [$check]')
+
+            # Track category
+            category=$(echo "$metadata" | jq -r '.category')
+            if [ -n "$category" ] && [[ ! "$categories_set" =~ "$category" ]]; then
+              categories_set="$categories_set|$category"
+            fi
+          done
+
+          # Build categories array (ordered)
+          categories_json='["Scorecards Setup", "Documentation", "Testing & CI", "Configuration & Compliance"]'
+
+          # Sort checks by id
+          checks_json=$(echo "$checks_json" | jq 'sort_by(.id)')
+
+          # Build final all-checks.json
+          jq -n \
+            --arg version "1.0.0" \
+            --arg generated_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --argjson checks "$checks_json" \
+            --argjson categories "$categories_json" \
+            '{
+              version: $version,
+              generated_at: $generated_at,
+              checks: $checks,
+              categories: $categories,
+              count: ($checks | length)
+            }' > all-checks.json
+
+          checks_count=$(echo "$checks_json" | jq 'length')
+          echo "Generated all-checks.json with $checks_count checks"
+
       - name: Generate all-teams.json with statistics
         run: |
           # Collect all team files
@@ -336,7 +427,7 @@ jobs:
         id: check_changes
         run: |
           # Check if any files are modified
-          if [ -n "$(git status --porcelain registry/ teams/)" ]; then
+          if [ -n "$(git status --porcelain registry/ teams/ all-checks.json 2>/dev/null)" ]; then
             echo "changed=true" >> $GITHUB_OUTPUT
           else
             echo "changed=false" >> $GITHUB_OUTPUT
@@ -347,6 +438,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add registry/all-services.json teams/
-          git commit -m "Update consolidated registry and teams [skip ci]"
+          git add registry/all-services.json teams/ all-checks.json
+          git commit -m "Update consolidated registry, teams, and checks [skip ci]"
           git push

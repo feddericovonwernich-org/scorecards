@@ -25,6 +25,7 @@
 @import 'features/controls.css';
 @import 'features/services.css';
 @import 'features/checks.css';
+@import 'features/check-filter.css';
 @import 'features/toast.css';
 @import 'features/actions-widget.css';
 @import 'features/teams.css';
