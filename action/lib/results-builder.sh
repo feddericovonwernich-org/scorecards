@@ -9,7 +9,7 @@ build_results_json() {
     local timestamp="$3"
     local contributors_json="$4"
     local checks_json="$5"
-    local links_json="${6:-[]}"
+    local links_json="${6:-"[]"}"
     local openapi_json="${7:-null}"
 
     # Extract values
@@ -17,7 +17,7 @@ build_results_json() {
     local service_repo="${svc_ref[repo]}"
     local service_name="${svc_ref[name]}"
     local team_name="${svc_ref[team]}"
-    local team_all="${svc_ref[team_all]:-[]}"
+    local team_all="${svc_ref[team_all]:-"[]"}"
     local team_source="${svc_ref[team_source]:-none}"
     local team_discovered_at="${svc_ref[team_discovered_at]:-}"
 

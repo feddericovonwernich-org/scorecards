@@ -85,14 +85,14 @@ build_registry_entry() {
     local -n scr_ref=$2
     local -n prs_ref=$3
     local timestamp="$4"
-    local check_results="${5:-{}}"  # Optional: compact check results map
+    local check_results="${5:-"{}"}"  # Optional: compact check results map
 
     # Extract values
     local org="${svc_ref[org]}"
     local repo="${svc_ref[repo]}"
     local name="${svc_ref[name]}"
     local team="${svc_ref[team]}"
-    local team_all="${svc_ref[team_all]:-[]}"
+    local team_all="${svc_ref[team_all]:-"[]"}"
     local team_source="${svc_ref[team_source]:-none}"
     local team_discovered_at="${svc_ref[team_discovered_at]:-}"
     local team_github_org="${svc_ref[team_github_org]:-}"
@@ -212,7 +212,7 @@ git_push_with_smart_retry() {
     local -n scr_ref=$6
     local -n prs_ref=$7
     local timestamp="$8"
-    local check_results="${9:-{}}"  # Optional: compact check results map
+    local check_results="${9:-"{}"}"  # Optional: compact check results map
 
     cd "$repo_path" || return 1
 
