@@ -97,14 +97,14 @@ build_registry_entry() {
     local team_discovered_at="${svc_ref[team_discovered_at]:-}"
     local team_github_org="${svc_ref[team_github_org]:-}"
     local team_github_slug="${svc_ref[team_github_slug]:-}"
-    local has_api="${svc_ref[has_api]}"
+    local has_api="${svc_ref[has_api]:-false}"
     local default_branch="${svc_ref[default_branch]}"
 
-    local score="${scr_ref[score]}"
+    local score="${scr_ref[score]:-0}"
     local rank="${scr_ref[rank]}"
     local checks_hash="${scr_ref[checks_hash]}"
-    local checks_count="${scr_ref[checks_count]}"
-    local installed="${scr_ref[installed]}"
+    local checks_count="${scr_ref[checks_count]:-0}"
+    local installed="${scr_ref[installed]:-false}"
 
     local pr_number="${prs_ref[number]}"
     local pr_state="${prs_ref[state]}"
@@ -116,6 +116,7 @@ build_registry_entry() {
     log_debug "  checks_count=[$checks_count] (length: ${#checks_count})" >&2
     log_debug "  installed=[$installed]" >&2
     log_debug "  has_api=[$has_api]" >&2
+    log_debug "  check_results=[$check_results] (length: ${#check_results})" >&2
 
     local jq_args=(
         -n
