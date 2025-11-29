@@ -18,6 +18,7 @@
 @import 'components/forms.css';
 @import 'components/links.css';
 @import 'components/contributors.css';
+@import 'components/floating-controls.css';
 
 /* Features */
 @import 'features/stats.css';

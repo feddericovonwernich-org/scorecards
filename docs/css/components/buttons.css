@@ -56,27 +56,6 @@
 }
 
 /* ==============================================
-   HEADER BUTTONS - Glass Effect
-   ============================================== */
-
-/* Note: Main styles are in header.css, these are overrides */
-.theme-toggle-btn svg,
-.settings-btn svg {
-    width: 20px;
-    height: 20px;
-    fill: currentColor;
-}
-
-.settings-btn.has-token {
-    background: rgba(16, 185, 129, 0.15);
-    border-color: var(--color-success);
-}
-
-.settings-btn.has-token:hover {
-    background: rgba(16, 185, 129, 0.25);
-}
-
-/* ==============================================
    SECONDARY / OUTLINE BUTTONS
    ============================================== */
 

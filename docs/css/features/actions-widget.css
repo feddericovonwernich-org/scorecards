@@ -2,53 +2,6 @@
    GITHUB ACTIONS WIDGET - Premium Design
    ============================================== */
 
-/* Widget Container */
-.actions-widget {
-    position: fixed;
-    bottom: var(--space-5);
-    right: var(--space-5);
-    z-index: 9999;
-}
-
-/* ==============================================
-   WIDGET TOGGLE BUTTON
-   ============================================== */
-
-.widget-toggle {
-    position: relative;
-    width: 56px;
-    height: 56px;
-    border-radius: var(--radius-full);
-    background: var(--color-accent);
-    border: none;
-    color: white;
-    cursor: pointer;
-    box-shadow: var(--shadow-lg), 0 4px 20px rgba(59, 130, 246, 0.4);
-    transition: all var(--duration-normal) var(--ease-out-expo);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.widget-toggle:hover {
-    background: var(--color-accent-hover);
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: var(--shadow-xl), 0 8px 30px rgba(59, 130, 246, 0.5);
-}
-
-.widget-toggle:active {
-    transform: translateY(-1px) scale(1);
-}
-
-.widget-toggle.active {
-    background: var(--color-accent-hover);
-}
-
-.widget-toggle svg {
-    width: 24px;
-    height: 24px;
-}
-
 /* ==============================================
    WIDGET SIDEBAR
    ============================================== */
@@ -292,15 +245,5 @@
 @media (max-width: 480px) {
     .widget-sidebar {
         width: 100%;
-    }
-
-    .widget-toggle {
-        width: 48px;
-        height: 48px;
-    }
-
-    .widget-toggle svg {
-        width: 20px;
-        height: 20px;
     }
 }
