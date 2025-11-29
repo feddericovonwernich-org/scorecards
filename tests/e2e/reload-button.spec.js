@@ -165,7 +165,7 @@ test.describe('Reload Button', () => {
     const reloadBtn = staleCard.locator('.trigger-btn-icon');
 
     // Initial state: orange background
-    await expect(reloadBtn).toHaveCSS('background', /rgb\(243, 156, 18\)/); // #f39c12
+    await expect(reloadBtn).toHaveCSS('background', /rgb\(245, 158, 11\)/); // #F59E0B
 
     // Click the button
     await reloadBtn.click();
@@ -187,7 +187,7 @@ test.describe('Reload Button', () => {
     await page.mouse.move(0, 0);
 
     // After reset: back to orange
-    await expect(reloadBtn).toHaveCSS('background', /rgb\(243, 156, 18\)/);
+    await expect(reloadBtn).toHaveCSS('background', /rgb\(245, 158, 11\)/);
     await expect(reloadBtn).not.toBeDisabled();
   });
 
@@ -225,7 +225,7 @@ test.describe('Reload Button', () => {
     await page.mouse.move(0, 0);
 
     // After reset: back to orange with reload icon
-    await expect(reloadBtn).toHaveCSS('background-color', 'rgb(243, 156, 18)'); // #f39c12
+    await expect(reloadBtn).toHaveCSS('background-color', 'rgb(245, 158, 11)'); // #F59E0B
     await expect(reloadBtn).toHaveAttribute('title', 'Re-run scorecard workflow');
   });
 
@@ -242,7 +242,7 @@ test.describe('Reload Button', () => {
     await expect(page.locator('.toast')).toContainText(/configure.*GitHub.*PAT/i);
 
     // Should NOT change button state (still orange, reload icon)
-    await expect(reloadBtn).toHaveCSS('background', /rgb\(243, 156, 18\)/);
+    await expect(reloadBtn).toHaveCSS('background', /rgb\(245, 158, 11\)/);
   });
 
   test('should reset button after 3 seconds in success state', async ({ page }) => {
@@ -267,7 +267,7 @@ test.describe('Reload Button', () => {
     await page.mouse.move(0, 0);
 
     // Should be reset to original state
-    await expect(reloadBtn).toHaveCSS('background', /rgb\(243, 156, 18\)/);
+    await expect(reloadBtn).toHaveCSS('background', /rgb\(245, 158, 11\)/);
     await expect(reloadBtn).not.toBeDisabled();
     await expect(reloadBtn).toHaveAttribute('title', 'Re-run scorecard workflow');
 
