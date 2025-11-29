@@ -13,14 +13,14 @@ test.describe('Check Filter Modal', () => {
     await waitForCatalogLoad(page);
   });
 
-  test('should have Checks filter button', async ({ page }) => {
+  test('should have Check Filter button', async ({ page }) => {
     const checksButton = page.locator('.check-filter-toggle');
     await expect(checksButton).toBeVisible();
-    await expect(checksButton).toContainText('Checks');
+    await expect(checksButton).toContainText('Check Filter');
   });
 
-  test('should open check filter modal when clicking Checks button', async ({ page }) => {
-    // Click the Checks button
+  test('should open check filter modal when clicking Check Filter button', async ({ page }) => {
+    // Click the Check Filter button
     await page.locator('.check-filter-toggle').click();
 
     // Modal should be visible
@@ -183,7 +183,7 @@ test.describe('Check Filter Modal', () => {
 
     // Toggle button should show count
     const toggleButton = page.locator('.check-filter-toggle');
-    await expect(toggleButton).toContainText('Checks (1)');
+    await expect(toggleButton).toContainText('Check Filter (1)');
     await expect(toggleButton).toHaveClass(/active/);
   });
 
