@@ -14,7 +14,7 @@ window.checksHashTimestamp = 0;
 window.currentView = 'services'; // 'services' | 'teams'
 window.allTeams = [];
 window.filteredTeams = [];
-window.teamsSort = 'services-desc';
+window.teamsSort = 'score-desc';
 window.teamsSearchQuery = '';
 window.teamsActiveFilters = new Map();
 

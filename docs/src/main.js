@@ -431,17 +431,29 @@ function renderTeamsGrid(teams, services) {
 function sortTeams(teams, sortBy) {
     switch (sortBy) {
         case 'services-desc':
-            return teams.sort((a, b) => b.serviceCount - a.serviceCount);
+            return teams.sort((a, b) => {
+                const diff = b.serviceCount - a.serviceCount;
+                return diff !== 0 ? diff : (b.averageScore || 0) - (a.averageScore || 0);
+            });
         case 'services-asc':
-            return teams.sort((a, b) => a.serviceCount - b.serviceCount);
+            return teams.sort((a, b) => {
+                const diff = a.serviceCount - b.serviceCount;
+                return diff !== 0 ? diff : (b.averageScore || 0) - (a.averageScore || 0);
+            });
         case 'score-desc':
             return teams.sort((a, b) => (b.averageScore || 0) - (a.averageScore || 0));
         case 'score-asc':
             return teams.sort((a, b) => (a.averageScore || 0) - (b.averageScore || 0));
         case 'name-asc':
-            return teams.sort((a, b) => a.name.localeCompare(b.name));
+            return teams.sort((a, b) => {
+                const diff = a.name.localeCompare(b.name);
+                return diff !== 0 ? diff : (b.averageScore || 0) - (a.averageScore || 0);
+            });
         case 'name-desc':
-            return teams.sort((a, b) => b.name.localeCompare(a.name));
+            return teams.sort((a, b) => {
+                const diff = b.name.localeCompare(a.name);
+                return diff !== 0 ? diff : (b.averageScore || 0) - (a.averageScore || 0);
+            });
         default:
             return teams;
     }
