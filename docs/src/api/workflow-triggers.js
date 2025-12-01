@@ -6,6 +6,8 @@
 import { getToken, clearToken } from '../services/auth.js';
 import { setButtonLoading, setButtonSuccess, setButtonError, resetButton } from '../ui/button-states.js';
 import { showToast } from '../ui/toast.js';
+import { DEPLOYMENT } from '../config/deployment.js';
+import { WORKFLOWS, getWorkflowDispatchUrl } from '../config/workflows.js';
 
 // Get repo info from registry module
 const getRepoInfo = () => {
@@ -37,13 +39,13 @@ export async function triggerServiceWorkflow(org, repo, buttonElement) {
     try {
         const { owner, name } = getRepoInfo();
         const response = await fetch(
-            `https://api.github.com/repos/${owner}/${name}/actions/workflows/trigger-service-workflow.yml/dispatches`,
+            getWorkflowDispatchUrl(owner, name, WORKFLOWS.files.triggerService),
             {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/vnd.github+json',
                     'Authorization': `Bearer ${token}`,
-                    'X-GitHub-Api-Version': '2022-11-28',
+                    'X-GitHub-Api-Version': DEPLOYMENT.api.version,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
@@ -97,13 +99,13 @@ export async function installService(org, repo, buttonElement) {
     try {
         const { owner, name } = getRepoInfo();
         const response = await fetch(
-            `https://api.github.com/repos/${owner}/${name}/actions/workflows/create-installation-pr.yml/dispatches`,
+            getWorkflowDispatchUrl(owner, name, WORKFLOWS.files.createInstallPR),
             {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/vnd.github+json',
                     'Authorization': `Bearer ${token}`,
-                    'X-GitHub-Api-Version': '2022-11-28',
+                    'X-GitHub-Api-Version': DEPLOYMENT.api.version,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
@@ -181,13 +183,13 @@ export async function triggerBulkWorkflows(services, buttonElement) {
         const { owner, name } = getRepoInfo();
 
         const response = await fetch(
-            `https://api.github.com/repos/${owner}/${name}/actions/workflows/trigger-service-workflow.yml/dispatches`,
+            getWorkflowDispatchUrl(owner, name, WORKFLOWS.files.triggerService),
             {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/vnd.github+json',
                     'Authorization': `Bearer ${token}`,
-                    'X-GitHub-Api-Version': '2022-11-28',
+                    'X-GitHub-Api-Version': DEPLOYMENT.api.version,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({

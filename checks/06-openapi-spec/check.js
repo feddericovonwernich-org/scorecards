@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-console */
 // Check: OpenAPI Specification Detection & Validation
 
 import fs from 'fs';
@@ -8,7 +9,7 @@ import commonPaths from '../lib/common-paths.js';
 const repoPath = process.env.SCORECARD_REPO_PATH || '.';
 
 // Find OpenAPI files
-let foundFiles = [];
+const foundFiles = [];
 for (const relativePath of commonPaths.openapi) {
     const fullPath = path.join(repoPath, relativePath);
     if (fs.existsSync(fullPath)) {

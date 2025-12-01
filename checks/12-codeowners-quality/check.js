@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-console */
 // Check: CODEOWNERS Quality (Syntax Validation)
 
 import fs from 'fs';

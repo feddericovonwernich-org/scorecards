@@ -78,18 +78,18 @@ export function filterAndRenderServices() {
     // Sort
     window.filteredServices.sort((a, b) => {
         switch (window.currentSort) {
-            case 'score-desc':
-                return b.score - a.score;
-            case 'score-asc':
-                return a.score - b.score;
-            case 'name-asc':
-                return a.name.localeCompare(b.name);
-            case 'name-desc':
-                return b.name.localeCompare(a.name);
-            case 'updated-desc':
-                return new Date(b.last_updated) - new Date(a.last_updated);
-            default:
-                return 0;
+        case 'score-desc':
+            return b.score - a.score;
+        case 'score-asc':
+            return a.score - b.score;
+        case 'name-asc':
+            return a.name.localeCompare(b.name);
+        case 'name-desc':
+            return b.name.localeCompare(a.name);
+        case 'updated-desc':
+            return new Date(b.last_updated) - new Date(a.last_updated);
+        default:
+            return 0;
         }
     });
 
@@ -102,7 +102,7 @@ export function filterAndRenderServices() {
  */
 export async function refreshData() {
     const refreshBtn = document.getElementById('refresh-btn');
-    if (!refreshBtn) return;
+    if (!refreshBtn) {return;}
 
     // Disable button and show loading state
     const originalText = refreshBtn.innerHTML;

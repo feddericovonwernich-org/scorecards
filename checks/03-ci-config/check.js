@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-console */
 // Check: CI configuration existence
 
 import fs from 'fs';
@@ -31,7 +32,7 @@ const otherCIFiles = [
     'bitbucket-pipelines.yml' // Bitbucket Pipelines
 ];
 
-let foundOtherCI = [];
+const foundOtherCI = [];
 for (const ciFile of otherCIFiles) {
     if (fs.existsSync(path.join(repoPath, ciFile))) {
         foundOtherCI.push(ciFile);
@@ -52,7 +53,7 @@ if (workflowFiles.length > 0) {
     message += `GitHub Actions: ${workflowFiles.length} workflow(s) (${workflowFiles.slice(0, 3).join(', ')}${workflowFiles.length > 3 ? '...' : ''})`;
 }
 if (foundOtherCI.length > 0) {
-    if (message) message += '; ';
+    if (message) {message += '; ';}
     message += `Other CI: ${foundOtherCI.join(', ')}`;
 }
 

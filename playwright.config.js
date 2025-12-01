@@ -7,6 +7,8 @@ import { defineConfig, devices } from '@playwright/test';
  * API requests are mocked via page.route() to serve test fixtures.
  */
 
+const TEST_PORT = process.env.TEST_PORT || 8080;
+
 export default defineConfig({
   testDir: './tests/e2e',
 
@@ -31,7 +33,7 @@ export default defineConfig({
 
   // Shared settings for all projects
   use: {
-    baseURL: 'http://localhost:8080/',
+    baseURL: `http://localhost:${TEST_PORT}/`,
 
     // Collect trace when retrying the failed test
     trace: 'on-first-retry',
@@ -55,8 +57,8 @@ export default defineConfig({
   // Tests use request mocking via page.route() to serve test fixtures
   // from tests/e2e/fixtures/ instead of fetching from GitHub
   webServer: {
-    command: 'python3 -m http.server 8080 --directory docs',
-    port: 8080,
+    command: `python3 -m http.server ${TEST_PORT} --directory docs`,
+    port: TEST_PORT,
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
   },

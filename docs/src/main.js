@@ -294,8 +294,8 @@ window.refreshData = appInit.refreshData;
  * @param {string} view - 'services' | 'teams'
  */
 function switchView(view) {
-    if (view !== 'services' && view !== 'teams') return;
-    if (view === window.currentView) return;
+    if (view !== 'services' && view !== 'teams') {return;}
+    if (view === window.currentView) {return;}
 
     window.currentView = view;
 
@@ -317,7 +317,6 @@ function switchView(view) {
         initTeamsView();
     }
 
-    console.log(`Switched to ${view} view`);
 }
 
 /**
@@ -325,7 +324,7 @@ function switchView(view) {
  */
 async function initTeamsView() {
     const grid = document.getElementById('teams-grid');
-    if (!grid) return;
+    if (!grid) {return;}
 
     // Show loading state
     grid.innerHTML = '<div class="loading">Loading teams...</div>';
@@ -343,8 +342,6 @@ async function initTeamsView() {
 
         // Render teams
         renderTeamsGrid(window.allTeams, services);
-
-        console.log(`Teams view initialized with ${window.allTeams.length} teams`);
     } catch (error) {
         console.error('Failed to initialize teams view:', error);
         grid.innerHTML = `<div class="error">Failed to load teams: ${error.message}</div>`;
@@ -357,7 +354,7 @@ async function initTeamsView() {
 function updateTeamsStats(teams, services) {
     // Total teams
     const totalTeamsEl = document.getElementById('teams-total-teams');
-    if (totalTeamsEl) totalTeamsEl.textContent = teams.length;
+    if (totalTeamsEl) {totalTeamsEl.textContent = teams.length;}
 
     // Average score across all teams
     const avgScoreEl = document.getElementById('teams-avg-score');
@@ -368,21 +365,21 @@ function updateTeamsStats(teams, services) {
 
     // Total services
     const totalServicesEl = document.getElementById('teams-total-services');
-    if (totalServicesEl) totalServicesEl.textContent = services.length;
+    if (totalServicesEl) {totalServicesEl.textContent = services.length;}
 
     // Services without team
     const noTeamCount = services.filter(s => !teamStatistics.getTeamName(s)).length;
     const noTeamEl = document.getElementById('teams-no-team');
-    if (noTeamEl) noTeamEl.textContent = noTeamCount;
+    if (noTeamEl) {noTeamEl.textContent = noTeamCount;}
 
     // Rank distribution across teams (based on dominant rank)
     let platinumCount = 0, goldCount = 0, silverCount = 0, bronzeCount = 0;
     teams.forEach(team => {
         const rank = teamStatistics.getRank(team);
-        if (rank === 'platinum') platinumCount++;
-        else if (rank === 'gold') goldCount++;
-        else if (rank === 'silver') silverCount++;
-        else if (rank === 'bronze') bronzeCount++;
+        if (rank === 'platinum') {platinumCount++;}
+        else if (rank === 'gold') {goldCount++;}
+        else if (rank === 'silver') {silverCount++;}
+        else if (rank === 'bronze') {bronzeCount++;}
     });
 
     const platinumEl = document.getElementById('teams-platinum-count');
@@ -390,10 +387,10 @@ function updateTeamsStats(teams, services) {
     const silverEl = document.getElementById('teams-silver-count');
     const bronzeEl = document.getElementById('teams-bronze-count');
 
-    if (platinumEl) platinumEl.textContent = platinumCount;
-    if (goldEl) goldEl.textContent = goldCount;
-    if (silverEl) silverEl.textContent = silverCount;
-    if (bronzeEl) bronzeEl.textContent = bronzeCount;
+    if (platinumEl) {platinumEl.textContent = platinumCount;}
+    if (goldEl) {goldEl.textContent = goldCount;}
+    if (silverEl) {silverEl.textContent = silverCount;}
+    if (bronzeEl) {bronzeEl.textContent = bronzeCount;}
 }
 
 /**
@@ -401,7 +398,7 @@ function updateTeamsStats(teams, services) {
  */
 function renderTeamsGrid(teams, services) {
     const grid = document.getElementById('teams-grid');
-    if (!grid) return;
+    if (!grid) {return;}
 
     if (teams.length === 0) {
         grid.innerHTML = '<div class="team-empty-state">No teams found</div>';
@@ -430,39 +427,39 @@ function renderTeamsGrid(teams, services) {
  */
 function sortTeams(teams, sortBy) {
     switch (sortBy) {
-        case 'services-desc':
-            return teams.sort((a, b) => {
-                const diff = b.serviceCount - a.serviceCount;
-                return diff !== 0 ? diff : (b.averageScore || 0) - (a.averageScore || 0);
-            });
-        case 'services-asc':
-            return teams.sort((a, b) => {
-                const diff = a.serviceCount - b.serviceCount;
-                return diff !== 0 ? diff : (b.averageScore || 0) - (a.averageScore || 0);
-            });
-        case 'score-desc':
-            return teams.sort((a, b) => (b.averageScore || 0) - (a.averageScore || 0));
-        case 'score-asc':
-            return teams.sort((a, b) => (a.averageScore || 0) - (b.averageScore || 0));
-        case 'name-asc':
-            return teams.sort((a, b) => {
-                const diff = a.name.localeCompare(b.name);
-                return diff !== 0 ? diff : (b.averageScore || 0) - (a.averageScore || 0);
-            });
-        case 'name-desc':
-            return teams.sort((a, b) => {
-                const diff = b.name.localeCompare(a.name);
-                return diff !== 0 ? diff : (b.averageScore || 0) - (a.averageScore || 0);
-            });
-        default:
-            return teams;
+    case 'services-desc':
+        return teams.sort((a, b) => {
+            const diff = b.serviceCount - a.serviceCount;
+            return diff !== 0 ? diff : (b.averageScore || 0) - (a.averageScore || 0);
+        });
+    case 'services-asc':
+        return teams.sort((a, b) => {
+            const diff = a.serviceCount - b.serviceCount;
+            return diff !== 0 ? diff : (b.averageScore || 0) - (a.averageScore || 0);
+        });
+    case 'score-desc':
+        return teams.sort((a, b) => (b.averageScore || 0) - (a.averageScore || 0));
+    case 'score-asc':
+        return teams.sort((a, b) => (a.averageScore || 0) - (b.averageScore || 0));
+    case 'name-asc':
+        return teams.sort((a, b) => {
+            const diff = a.name.localeCompare(b.name);
+            return diff !== 0 ? diff : (b.averageScore || 0) - (a.averageScore || 0);
+        });
+    case 'name-desc':
+        return teams.sort((a, b) => {
+            const diff = b.name.localeCompare(a.name);
+            return diff !== 0 ? diff : (b.averageScore || 0) - (a.averageScore || 0);
+        });
+    default:
+        return teams;
     }
 }
 
 /**
  * Render a single team card
  */
-function renderTeamCard(team, services) {
+function renderTeamCard(team, _services) {
     const dominantRank = teamStatistics.getRank(team);
     const rankDist = team.rankDistribution || {};
 
@@ -566,10 +563,6 @@ window.refreshTeamsView = refreshTeamsView;
 window.renderTeamsGrid = renderTeamsGrid;
 window.filterAndRenderTeams = filterAndRenderTeams;
 window.handleHashChange = handleHashChange;
-
-// Log initialization
-console.log('✓ ES6 Modules loaded successfully');
-console.log('Available modules:', Object.keys(window.ScorecardModules));
 
 /**
  * Update theme toggle button icon
@@ -740,8 +733,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize application (load services and render)
     appInit.initializeApp();
-
-    console.log('✓ Modal handlers and event listeners initialized');
 });
 
 // Export for ES6 module imports

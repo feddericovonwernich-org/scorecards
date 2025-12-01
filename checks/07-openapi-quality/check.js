@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-console */
 // Check: OpenAPI Quality Metrics
 
 import fs from 'fs';
@@ -8,7 +9,7 @@ import commonPaths from '../lib/common-paths.js';
 const repoPath = process.env.SCORECARD_REPO_PATH || '.';
 
 // Find OpenAPI files
-let foundFiles = [];
+const foundFiles = [];
 for (const relativePath of commonPaths.openapi) {
     const fullPath = path.join(repoPath, relativePath);
     if (fs.existsSync(fullPath)) {
@@ -35,7 +36,7 @@ async function assessQuality() {
         const api = await SwaggerParser.parse(specFile.fullPath);
 
         // Quality metrics
-        let metrics = {
+        const metrics = {
             operations: { total: 0, withDescription: 0, withExamples: 0, withTags: 0 },
             parameters: { total: 0, withDescription: 0, withExamples: 0 },
             responses: { total: 0, withDescription: 0, withExamples: 0 },
@@ -144,9 +145,9 @@ async function assessQuality() {
         let qualityScore = 0;
 
         // Info section quality (15 points)
-        if (metrics.info.hasDescription) qualityScore += 5;
-        if (metrics.info.hasContact) qualityScore += 5;
-        if (metrics.info.hasLicense) qualityScore += 5;
+        if (metrics.info.hasDescription) {qualityScore += 5;}
+        if (metrics.info.hasContact) {qualityScore += 5;}
+        if (metrics.info.hasLicense) {qualityScore += 5;}
 
         // Operation documentation (35 points)
         if (metrics.operations.total > 0) {
@@ -177,8 +178,8 @@ async function assessQuality() {
         }
 
         // Security (10 points)
-        if (metrics.security.defined) qualityScore += 5;
-        if (metrics.security.applied) qualityScore += 5;
+        if (metrics.security.defined) {qualityScore += 5;}
+        if (metrics.security.applied) {qualityScore += 5;}
 
         // Quality threshold: 60% (good documentation practices)
         const threshold = 60;

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-console */
 // Check: Scorecard Config Quality
 
 import fs from 'fs';

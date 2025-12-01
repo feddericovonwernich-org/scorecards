@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-console */
 // Check: API Environment Configuration
 
 import fs from 'fs';

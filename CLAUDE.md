@@ -1,119 +1,43 @@
 # Scorecards - AI Context
 
-## Documentation Guidelines
+## Core Principles
 
-- Write concise, clear documentation
-- Avoid repetition - apply DRY principle
-- Reference existing docs rather than duplicating
-- Assume mature technical audience
+### DRY Configuration
+Never hardcode magic values (timeouts, API params, thresholds, workflow names, etc.). Configuration lives in `docs/src/config/` - explore that directory to discover available constants, settings, and helper functions.
 
-## Testing Guidelines
+### DRY Styling
+Never hardcode colors in JavaScript. Use CSS variables from `docs/css/base/variables.css` via the `getCssVar()` utility in `docs/src/utils/css.js`.
 
-### Playwright E2E Tests
+### DRY Code
+Before creating new utilities, explore `docs/src/utils/` for existing implementations. Reuse over reinvent.
 
-**IMPORTANT: Always run Playwright tests synchronously, never in background.**
+### ESLint Compliance
+All code must pass `npm run lint`. Key enforced rules:
+- No `console.log()` in frontend code - use `console.error()` or `console.warn()`
+- CLI scripts in `checks/` may disable this rule at file top with `/* eslint-disable no-console */`
+- `prefer-const`, `no-var`, `eqeqeq`, `curly` are all enforced
 
-When running Playwright tests:
-- ✅ DO: Run tests synchronously without background flag
-  ```bash
-  npx playwright test --project=chromium
-  npx playwright test tests/e2e/catalog.spec.js --project=chromium
-  ```
-- ❌ DON'T: Run tests in background or with `run_in_background: true`
-- ❌ DON'T: Use commands like `npx playwright test 2>&1 &`
+### Testing
+- Run Playwright tests synchronously, never in background
+- Test frontend changes with fresh browser context (ES modules cache aggressively)
+- Kill leftover servers before testing: `pkill -f "python3 -m http.server"`
 
-**Reason**: Playwright tests involve browser automation and timing-sensitive operations. Running them in background makes it difficult to track test progress, see failures in real-time, and properly handle test output.
+## Module Structure
 
-## Frontend Code Guidelines
-
-### Colors and Styling
-
-**IMPORTANT: Never hardcode colors in JavaScript files.**
-
-- ✅ DO: Use CSS variables via `getCssVar()` from `docs/src/utils/css.js`
-  ```javascript
-  import { getCssVar } from '../utils/css.js';
-  button.style.background = getCssVar('--color-success');
-  ```
-- ✅ DO: Use existing CSS classes when possible
-- ❌ DON'T: Hardcode hex colors like `#10b981` or `#ef4444`
-- ❌ DON'T: Use inline styles with hardcoded values
-
-**Available CSS variables** (see `docs/css/base/variables.css`):
-- `--color-success`, `--color-error` - Status colors
-- `--color-success-btn`, `--color-error-btn` - Button state colors
-- `--color-copy-success`, `--color-copy-default` - Clipboard feedback colors
-- `--color-link-btn`, `--color-link-btn-hover` - Link button colors
-- `--color-text-muted`, `--color-text-secondary`, `--color-text-error` - Text colors
-
-### Constants and Configuration
-
-**IMPORTANT: Use centralized constants, never hardcode magic values.**
-
-- ✅ DO: Import from `docs/src/config/constants.js`
-  ```javascript
-  import { TIMING, API_CONFIG, STORAGE_KEYS } from '../config/constants.js';
-  setTimeout(callback, TIMING.BUTTON_FEEDBACK);
-  fetch(`${API_CONFIG.GITHUB_BASE_URL}/repos/...?per_page=${API_CONFIG.PER_PAGE}`);
-  localStorage.setItem(STORAGE_KEYS.WIDGET_POLL_INTERVAL, value);
-  ```
-- ❌ DON'T: Hardcode timeouts like `2000`, `3000`, `5000`
-- ❌ DON'T: Hardcode API params like `per_page=25`
-- ❌ DON'T: Hardcode localStorage keys as strings
-
-### SVG Icons
-
-**IMPORTANT: Use centralized icon definitions.**
-
-- ✅ DO: Import from `docs/src/config/icons.js`
-  ```javascript
-  import { getIcon } from '../config/icons.js';
-  const html = `<button>${getIcon('github')} View on GitHub</button>`;
-  ```
-- ❌ DON'T: Copy-paste SVG markup into template strings
-- ❌ DON'T: Duplicate icon definitions across files
-
-**Available icons**: `github`, `refresh`, `checkmark`, `xMark`, `externalLink`, `pullRequest`, `download`, `arrowLeft`, `arrowRight`
-
-### Shared Utilities
-
-**IMPORTANT: Use existing utilities instead of duplicating code.**
-
-| Utility | Location | Use For |
-|---------|----------|---------|
-| `getCssVar(name)` | `utils/css.js` | Access CSS variables in JS |
-| `startButtonSpin(btn)` | `utils/animation.js` | Add loading spinner to button |
-| `stopButtonSpin(btn)` | `utils/animation.js` | Remove loading spinner |
-| `countByRank(services)` | `utils/statistics.js` | Count services by rank |
-| `calculateAverageScore(services)` | `utils/statistics.js` | Calculate average score |
-| `startLiveDurationUpdates(selector)` | `utils/duration-tracker.js` | Live workflow duration updates |
-| `fetchWorkflowRuns(org, repo)` | `api/github.js` | Fetch GitHub workflow runs |
-
-### Module Structure
-
-When adding new code, follow this structure:
-- `docs/src/config/` - Constants, icons, configuration
+When adding code, follow this structure:
+- `docs/src/config/` - Configuration (explore for available options)
 - `docs/src/api/` - API integrations (GitHub, registry)
 - `docs/src/ui/` - UI components and rendering
 - `docs/src/services/` - Business logic (auth, theme, staleness)
-- `docs/src/utils/` - Reusable utility functions
+- `docs/src/utils/` - Utilities (explore before creating new ones)
+- `checks/` - Quality check scripts (CLI tools)
 
-### Local Development Testing
+## Documentation
+- Write concise, clear documentation
+- Apply DRY - reference existing docs rather than duplicating
+- Assume mature technical audience
 
-**IMPORTANT: Always test with a fresh browser context and clean up servers.**
-
-When testing local frontend changes:
-- ✅ DO: Close the browser tab and open a new one (or use incognito)
-- ✅ DO: Start a fresh HTTP server on a NEW port if caching persists
-- ✅ DO: Kill leftover background servers before starting new ones
-- ✅ DO: Check Network tab for `200 OK` (not `304 Not Modified`)
-- ❌ DON'T: Assume refreshing the page loads new code (ES modules are cached)
-- ❌ DON'T: Leave multiple HTTP servers running on different ports
-
-**Quick cleanup command:**
-```bash
-# Kill all Python HTTP servers
-pkill -f "python3 -m http.server"
-```
-
-**Reason**: ES module cache is separate from HTTP cache. Even with browser refresh, the same port may serve cached modules. A fresh browser context or new port ensures you're testing the actual changes.
+## Context-Specific Rules
+Detailed guidelines auto-load from `.claude/rules/` when working on relevant files:
+- `frontend.md` - Loaded for `docs/src/**` (config details, utilities, examples)
+- `checks.md` - Loaded for `checks/**` (script structure, exit codes)
