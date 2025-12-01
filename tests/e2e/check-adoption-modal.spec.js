@@ -244,8 +244,10 @@ test.describe('Check Adoption Dashboard Modal', () => {
   });
 
   test('progress bar shows correctly for 0% adoption', async ({ page }) => {
-    // Look for a row with 0% adoption
-    const zeroPercentRow = page.locator('.adoption-row').filter({ hasText: '0%' });
+    // Look for a row with 0% in the adoption cell specifically (not Excl. column)
+    const zeroPercentRow = page.locator('.adoption-row').filter({
+      has: page.locator('.adoption-cell', { hasText: /^0%$/ })
+    });
 
     // If such a row exists, verify the progress fill has the 'none' class
     if (await zeroPercentRow.count() > 0) {

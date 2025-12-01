@@ -204,7 +204,7 @@ test.describe('Service Modal', () => {
     await openServiceModal(page, 'test-repo-perfect');
 
     const modal = page.locator('#service-modal');
-    const githubLink = modal.locator('a', { hasText: 'View on GitHub' });
+    const githubLink = modal.locator('a', { hasText: 'View on GitHub' }).first();
     await expect(githubLink).toBeVisible();
     await expect(githubLink).toHaveAttribute('href', /github\.com.*test-repo-perfect/);
   });
