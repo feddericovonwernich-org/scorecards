@@ -378,7 +378,7 @@ function updateTeamsStats(teams, services) {
     // Rank distribution across teams (based on dominant rank)
     let platinumCount = 0, goldCount = 0, silverCount = 0, bronzeCount = 0;
     teams.forEach(team => {
-        const rank = teamStatistics.getDominantRank(team);
+        const rank = teamStatistics.getRank(team);
         if (rank === 'platinum') platinumCount++;
         else if (rank === 'gold') goldCount++;
         else if (rank === 'silver') silverCount++;
@@ -451,7 +451,7 @@ function sortTeams(teams, sortBy) {
  * Render a single team card
  */
 function renderTeamCard(team, services) {
-    const dominantRank = teamStatistics.getDominantRank(team);
+    const dominantRank = teamStatistics.getRank(team);
     const rankDist = team.rankDistribution || {};
 
     // Build mini rank badges
@@ -471,6 +471,7 @@ function renderTeamCard(team, services) {
                 <h3 class="team-card-name">${formatting.escapeHtml(team.name)}</h3>
                 ${team.slack_channel ? `<span class="team-slack">${formatting.escapeHtml(team.slack_channel)}</span>` : ''}
             </div>
+            <div class="rank-badge ${dominantRank}">${formatting.capitalize(dominantRank)}</div>
             ${team.description ? `<p class="team-card-description">${formatting.escapeHtml(team.description)}</p>` : ''}
             <div class="team-card-stats">
                 <div class="team-stat">
@@ -526,9 +527,9 @@ function filterAndRenderTeams() {
     window.teamsActiveFilters.forEach((state, filter) => {
         if (['platinum', 'gold', 'silver', 'bronze'].includes(filter)) {
             if (state === 'include') {
-                teams = teams.filter(t => teamStatistics.getDominantRank(t) === filter);
+                teams = teams.filter(t => teamStatistics.getRank(t) === filter);
             } else if (state === 'exclude') {
-                teams = teams.filter(t => teamStatistics.getDominantRank(t) !== filter);
+                teams = teams.filter(t => teamStatistics.getRank(t) !== filter);
             }
         }
     });

@@ -4,7 +4,7 @@
  */
 
 import { capitalize, escapeHtml } from '../utils/formatting.js';
-import { getTeamName, getDominantRank, calculateTeamStats } from '../utils/team-statistics.js';
+import { getTeamName, getRank, calculateTeamStats } from '../utils/team-statistics.js';
 import { fetchTeamMembers, getTeamUrl } from '../api/github-teams.js';
 import { hasToken } from '../services/auth.js';
 import { openSettings } from './settings.js';
@@ -110,7 +110,7 @@ export async function showTeamModal(teamName) {
 
     if (!modal || !content) return;
 
-    const dominantRank = getDominantRank(team);
+    const dominantRank = getRank(team);
     const rankDist = team.rankDistribution || {};
 
     // Build rank distribution bars

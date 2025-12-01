@@ -227,17 +227,14 @@ export function buildRankSummary(rankDistribution) {
 }
 
 /**
- * Get dominant rank for a team based on majority of services
- * @param {Object} team - Team object with rankDistribution
- * @returns {string} Dominant rank ('platinum', 'gold', 'silver', or 'bronze')
+ * Get rank for a team based on average score
+ * @param {Object} team - Team object with averageScore
+ * @returns {string} Rank ('platinum', 'gold', 'silver', or 'bronze')
  */
-export function getDominantRank(team) {
-    if (!team.rankDistribution) return 'bronze';
-    const dist = team.rankDistribution;
-    const max = Math.max(dist.platinum || 0, dist.gold || 0, dist.silver || 0, dist.bronze || 0);
-    if (max === 0) return 'bronze';
-    if ((dist.platinum || 0) === max) return 'platinum';
-    if ((dist.gold || 0) === max) return 'gold';
-    if ((dist.silver || 0) === max) return 'silver';
+export function getRank(team) {
+    const score = team.averageScore || 0;
+    if (score >= 90) return 'platinum';
+    if (score >= 75) return 'gold';
+    if (score >= 50) return 'silver';
     return 'bronze';
 }
