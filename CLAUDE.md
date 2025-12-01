@@ -32,6 +32,7 @@ When adding code, follow this structure:
 - `docs/src/config/` - Configuration (explore for available options)
 - `docs/src/api/` - API integrations (GitHub, registry)
 - `docs/src/ui/` - UI components and rendering
+- `docs/src/ui/modals/` - Modal components (shared utilities in `shared/`)
 - `docs/src/services/` - Business logic (auth, theme, staleness)
 - `docs/src/utils/` - Utilities (explore before creating new ones)
 - `checks/` - Quality check scripts (CLI tools)
