@@ -209,8 +209,8 @@ window.openApiExplorer = function (org: string, repo: string): void {
   window.open(explorerUrl, '_blank');
 };
 
-// Toast notifications
-window.showToast = toast.showToast;
+// Toast notifications - handled by React components (see components/index.tsx)
+// window.showToast is set by the React Toast component
 
 // Modal management
 window.showModal = modals.showModal;
