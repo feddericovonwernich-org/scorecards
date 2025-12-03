@@ -720,22 +720,7 @@ window.renderTeamsGrid = renderTeamsGrid;
 window.filterAndRenderTeams = filterAndRenderTeams;
 window.handleHashChange = handleHashChange;
 
-/**
- * Update theme toggle button icon
- */
-function updateThemeIcon(themeValue: string): void {
-  const sunIcon = document.getElementById('theme-icon-sun');
-  const moonIcon = document.getElementById('theme-icon-moon');
-  if (sunIcon && moonIcon) {
-    if (themeValue === 'dark') {
-      sunIcon.style.display = 'none';
-      moonIcon.style.display = 'block';
-    } else {
-      sunIcon.style.display = 'block';
-      moonIcon.style.display = 'none';
-    }
-  }
-}
+// Note: updateThemeIcon removed - React FloatingControls component now handles theme icon rendering
 
 /**
  * Setup Event Listeners
@@ -793,14 +778,7 @@ function setupEventListeners(): void {
     });
   }
 
-  // Theme toggle
-  const themeToggleBtn = document.getElementById('theme-toggle-btn');
-  if (themeToggleBtn) {
-    themeToggleBtn.addEventListener('click', () => {
-      const newTheme = window.toggleTheme();
-      updateThemeIcon(newTheme);
-    });
-  }
+  // Theme toggle - handled by React FloatingControls component
 
   // Modal close
   const modalClose = document.querySelector('.modal-close');
@@ -880,16 +858,19 @@ function setupEventListeners(): void {
     });
   });
 
-  // View tab navigation
-  document.querySelectorAll('.view-tab').forEach((tab) => {
-    tab.addEventListener('click', () => {
-      const tabEl = tab as HTMLElement;
-      const view = tabEl.dataset.view as ViewType | undefined;
-      if (view) {
-        switchView(view);
-      }
+  // View tab navigation - handled by React Navigation component if available
+  // Keep as fallback for non-React rendered tabs
+  if (!window.__REACT_MANAGES_NAVIGATION) {
+    document.querySelectorAll('.view-tab').forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const tabEl = tab as HTMLElement;
+        const view = tabEl.dataset.view as ViewType | undefined;
+        if (view) {
+          switchView(view);
+        }
+      });
     });
-  });
+  }
 
   // Handle URL hash on load
   handleHashChange();

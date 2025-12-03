@@ -131,11 +131,21 @@ declare global {
     handleHashChange: () => void;
     setupEventListeners: () => void;
 
+    // Check Filter Modal
+    openCheckFilterModal: () => void;
+    closeCheckFilterModal: () => void;
+
     // ============= React Integration Flags =============
     // These flags indicate when React is managing specific UI elements
     // Vanilla JS code should check these before rendering
     __REACT_MANAGES_SERVICES_GRID?: boolean;
     __REACT_MANAGES_TEAMS_GRID?: boolean;
+    __REACT_MANAGES_SERVICE_MODAL?: boolean;
+    __REACT_MANAGES_TEAM_MODAL?: boolean;
+    __REACT_MANAGES_HEADER?: boolean;
+    __REACT_MANAGES_FOOTER?: boolean;
+    __REACT_MANAGES_NAVIGATION?: boolean;
+    __REACT_MANAGES_FLOATING_CONTROLS?: boolean;
 
     // ============= Additional Window Functions =============
     // Using index signature for flexibility with other window functions

@@ -38,3 +38,11 @@ export {
   WORKFLOW_FILTER_OPTIONS,
   createWorkflowFilterOptions,
 } from './FilterButton.js';
+
+// Modal
+export { Modal } from './Modal.js';
+export type { ModalProps } from './Modal.js';
+
+// Tabs
+export { Tabs } from './Tabs.js';
+export type { Tab, TabsProps } from './Tabs.js';
