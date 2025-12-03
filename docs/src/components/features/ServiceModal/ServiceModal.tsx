@@ -206,8 +206,8 @@ export function ServiceModal({ isOpen, onClose, org, repo }: ServiceModalProps) 
     if (!org || !repo) {return;}
 
     try {
-      const { triggerWorkflowDispatch } = await import('../../../api/github.js');
-      await triggerWorkflowDispatch(org, repo);
+      const { triggerScorecardWorkflow } = await import('../../../api/github.js');
+      await triggerScorecardWorkflow(org, repo);
       window.showToast?.('Workflow triggered successfully', 'success');
     } catch (err) {
       window.showToast?.(
