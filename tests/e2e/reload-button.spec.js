@@ -3,7 +3,7 @@
  * Tests for individual service card reload button functionality
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from './coverage.js';
 import {
   mockCatalogRequests,
   waitForCatalogLoad,

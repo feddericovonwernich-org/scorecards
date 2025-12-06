@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './coverage.js';
 import AxeBuilder from '@axe-core/playwright';
 import { mockCatalogRequests, waitForCatalogLoad } from './test-helper.js';
 

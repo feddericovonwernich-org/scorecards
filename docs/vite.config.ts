@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import react from '@vitejs/plugin-react';
+import istanbul from 'vite-plugin-istanbul';
 
 export default defineConfig({
   // Root is the docs directory
@@ -35,6 +36,16 @@ export default defineConfig({
   plugins: [
     // React plugin for JSX transformation and Fast Refresh
     react(),
+    // Istanbul plugin for code coverage during E2E tests
+    // Only instrument when COVERAGE env var is set (to avoid overhead in normal builds)
+    ...(process.env.COVERAGE === 'true' ? [istanbul({
+      include: ['src/**/*.ts', 'src/**/*.tsx'],
+      exclude: ['node_modules/**', 'dist/**', 'tests/**', '**/*.d.ts'],
+      extension: ['.ts', '.tsx'],
+      requireEnv: false,
+      forceBuildInstrument: true,
+      cwd: __dirname, // Ensure paths are relative to docs directory
+    })] : []),
     // Plugin to rewrite .js imports to .ts/.tsx during development
     {
       name: 'resolve-js-to-ts',

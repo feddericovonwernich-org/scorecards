@@ -32,5 +32,9 @@ test-results/
 playwright-report/
 playwright/.cache/
 
+# Coverage output
+.nyc_output/
+coverage/
+
 # Catalog data worktree
 catalog-data/

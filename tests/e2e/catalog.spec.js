@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './coverage.js';
 import { expectedStats, expectedServices, sortOptions } from './fixtures.js';
 import {
   mockCatalogRequests,

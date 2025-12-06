@@ -5,9 +5,14 @@ import { defineConfig, devices } from '@playwright/test';
  *
  * Tests run against a local HTTP server serving the docs/ directory.
  * API requests are mocked via page.route() to serve test fixtures.
+ *
+ * Coverage:
+ * Run with COVERAGE=true to collect code coverage:
+ *   COVERAGE=true npm run test:e2e:coverage
  */
 
 const TEST_PORT = process.env.TEST_PORT || 4173;
+const COVERAGE = process.env.COVERAGE === 'true';
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -58,9 +63,18 @@ export default defineConfig({
   // Tests use request mocking via page.route() to serve test fixtures
   // from tests/e2e/fixtures/ instead of fetching from GitHub
   webServer: {
-    command: `npm run build && npm run preview -- --port ${TEST_PORT}`,
+    // When COVERAGE is enabled, pass COVERAGE env to build for instrumentation
+    command: COVERAGE
+      ? `COVERAGE=true npm run build && npm run preview -- --port ${TEST_PORT}`
+      : `npm run build && npm run preview -- --port ${TEST_PORT}`,
     port: TEST_PORT,
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
   },
+
+  // Global setup/teardown for coverage collection
+  ...(COVERAGE ? {
+    globalSetup: './tests/e2e/coverage-setup.js',
+    globalTeardown: './tests/e2e/coverage-teardown.js',
+  } : {}),
 });
