@@ -31,10 +31,9 @@ jobs:
           echo "## JavaScript Coverage" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          # Extract coverage summary from Jest output
-          grep -A 10 "^-*|" jest-output.txt | head -15 >> $GITHUB_STEP_SUMMARY 2>/dev/null || \
-          grep -A 5 "Coverage summary" jest-output.txt >> $GITHUB_STEP_SUMMARY 2>/dev/null || \
-          echo "Coverage data available in artifacts" >> $GITHUB_STEP_SUMMARY
+          # Extract coverage table (lines containing |)
+          grep "|" jest-output.txt | head -20 >> $GITHUB_STEP_SUMMARY 2>/dev/null || \
+          echo "No coverage data extracted" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Upload coverage
@@ -84,9 +83,10 @@ jobs:
           echo "## Python Coverage" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          # Extract coverage table from pytest output
-          grep -A 100 "^Name" pytest-output.txt | grep -B 1 -A 100 "^-" | head -50 >> $GITHUB_STEP_SUMMARY 2>/dev/null || \
-          echo "No coverage data" >> $GITHUB_STEP_SUMMARY
+          # Extract coverage report from "Name" header through "TOTAL"
+          sed -n '/^Name/,/^TOTAL/p' pytest-output.txt >> $GITHUB_STEP_SUMMARY 2>/dev/null || \
+          grep -E "^(Name|---|TOTAL|checks/)" pytest-output.txt >> $GITHUB_STEP_SUMMARY 2>/dev/null || \
+          echo "No coverage data extracted" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Upload coverage
