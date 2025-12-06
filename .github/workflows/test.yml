@@ -22,8 +22,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run JavaScript tests
-        run: npm run test:js
+      - name: Run JavaScript tests with coverage
+        run: npm run test:coverage 2>&1 | tee jest-output.txt
+
+      - name: Generate coverage summary
+        if: always()
+        run: |
+          echo "## JavaScript Coverage" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          # Extract coverage summary from Jest output
+          grep -A 10 "^-*|" jest-output.txt | head -15 >> $GITHUB_STEP_SUMMARY 2>/dev/null || \
+          grep -A 5 "Coverage summary" jest-output.txt >> $GITHUB_STEP_SUMMARY 2>/dev/null || \
+          echo "Coverage data available in artifacts" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Upload coverage
         uses: codecov/codecov-action@v3
@@ -64,7 +76,18 @@ jobs:
           pip install -r requirements-dev.txt
 
       - name: Run Python tests
-        run: pytest
+        run: pytest 2>&1 | tee pytest-output.txt
+
+      - name: Generate coverage summary
+        if: always()
+        run: |
+          echo "## Python Coverage" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          # Extract coverage table from pytest output
+          grep -A 100 "^Name" pytest-output.txt | grep -B 1 -A 100 "^-" | head -50 >> $GITHUB_STEP_SUMMARY 2>/dev/null || \
+          echo "No coverage data" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Upload coverage
         uses: codecov/codecov-action@v3
@@ -115,11 +138,22 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Run Playwright tests
-        run: npx playwright test --project=chromium
+      - name: Run Playwright tests with coverage
+        run: npm run test:e2e:coverage
         env:
           # Use local server instead of GitHub Pages for faster, more reliable tests
           CI_USE_LOCAL_SERVER: true
+          PLAYWRIGHT_HTML_OPEN: never
+
+      - name: Generate E2E coverage summary
+        if: always()
+        run: |
+          echo "## E2E Coverage (Playwright)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          npx nyc report --reporter=text-summary 2>/dev/null >> $GITHUB_STEP_SUMMARY || \
+          echo "No E2E coverage data" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
@@ -127,4 +161,12 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report/
+          retention-days: 30
+
+      - name: Upload E2E coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-coverage-report
+          path: coverage/e2e/
           retention-days: 30
