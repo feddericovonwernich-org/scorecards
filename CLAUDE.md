@@ -48,3 +48,4 @@ Detailed guidelines auto-load from `.claude/rules/` when working on relevant fil
 - `frontend.md` - Loaded for `docs/src/**` (config details, utilities, examples)
 - `checks.md` - Loaded for `checks/**` (script structure, exit codes)
 - `bash.md` - Loaded for `**/*.sh` (strict mode, quoting, shared utilities)
+- `playwright.md` - Loaded for `tests/e2e/**` (test patterns, helpers, state assertions)
