@@ -1,0 +1,10 @@
+{
+  "id": "backend",
+  "name": "Backend",
+  "description": "Backend services team",
+  "aliases": ["be", "api"],
+  "metadata": {
+    "slack_channel": "#backend",
+    "oncall_rotation": "backend-oncall"
+  }
+}

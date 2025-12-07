@@ -1,0 +1,28 @@
+{
+  "org": "feddericovonwernich",
+  "repo": "test-repo-stale",
+  "name": "test-repo-stale",
+  "team": {"primary": "platform", "all": ["platform"], "source": "codeowners", "last_discovered": "2025-11-16T18:58:54Z"},
+  "score": 82,
+  "rank": "gold",
+  "last_updated": "2025-11-16T18:58:54Z",
+  "has_api": false,
+  "checks_hash": "different-hash-to-mark-as-stale",
+  "checks_count": 11,
+  "installed": true,
+  "check_results": {
+    "01-readme": "pass",
+    "02-license": "pass",
+    "03-ci-config": "pass",
+    "04-tests": "fail",
+    "05-scorecard-config": "pass",
+    "06-openapi-spec": "pass",
+    "07-openapi-quality": "fail",
+    "08-api-environments": "fail",
+    "09-scorecard-badge": "pass",
+    "10-scorecard-config-quality": "pass",
+    "11-codeowners": "pass",
+    "12-codeowners-quality": "pass"
+  },
+  "excluded_checks": []
+}

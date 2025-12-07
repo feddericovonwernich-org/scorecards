@@ -1,0 +1,9 @@
+{
+  "id": "frontend",
+  "name": "Frontend",
+  "description": "Frontend development team",
+  "aliases": ["fe", "ui"],
+  "metadata": {
+    "slack_channel": "#frontend"
+  }
+}

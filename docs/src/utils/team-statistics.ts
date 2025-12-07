@@ -26,6 +26,8 @@ export interface MergedTeamData {
   name: string;
   description: string | null;
   aliases: string[];
+  github_org?: string;
+  github_slug?: string;
   metadata: Record<string, unknown>;
   statistics: SingleTeamStats;
 }
@@ -35,6 +37,8 @@ export interface TeamsJsonData {
     name?: string;
     description?: string;
     aliases?: string[];
+    github_org?: string;
+    github_slug?: string;
     metadata?: Record<string, unknown>;
   }>;
 }
@@ -213,6 +217,8 @@ export function mergeTeamDataWithStats(
         name: teamName,
         description: teamData.description || null,
         aliases: teamData.aliases || [],
+        github_org: teamData.github_org,
+        github_slug: teamData.github_slug,
         metadata: teamData.metadata || {},
         statistics: stats,
       };

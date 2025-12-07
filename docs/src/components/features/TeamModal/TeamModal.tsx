@@ -98,10 +98,11 @@ export function TeamModal({ isOpen, onClose, teamName }: TeamModalProps) {
 
         setTeamData(team as TeamWithStats);
 
-        // Get services for this team
+        // Get services for this team (case-insensitive match)
         const { getTeamName } = await import('../../../utils/team-statistics.js');
+        const teamNameLower = teamName.toLowerCase();
         const services = allServices.filter(
-          (s: ServiceData) => getTeamName(s) === teamName
+          (s: ServiceData) => getTeamName(s)?.toLowerCase() === teamNameLower
         );
         setTeamServices(services);
       } catch (err) {

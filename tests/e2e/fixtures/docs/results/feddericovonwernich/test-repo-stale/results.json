@@ -1,0 +1,174 @@
+{
+  "service": {
+    "org": "feddericovonwernich",
+    "repo": "test-repo-stale",
+    "name": "test-repo-stale",
+    "team": "platform",
+    "links": [],
+    "openapi": null
+  },
+  "score": 82,
+  "rank": "gold",
+  "passed_checks": 9,
+  "total_checks": 12,
+  "commit_sha": "abc123",
+  "timestamp": "2025-11-16T18:58:54Z",
+  "checks_hash": "different-hash-to-mark-as-stale",
+  "checks_count": 11,
+  "installed": true,
+  "recent_contributors": [
+    {
+      "name": "Test User",
+      "email": "test@example.com",
+      "commit_count": 1,
+      "last_commit_date": "2025-11-16T15:28:44Z",
+      "last_commit_hash": "abc123"
+    }
+  ],
+  "checks": [
+    {
+      "check_id": "01-readme",
+      "name": "README Documentation",
+      "description": "Checks that the repository has a README file with meaningful content.",
+      "category": "Documentation",
+      "weight": 15,
+      "status": "pass",
+      "exit_code": 0,
+      "duration": 0,
+      "stdout": "README found",
+      "stderr": ""
+    },
+    {
+      "check_id": "02-license",
+      "name": "License File",
+      "description": "Checks that the repository has a LICENSE file.",
+      "category": "Configuration & Compliance",
+      "weight": 12,
+      "status": "pass",
+      "exit_code": 0,
+      "duration": 0,
+      "stdout": "LICENSE file found",
+      "stderr": ""
+    },
+    {
+      "check_id": "03-ci-config",
+      "name": "CI Configuration",
+      "description": "Checks that the repository has continuous integration configured.",
+      "category": "Testing & CI",
+      "weight": 18,
+      "status": "pass",
+      "exit_code": 0,
+      "duration": 0,
+      "stdout": "GitHub Actions found",
+      "stderr": ""
+    },
+    {
+      "check_id": "04-tests",
+      "name": "Test Coverage",
+      "description": "Checks that the repository has test files.",
+      "category": "Testing & CI",
+      "weight": 20,
+      "status": "fail",
+      "exit_code": 1,
+      "duration": 0,
+      "stdout": "",
+      "stderr": "No tests found"
+    },
+    {
+      "check_id": "05-scorecard-config",
+      "name": "Scorecard Configuration",
+      "description": "Checks that the repository has a .scorecard/config.yml file.",
+      "category": "Scorecards Setup",
+      "weight": 8,
+      "status": "pass",
+      "exit_code": 0,
+      "duration": 0,
+      "stdout": "Config found",
+      "stderr": ""
+    },
+    {
+      "check_id": "06-openapi-spec",
+      "name": "OpenAPI Specification",
+      "description": "Checks that the repository has an OpenAPI specification.",
+      "category": "Documentation",
+      "weight": 12,
+      "status": "pass",
+      "exit_code": 0,
+      "duration": 0,
+      "stdout": "OpenAPI spec found",
+      "stderr": ""
+    },
+    {
+      "check_id": "07-openapi-quality",
+      "name": "OpenAPI Quality",
+      "description": "Evaluates the quality of the OpenAPI specification.",
+      "category": "Documentation",
+      "weight": 10,
+      "status": "fail",
+      "exit_code": 1,
+      "duration": 0,
+      "stdout": "",
+      "stderr": "Quality score too low"
+    },
+    {
+      "check_id": "08-api-environments",
+      "name": "API Environment Configuration",
+      "description": "Checks that API services have environment configuration.",
+      "category": "Documentation",
+      "weight": 8,
+      "status": "fail",
+      "exit_code": 1,
+      "duration": 0,
+      "stdout": "",
+      "stderr": "No environments configured"
+    },
+    {
+      "check_id": "09-scorecard-badge",
+      "name": "Scorecard Badge",
+      "description": "Checks that the README displays scorecard badges.",
+      "category": "Scorecards Setup",
+      "weight": 5,
+      "status": "pass",
+      "exit_code": 0,
+      "duration": 0,
+      "stdout": "Badge found",
+      "stderr": ""
+    },
+    {
+      "check_id": "10-scorecard-config-quality",
+      "name": "Scorecard Config Quality",
+      "description": "Validates that config contains meaningful metadata.",
+      "category": "Scorecards Setup",
+      "weight": 7,
+      "status": "pass",
+      "exit_code": 0,
+      "duration": 0,
+      "stdout": "Config quality good",
+      "stderr": ""
+    },
+    {
+      "check_id": "11-codeowners",
+      "name": "Code Owners",
+      "description": "Checks for CODEOWNERS file.",
+      "category": "Configuration & Compliance",
+      "weight": 8,
+      "status": "pass",
+      "exit_code": 0,
+      "duration": 0,
+      "stdout": "CODEOWNERS found",
+      "stderr": ""
+    },
+    {
+      "check_id": "12-codeowners-quality",
+      "name": "Code Owners Quality",
+      "description": "Validates CODEOWNERS quality.",
+      "category": "Configuration & Compliance",
+      "weight": 5,
+      "status": "pass",
+      "exit_code": 0,
+      "duration": 0,
+      "stdout": "Quality good",
+      "stderr": ""
+    }
+  ]
+}

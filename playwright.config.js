@@ -17,8 +17,8 @@ const COVERAGE = process.env.COVERAGE === 'true';
 export default defineConfig({
   testDir: './tests/e2e',
 
-  // Maximum time one test can run for
-  timeout: 30 * 1000,
+  // Maximum time one test can run for (reduced from 30s for faster failure detection)
+  timeout: 15 * 1000,
 
   // Global timeout for the entire test run (20 minutes)
   globalTimeout: 20 * 60 * 1000,

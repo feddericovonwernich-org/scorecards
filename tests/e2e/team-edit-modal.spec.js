@@ -344,7 +344,7 @@ test.describe('Team Edit Modal', () => {
     });
 
     test('should show error toast on API failure', async ({ page }) => {
-      // Mock failed API response
+      // Mock failed API response BEFORE opening modal
       await page.route('**/api.github.com/repos/**/actions/workflows/update-team.yml/dispatches', async (route) => {
         await route.fulfill({
           status: 403,
@@ -363,7 +363,128 @@ test.describe('Team Edit Modal', () => {
       await page.locator(TEAM_EDIT_MODAL_SELECTOR).getByRole('button', { name: /Create Team/i }).click();
 
       // Should show error toast
-      await expect(page.getByText(/Failed|Error|not accessible/i)).toBeVisible();
+      await expect(page.getByText(/Failed to save/i)).toBeVisible({ timeout: 5000 });
+    });
+
+    test('should show error toast on 500 server error', async ({ page }) => {
+      // Mock 500 server error BEFORE opening modal
+      await page.route('**/api.github.com/repos/**/actions/workflows/update-team.yml/dispatches', async (route) => {
+        await route.fulfill({
+          status: 500,
+          body: JSON.stringify({ message: 'Internal Server Error' }),
+          headers: { 'Content-Type': 'application/json' },
+        });
+      });
+
+      await openCreateTeamModal(page);
+
+      // Fill required field
+      const nameInput = page.locator('input[placeholder="e.g., Platform Team"]');
+      await nameInput.fill('Test Team');
+
+      // Click create
+      await page.locator(TEAM_EDIT_MODAL_SELECTOR).getByRole('button', { name: /Create Team/i }).click();
+
+      // Should show error toast
+      await expect(page.getByText(/Failed to save/i)).toBeVisible({ timeout: 5000 });
+    });
+  });
+
+  test.describe('Edit Mode', () => {
+    test.beforeEach(async ({ page }) => {
+      await setGitHubPAT(page, mockPAT);
+      await mockWorkflowDispatch(page);
+    });
+
+    /**
+     * Open Team Edit Modal in edit mode by clicking Edit button in team modal
+     * @param {import('@playwright/test').Page} page
+     * @param {string} teamName
+     */
+    async function openEditTeamModal(page, teamName) {
+      await openTeamDashboard(page);
+
+      // Click on team card to open team modal
+      await page.locator('.team-card').filter({ hasText: teamName }).click();
+      await page.waitForSelector('#team-modal', { state: 'visible', timeout: 5000 });
+
+      // Click the Edit Team button in the team modal header
+      await page.locator('#team-modal').getByRole('button', { name: /Edit Team/i }).click();
+
+      // Wait for edit modal to appear
+      await page.waitForSelector('.modal', { state: 'visible', timeout: 5000 });
+    }
+
+    test('should open edit modal from team modal', async ({ page }) => {
+      await openEditTeamModal(page, 'Platform');
+
+      const modal = page.locator(TEAM_EDIT_MODAL_SELECTOR);
+      await expect(modal).toBeVisible();
+      await expect(modal).toContainText('Edit Team');
+    });
+
+    test('should pre-populate form with team name', async ({ page }) => {
+      await openEditTeamModal(page, 'Platform');
+
+      const nameInput = page.locator('input[placeholder="e.g., Platform Team"]');
+      await expect(nameInput).toHaveValue('Platform');
+    });
+
+    test('should pre-populate form with team description', async ({ page }) => {
+      await openEditTeamModal(page, 'Platform');
+
+      const descriptionInput = page.locator('textarea');
+      await expect(descriptionInput).toHaveValue('Platform engineering team');
+    });
+
+    test('should show existing aliases', async ({ page }) => {
+      await openEditTeamModal(page, 'Platform');
+
+      const modal = page.locator(TEAM_EDIT_MODAL_SELECTOR);
+      // Platform team has aliases: ["plat", "infra"]
+      await expect(modal).toContainText('plat');
+      await expect(modal).toContainText('infra');
+    });
+
+    test('should have disabled Team ID field in edit mode', async ({ page }) => {
+      await openEditTeamModal(page, 'Platform');
+
+      const idInput = page.locator('input[placeholder="auto-generated-from-name"]');
+      await expect(idInput).toBeDisabled();
+      await expect(idInput).toHaveValue('platform');
+    });
+
+    test('should pre-populate slack channel', async ({ page }) => {
+      await openEditTeamModal(page, 'Platform');
+
+      // Platform team has slack_channel: "#platform-eng"
+      // Find the slack input by its placeholder
+      const slackInput = page.locator('input[placeholder="#team-channel"]');
+      await expect(slackInput).toHaveValue('#platform-eng');
+    });
+
+    test('should show Save Changes button instead of Create Team', async ({ page }) => {
+      await openEditTeamModal(page, 'Platform');
+
+      const modal = page.locator(TEAM_EDIT_MODAL_SELECTOR);
+      await expect(modal.getByRole('button', { name: /Save Changes/i })).toBeVisible();
+      // Should not show Create Team button
+      await expect(modal.getByRole('button', { name: /Create Team/i })).not.toBeVisible();
+    });
+
+    test('should submit update successfully', async ({ page }) => {
+      await openEditTeamModal(page, 'Platform');
+
+      // Modify the name
+      const nameInput = page.locator('input[placeholder="e.g., Platform Team"]');
+      await nameInput.clear();
+      await nameInput.fill('Platform Updated');
+
+      // Click save
+      await page.locator(TEAM_EDIT_MODAL_SELECTOR).getByRole('button', { name: /Save Changes/i }).click();
+
+      // Should show success message
+      await expect(page.getByText(/workflow triggered|Changes will appear/i)).toBeVisible();
     });
   });
 });

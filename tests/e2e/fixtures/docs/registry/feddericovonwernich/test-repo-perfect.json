@@ -1,0 +1,30 @@
+{
+  "org": "feddericovonwernich",
+  "repo": "test-repo-perfect",
+  "name": "test-repo-perfect",
+  "team": {"primary": "platform", "all": ["platform"], "source": "codeowners", "last_discovered": "2025-11-16T18:58:54Z"},
+  "score": 76,
+  "rank": "gold",
+  "last_updated": "2025-11-16T18:58:54Z",
+  "has_api": false,
+  "checks_hash": "df8169736e22602a07ea3957f0f89eef5cd6a78cb083df17bb1cfbb086f17463",
+  "checks_count": 11,
+  "installed": false,
+  "check_results": {
+    "01-readme": "pass",
+    "02-license": "pass",
+    "03-ci-config": "pass",
+    "04-tests": "pass",
+    "05-scorecard-config": "pass",
+    "06-openapi-spec": "pass",
+    "07-openapi-quality": "pass",
+    "08-api-environments": "fail",
+    "09-scorecard-badge": "pass",
+    "10-scorecard-config-quality": "pass",
+    "11-codeowners": "pass",
+    "12-codeowners-quality": "pass"
+  },
+  "excluded_checks": [
+    {"check": "08-api-environments", "reason": "Uses different environment strategy"}
+  ]
+}

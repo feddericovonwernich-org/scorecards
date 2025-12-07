@@ -5,6 +5,8 @@
       "name": "Platform",
       "description": "Platform engineering team",
       "aliases": ["plat", "infra"],
+      "github_org": "feddericovonwernich",
+      "github_slug": "platform",
       "metadata": {
         "slack_channel": "#platform-eng",
         "oncall_rotation": "platform-oncall"

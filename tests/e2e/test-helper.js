@@ -446,8 +446,8 @@ export async function clickServiceModalTab(page, tabName) {
   const modal = page.locator('#service-modal');
   const tab = modal.getByRole('button', { name: tabName });
   await tab.click();
-  // Wait for tab content to be visible
-  await expect(modal.locator('.tab-content, [class*="tab-content"]')).toBeVisible();
+  // Wait for tab content to be visible (use .active to avoid matching nested tab-content)
+  await expect(modal.locator('.tab-content.active')).toBeVisible();
 }
 
 /**
@@ -459,8 +459,8 @@ export async function clickTeamModalTab(page, tabName) {
   const modal = page.locator('#team-modal');
   const tab = modal.getByRole('button', { name: tabName, exact: true });
   await tab.click();
-  // Wait for tab content to be visible
-  await expect(modal.locator('.tab-content, [class*="tab-content"]')).toBeVisible();
+  // Wait for tab content to be visible (use .active to avoid matching nested tab-content)
+  await expect(modal.locator('.tab-content.active')).toBeVisible();
 }
 
 /**

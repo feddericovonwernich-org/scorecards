@@ -150,9 +150,9 @@
     --color-category-header-bg: #F9FAFB;
     --color-category-header-hover: #F4F4F5;
     --color-category-stats-pass-bg: rgba(16, 185, 129, 0.1);
-    --color-category-stats-pass-text: #059669;
+    --color-category-stats-pass-text: #047857;  /* Darker for WCAG AA contrast */
     --color-category-stats-fail-bg: rgba(245, 158, 11, 0.1);
-    --color-category-stats-fail-text: #D97706;
+    --color-category-stats-fail-text: #92400E;  /* Darker for WCAG AA contrast */
 
     /* Button State Colors (for JS usage) */
     --color-success-btn: #10B981;
