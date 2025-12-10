@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set -e
 
 # Scorecards Installation Script
 # This script sets up a new scorecards instance in your GitHub organization or account
@@ -13,12 +13,32 @@ set -euo pipefail
 #   bash scripts/install.sh
 #
 # Environment variables:
-#   GITHUB_TOKEN           - Required: GitHub PAT with repo and workflow permissions
-#   SCORECARDS_SOURCE_REPO - Optional: Override the template repository URL
-#                            (defaults to https://github.com/feddericovonwernich/scorecards.git)
-#   SCORECARDS_TARGET_REPO - Optional: Target repository (e.g., "org/repo") for non-interactive mode
-#   SCORECARDS_REPO_PRIVATE - Optional: "true" or "false" for repository visibility (default: prompt)
-#   SCORECARDS_AUTO_CONFIRM - Optional: "true" to skip confirmations (non-interactive mode)
+#   GITHUB_TOKEN              - Required: GitHub PAT with repo and workflow permissions
+#   SCORECARDS_SOURCE_REPO    - Optional: Override the template repository URL
+#                               (defaults to https://github.com/feddericovonwernich/scorecards.git)
+#
+# Non-Interactive Mode Variables (for CI/automation):
+#   SCORECARDS_TARGET_REPO    - Target repository in 'org/repo' format
+#   SCORECARDS_AUTO_CONFIRM   - Skip all confirmation prompts (true/false)
+#   SCORECARDS_REPO_PRIVATE   - Create as private repository (true/false)
+#   SCORECARDS_USE_EXISTING   - Use existing repository if found (true/false)
+#
+# Usage Examples:
+#   Interactive (default):
+#     export GITHUB_TOKEN=ghp_xxx
+#     bash scripts/install.sh
+#
+#   Non-Interactive (CI/automation):
+#     export GITHUB_TOKEN=ghp_xxx
+#     export SCORECARDS_TARGET_REPO=my-org/scorecards
+#     export SCORECARDS_AUTO_CONFIRM=true
+#     export SCORECARDS_REPO_PRIVATE=false
+#     bash scripts/install.sh
+#
+#   One-liner remote install:
+#     export GITHUB_TOKEN=ghp_xxx SCORECARDS_TARGET_REPO=my-org/scorecards \
+#            SCORECARDS_AUTO_CONFIRM=true SCORECARDS_REPO_PRIVATE=false
+#     curl -fsSL https://raw.githubusercontent.com/.../install.sh | bash
 
 # Colors for output (use $'...' for actual escape characters)
 RED=$'\033[0;31m'
@@ -51,6 +71,43 @@ print_warning() {
 print_info() {
     echo -e "${BLUE}ℹ $1${NC}"
 }
+
+# Validation helper for boolean environment variables
+validate_boolean_env() {
+    local var_name="$1"
+    local var_value="${2:-}"
+
+    if [ -n "$var_value" ] && [ "$var_value" != "true" ] && [ "$var_value" != "false" ]; then
+        print_error "Invalid value for $var_name: '$var_value'"
+        echo "Expected: 'true' or 'false' (as strings)"
+        echo "Got: '$var_value'"
+        exit 1
+    fi
+}
+
+# Validate environment variables in non-interactive mode
+if [ "${SCORECARDS_AUTO_CONFIRM:-}" = "true" ]; then
+    print_info "Non-interactive mode enabled (SCORECARDS_AUTO_CONFIRM=true)"
+
+    # Validate required vars for non-interactive mode
+    if [ -z "${SCORECARDS_TARGET_REPO:-}" ]; then
+        print_error "SCORECARDS_TARGET_REPO is required when SCORECARDS_AUTO_CONFIRM=true"
+        echo "Please set: export SCORECARDS_TARGET_REPO=org/repo"
+        exit 1
+    fi
+
+    # Validate repository format
+    if [[ ! "$SCORECARDS_TARGET_REPO" =~ ^[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+$ ]]; then
+        print_error "Invalid SCORECARDS_TARGET_REPO format: '$SCORECARDS_TARGET_REPO'"
+        echo "Expected format: 'org/repo' or 'username/repo'"
+        exit 1
+    fi
+
+    # Validate boolean vars
+    validate_boolean_env "SCORECARDS_AUTO_CONFIRM" "${SCORECARDS_AUTO_CONFIRM:-}"
+    validate_boolean_env "SCORECARDS_REPO_PRIVATE" "${SCORECARDS_REPO_PRIVATE:-}"
+    validate_boolean_env "SCORECARDS_USE_EXISTING" "${SCORECARDS_USE_EXISTING:-}"
+fi
 
 # Step 1: Check prerequisites
 print_header "Step 1: Checking Prerequisites"
@@ -98,14 +155,15 @@ print_success "GitHub token is valid"
 GITHUB_USER=$(gh api user -q .login)
 print_success "Authenticated as: $GITHUB_USER"
 
-# Step 2: Repository Setup
+# Step 2: Interactive setup
 print_header "Step 2: Repository Setup"
 
-# Check for non-interactive mode
 if [ -n "${SCORECARDS_TARGET_REPO:-}" ]; then
+    # Use environment variable
     REPO_INPUT="$SCORECARDS_TARGET_REPO"
     print_info "Using target repository from environment: $REPO_INPUT"
 else
+    # Interactive prompt
     echo "Enter the repository name for your scorecards instance."
     echo "Format: 'org/repo' or just 'repo' (for personal account)"
     echo ""
@@ -124,9 +182,9 @@ fi
 FULL_REPO="$REPO_OWNER/$REPO_NAME"
 print_info "Target repository: $FULL_REPO"
 
-# Confirm with user (skip if auto-confirm is set)
+# Confirm with user
 if [ "${SCORECARDS_AUTO_CONFIRM:-}" = "true" ]; then
-    print_info "Auto-confirm enabled, skipping confirmation"
+    print_info "Auto-confirm enabled, proceeding with: $FULL_REPO"
 else
     echo ""
     read -p "Is this correct? (y/n) " -n 1 -r < /dev/tty
@@ -143,9 +201,27 @@ print_header "Step 3: Repository Validation"
 print_info "Checking if repository exists..."
 if gh repo view "$FULL_REPO" &> /dev/null; then
     print_warning "Repository $FULL_REPO already exists"
-    if [ "${SCORECARDS_AUTO_CONFIRM:-}" = "true" ]; then
+
+    # Determine whether to use existing repository
+    if [ -n "${SCORECARDS_USE_EXISTING:-}" ]; then
+        # Explicit environment variable takes precedence
+        if [ "${SCORECARDS_USE_EXISTING}" = "true" ]; then
+            print_info "Using existing repository (SCORECARDS_USE_EXISTING=true)"
+            REPO_EXISTS=true
+        else
+            print_error "Cannot proceed: Repository exists but SCORECARDS_USE_EXISTING=false"
+            echo "Either:"
+            echo "  - Set SCORECARDS_USE_EXISTING=true to use the existing repository"
+            echo "  - Use a different repository name"
+            echo "  - Manually delete the existing repository"
+            exit 1
+        fi
+    elif [ "${SCORECARDS_AUTO_CONFIRM:-}" = "true" ]; then
+        # Auto-confirm defaults to using existing repository
         print_info "Auto-confirm enabled, using existing repository"
+        REPO_EXISTS=true
     else
+        # Interactive prompt
         echo ""
         read -p "Do you want to use this existing repository? (y/n) " -n 1 -r < /dev/tty
         echo ""
@@ -153,21 +229,27 @@ if gh repo view "$FULL_REPO" &> /dev/null; then
             print_error "Installation cancelled"
             exit 1
         fi
+        REPO_EXISTS=true
     fi
-    REPO_EXISTS=true
 else
     print_info "Repository does not exist. Creating it..."
 
     # Determine visibility
     if [ -n "${SCORECARDS_REPO_PRIVATE:-}" ]; then
+        # Use environment variable
         if [ "${SCORECARDS_REPO_PRIVATE}" = "true" ]; then
             VISIBILITY="--private"
-            print_info "Using private visibility from environment"
+            print_info "Creating private repository (SCORECARDS_REPO_PRIVATE=true)"
         else
             VISIBILITY="--public"
-            print_info "Using public visibility from environment"
+            print_info "Creating public repository (SCORECARDS_REPO_PRIVATE=false)"
         fi
+    elif [ "${SCORECARDS_AUTO_CONFIRM:-}" = "true" ]; then
+        # Auto-confirm defaults to public
+        VISIBILITY="--public"
+        print_info "Auto-confirm enabled, creating public repository"
     else
+        # Interactive prompt
         echo ""
         read -p "Should this be a private repository? (y/n) " -n 1 -r < /dev/tty
         echo ""
@@ -517,22 +599,7 @@ PAGES_URL="https://$REPO_OWNER.github.io/$REPO_NAME"
 print_info "Pages URL: $PAGES_URL"
 print_warning "Note: It may take a few minutes for Pages to deploy"
 
-# Step 9: Trigger catalog UI build
-print_header "Step 9: Building Catalog UI"
-
-print_info "Triggering catalog UI build workflow..."
-if gh workflow run sync-docs.yml \
-    --repo "$FULL_REPO" \
-    --ref main 2>/dev/null; then
-    print_success "Catalog build workflow triggered"
-    print_info "The workflow will compile TypeScript and deploy the UI"
-    print_warning "Note: It may take 2-5 minutes for the UI to be ready"
-else
-    print_warning "Could not trigger build workflow automatically"
-    print_info "Manual fix: Go to Actions tab and run 'Sync Catalog UI to Catalog Branch'"
-fi
-
-# Step 10: Success message
+# Step 9: Success message
 print_header "Installation Complete!"
 
 cat << EOF
