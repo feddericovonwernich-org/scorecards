@@ -7,7 +7,7 @@ on:
         description: 'Central scorecards repository (owner/repo)'
         required: false
         type: string
-        default: 'feddericovonwernich-org/scorecards'
+        default: 'feddericovonwernich/scorecards'
       scorecards-branch:
         description: 'Branch to commit results to in central repo'
         required: false
@@ -53,9 +53,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.github-token }}
         run: |
-          # Search for PRs with the scorecards-install label (including closed ones)
+          # Search for OPEN PRs with the scorecards-install label
+          # MERGED/CLOSED PRs don't block new installation attempts
           # By default, gh pr list sorts by creation date descending (newest first)
-          pr_data=$(gh pr list --label "scorecards-install" --state all --json number,state,title --limit 1)
+          pr_data=$(gh pr list --label "scorecards-install" --state open --json number,state,title --limit 1)
 
           if [ "$pr_data" = "[]" ]; then
             echo "exists=false" >> $GITHUB_OUTPUT
@@ -106,7 +107,7 @@ jobs:
           mkdir -p .github/workflows
 
           # Copy template and customize it
-          sed -e "s|feddericovonwernich-org/scorecards|${{ inputs.scorecards-repo }}|g" \
+          sed -e "s|feddericovonwernich/scorecards|${{ inputs.scorecards-repo }}|g" \
               -e "s|scorecards-branch: 'catalog'|scorecards-branch: '${{ inputs.scorecards-branch }}'|g" \
               .scorecards-tmp/documentation/examples/scorecard-workflow-template.yml > .github/workflows/scorecards.yml
 
@@ -271,7 +272,7 @@ jobs:
       - name: Run Scorecards Action
         if: steps.cache.outputs.cache-hit != 'true'
         id: scorecards
-        uses: feddericovonwernich-org/scorecards/action@main
+        uses: feddericovonwernich/scorecards/action@main
         with:
           github-token: ${{ secrets.scorecards-catalog-token }}
           scorecards-repo: ${{ inputs.scorecards-repo }}
