@@ -289,6 +289,8 @@ export async function switchToTeamsView(page) {
   await page.locator('[data-view="teams"]').click();
   // Wait for teams grid to be visible
   await expect(page.locator('.teams-grid')).toBeVisible();
+  // Wait for team cards to load (teams data loads asynchronously)
+  await page.waitForSelector('.team-card', { state: 'visible', timeout: 10000 });
 }
 
 /**

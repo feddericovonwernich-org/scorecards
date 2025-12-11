@@ -52,7 +52,7 @@ async function closeTeamEditModal(page) {
  * @param {Object} options
  */
 async function mockWorkflowDispatch(page, { status = 204 } = {}) {
-  await page.route('**/api.github.com/repos/**/actions/workflows/update-team.yml/dispatches', async (route) => {
+  await page.route('**/api.github.com/repos/**/actions/workflows/update-team-registry.yml/dispatches', async (route) => {
     await route.fulfill({
       status,
       body: '',
