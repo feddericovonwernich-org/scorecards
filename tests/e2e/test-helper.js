@@ -257,6 +257,8 @@ export async function searchServices(page, query) {
   // and the services grid is still visible (filter complete)
   await expect(searchInput).toHaveValue(query);
   await expect(page.locator('.services-grid')).toBeVisible();
+  // Wait for debounce (React controls have 300ms debounce on search)
+  await page.waitForTimeout(350);
 }
 
 /**
@@ -269,6 +271,8 @@ export async function clearSearch(page) {
   // Wait for filter to be cleared and services grid to be visible
   await expect(searchInput).toHaveValue('');
   await expect(page.locator('.services-grid')).toBeVisible();
+  // Wait for debounce (React controls have 300ms debounce on search)
+  await page.waitForTimeout(350);
 }
 
 /**
@@ -291,6 +295,33 @@ export async function switchToTeamsView(page) {
   await expect(page.locator('.teams-grid')).toBeVisible();
   // Wait for team cards to load (teams data loads asynchronously)
   await page.waitForSelector('.team-card', { state: 'visible', timeout: 10000 });
+}
+
+/**
+ * Search for teams
+ * @param {import('@playwright/test').Page} page
+ * @param {string} query
+ */
+export async function searchTeams(page, query) {
+  const searchInput = page.getByRole('textbox', { name: /search teams/i });
+  await searchInput.fill(query);
+  // Wait for filter to be applied by checking that the input value is set
+  await expect(searchInput).toHaveValue(query);
+  // Wait for debounce (React controls have 300ms debounce on search)
+  await page.waitForTimeout(350);
+}
+
+/**
+ * Clear teams search
+ * @param {import('@playwright/test').Page} page
+ */
+export async function clearTeamsSearch(page) {
+  const searchInput = page.getByRole('textbox', { name: /search teams/i });
+  await searchInput.clear();
+  // Wait for filter to be cleared
+  await expect(searchInput).toHaveValue('');
+  // Wait for debounce (React controls have 300ms debounce on search)
+  await page.waitForTimeout(350);
 }
 
 /**
