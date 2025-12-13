@@ -1,0 +1,10 @@
+{
+  "id": "integration-test-team",
+  "name": "Integration Test Team",
+  "description": "Temporary team for integration testing",
+  "aliases": ["test-team", "e2e-test"],
+  "metadata": {
+    "slack_channel": "#test-channel",
+    "oncall_rotation": "test-oncall"
+  }
+}
