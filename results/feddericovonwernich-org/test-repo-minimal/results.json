@@ -9,23 +9,18 @@
         "platform"
       ],
       "source": "codeowners",
-      "last_discovered": "2025-12-13T18:37:35Z"
+      "last_discovered": "2025-12-13T18:39:43Z"
     },
     "links": [],
     "openapi": null
   },
-  "score": 72,
+  "score": 65,
   "rank": "silver",
   "passed_checks": 7,
-  "total_checks": 11,
-  "excluded_count": 1,
-  "excluded_checks": [
-    {
-      "check": "06-openapi-spec",
-      "reason": "Test exclusion - verifying check exclusion feature"
-    }
-  ],
-  "timestamp": "2025-12-13T18:38:31Z",
+  "total_checks": 12,
+  "excluded_count": 0,
+  "excluded_checks": [],
+  "timestamp": "2025-12-13T18:40:36Z",
   "checks_hash": "01365f82dcdc35208f679ceeac063df7b35a9dbbd4f47dabad09d840500e711d",
   "checks_count": 13,
   "installed": true,
@@ -34,8 +29,8 @@
       "name": "Federico von Wernich",
       "email": "feddericokz @gmail.com",
       "commit_count": 1,
-      "last_commit_date": "2025-12-13T15:37:25Z",
-      "last_commit_hash": "d97b5cd"
+      "last_commit_date": "2025-12-13T15:39:33Z",
+      "last_commit_hash": "e5c5217"
     }
   ],
   "checks": [
@@ -96,7 +91,7 @@
       "status": "pass",
       "exit_code": 0,
       "duration": 0,
-      "stdout": "Scorecard config found: .scorecard/config.yml (190 bytes)\n",
+      "stdout": "Scorecard config found: .scorecard/config.yml (78 bytes)\n",
       "stderr": ""
     },
     {
@@ -105,11 +100,11 @@
       "description": "Checks that the repository has an OpenAPI/Swagger specification file and that it is valid. Validates syntax and structure of API documentation.",
       "category": "Documentation",
       "weight": 12,
-      "status": "excluded",
-      "exit_code": null,
+      "status": "fail",
+      "exit_code": 1,
       "duration": 0,
       "stdout": "",
-      "stderr": ""
+      "stderr": "No OpenAPI specification file found in common locations\nLooked for: openapi.{yaml,yml,json}, swagger.{yaml,yml,json}\nIn directories: root, /api, /docs, /spec, /.openapi\n"
     },
     {
       "check_id": "07-openapi-quality",
@@ -155,7 +150,7 @@
       "weight": 7,
       "status": "fail",
       "exit_code": 1,
-      "duration": 0,
+      "duration": 1,
       "stdout": "",
       "stderr": "Scorecard config exists but lacks meaningful content:\n\n  • team field is empty or missing\n  • description field is empty or missing\n\nBoth team and description fields must be filled to help catalog users\nunderstand what your service does and who maintains it.\n\nExample config.yml:\n  service:\n    name: \"User Authentication API\"\n    team: \"Platform Security Team\"\n    description: \"Handles user authentication, authorization, and session management\"\n    links:\n      - name: \"Documentation\"\n        url: \"https://wiki.example.com/auth-api\"\n"
     },
