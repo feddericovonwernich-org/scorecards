@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Explorer - Scorecards</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <script>
+        // Apply theme immediately to prevent flash
+        (function() {
+            const THEME_KEY = 'theme';
+            const savedTheme = localStorage.getItem(THEME_KEY);
+            const osPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (osPrefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <link rel="stylesheet" type="text/css" href="css/base/variables.css">
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui.css">
+</head>
+<body>
+    <div id="api-explorer-root"></div>
+    <script type="module" src="src/pages/ApiExplorer/index.tsx"></script>
+</body>
+</html>
