@@ -374,7 +374,7 @@ export function ServiceGrid({
   }
 
   return (
-    <div ref={gridRef} style={{ display: 'contents' }}>
+    <div style={{ display: 'contents' }}>
       {services.map((service) => {
         const isStale = isServiceStale?.(service, checksHash) ?? false;
         return (
