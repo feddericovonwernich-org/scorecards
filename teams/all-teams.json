@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generated_at": "2025-12-13T18:49:48Z",
+  "generated_at": "2025-12-13T18:51:05Z",
   "teams": {
     "backend": {
       "id": "backend",
@@ -46,6 +46,26 @@
         "installed_count": 1
       }
     },
+    "integration-test-team": {
+      "id": "integration-test-team",
+      "name": "Integration Test Team",
+      "description": "Temporary team for integration testing",
+      "aliases": [
+        "test-team",
+        "e2e-test"
+      ],
+      "metadata": {
+        "slack_channel": "#test-channel",
+        "oncall_rotation": "test-oncall"
+      },
+      "statistics": {
+        "service_count": 0,
+        "average_score": 0,
+        "rank_distribution": {},
+        "stale_count": 0,
+        "installed_count": 0
+      }
+    },
     "platform": {
       "id": "platform",
       "name": "platform",
@@ -69,6 +89,9 @@
       }
     }
   },
-  "count": 3,
-  "aliases": {}
+  "count": 4,
+  "aliases": {
+    "test-team": "integration-test-team",
+    "e2e-test": "integration-test-team"
+  }
 }
