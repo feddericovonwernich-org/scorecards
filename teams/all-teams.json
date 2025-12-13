@@ -1,7 +1,74 @@
 {
   "version": "1.0.0",
-  "generated_at": "2025-12-13T18:20:07Z",
-  "teams": {},
-  "count": 0,
+  "generated_at": "2025-12-13T18:22:58Z",
+  "teams": {
+    "backend": {
+      "id": "backend",
+      "name": "backend",
+      "description": null,
+      "aliases": [],
+      "metadata": {},
+      "github_org": "feddericovonwernich-org",
+      "github_slug": "backend",
+      "auto_created": "2025-12-13T18:22:57Z",
+      "statistics": {
+        "service_count": 3,
+        "average_score": 61.3,
+        "rank_distribution": {
+          "platinum": 0,
+          "gold": 0,
+          "silver": 2,
+          "bronze": 1
+        },
+        "stale_count": 0,
+        "installed_count": 0
+      }
+    },
+    "frontend": {
+      "id": "frontend",
+      "name": "frontend",
+      "description": null,
+      "aliases": [],
+      "metadata": {},
+      "github_org": "feddericovonwernich-org",
+      "github_slug": "frontend",
+      "auto_created": "2025-12-13T18:22:57Z",
+      "statistics": {
+        "service_count": 1,
+        "average_score": 68.0,
+        "rank_distribution": {
+          "platinum": 0,
+          "gold": 0,
+          "silver": 1,
+          "bronze": 0
+        },
+        "stale_count": 0,
+        "installed_count": 0
+      }
+    },
+    "platform": {
+      "id": "platform",
+      "name": "platform",
+      "description": null,
+      "aliases": [],
+      "metadata": {},
+      "github_org": "feddericovonwernich-org",
+      "github_slug": "platform",
+      "auto_created": "2025-12-13T18:22:57Z",
+      "statistics": {
+        "service_count": 3,
+        "average_score": 68.6,
+        "rank_distribution": {
+          "platinum": 0,
+          "gold": 1,
+          "silver": 2,
+          "bronze": 0
+        },
+        "stale_count": 0,
+        "installed_count": 0
+      }
+    }
+  },
+  "count": 3,
   "aliases": {}
 }
