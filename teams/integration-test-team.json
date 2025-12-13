@@ -1,10 +1,11 @@
 {
   "id": "integration-test-team",
   "name": "Integration Test Team",
-  "description": "Temporary team for integration testing",
+  "description": "Updated description for testing",
   "aliases": ["test-team", "e2e-test"],
   "metadata": {
-    "slack_channel": "#test-channel",
+    "slack_channel": "#updated-channel",
     "oncall_rotation": "test-oncall"
-  }
+  },
+  "last_modified": "2025-12-13T15:45:00Z"
 }
