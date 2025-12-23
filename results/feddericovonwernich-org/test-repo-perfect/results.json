@@ -9,7 +9,7 @@
         "platform"
       ],
       "source": "codeowners",
-      "last_discovered": "2025-12-22T02:09:54Z"
+      "last_discovered": "2025-12-23T02:05:18Z"
     },
     "links": [],
     "openapi": {
@@ -36,7 +36,7 @@
   "total_checks": 12,
   "excluded_count": 0,
   "excluded_checks": [],
-  "timestamp": "2025-12-22T02:11:14Z",
+  "timestamp": "2025-12-23T02:06:17Z",
   "checks_hash": "01365f82dcdc35208f679ceeac063df7b35a9dbbd4f47dabad09d840500e711d",
   "checks_count": 13,
   "installed": true,
@@ -130,7 +130,7 @@
       "weight": 10,
       "status": "pass",
       "exit_code": 0,
-      "duration": 0,
+      "duration": 1,
       "stdout": "OpenAPI Quality Score: 98/100\n\nQuality Metrics:\n  Info: ✓ description, ✓ contact, ✓ license\n  Operations: 4 total\n    - 4/4 (100%) with descriptions\n    - 4/4 (100%) with tags\n    - 2/4 (50%) with examples\n  Parameters: 3/3 (100%) with descriptions\n  Responses: 9/9 (100%) with descriptions\n  Schemas: 4/4 (100%) with descriptions\n  Security: ✓ defined, ✓ applied\n\nQuality score meets threshold (60+)\n",
       "stderr": ""
     },
@@ -142,7 +142,7 @@
       "weight": 8,
       "status": "pass",
       "exit_code": 0,
-      "duration": 1,
+      "duration": 0,
       "stdout": "API environment configuration found for OpenAPI spec: openapi.yaml\nConfigured environments: 3\n  • development: http://localhost:8000 - Development server\n  • staging: https://staging-api.example.com/v1 - Staging server\n  • production: https://api.example.com/v1 - Production server\nSpec file reference: openapi.yaml\n",
       "stderr": ""
     },
