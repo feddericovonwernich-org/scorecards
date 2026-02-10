@@ -9,7 +9,7 @@
         "backend"
       ],
       "source": "codeowners",
-      "last_discovered": "2026-02-09T02:52:04Z"
+      "last_discovered": "2026-02-10T03:16:41Z"
     },
     "links": [],
     "openapi": null
@@ -20,7 +20,7 @@
   "total_checks": 12,
   "excluded_count": 0,
   "excluded_checks": [],
-  "timestamp": "2026-02-09T02:53:03Z",
+  "timestamp": "2026-02-10T03:17:35Z",
   "checks_hash": "01365f82dcdc35208f679ceeac063df7b35a9dbbd4f47dabad09d840500e711d",
   "checks_count": 13,
   "installed": true,
@@ -66,7 +66,7 @@
       "weight": 18,
       "status": "pass",
       "exit_code": 0,
-      "duration": 0,
+      "duration": 1,
       "stdout": "GitHub Actions: 2 workflow(s) (ci.yml, scorecards.yml); Other CI: .travis.yml, .gitlab-ci.yml\n",
       "stderr": ""
     },
