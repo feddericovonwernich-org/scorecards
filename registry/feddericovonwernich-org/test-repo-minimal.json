@@ -8,13 +8,13 @@
       "platform"
     ],
     "source": "codeowners",
-    "last_discovered": "2026-02-11T01:57:07Z",
+    "last_discovered": "2026-02-12T01:50:17Z",
     "github_org": "feddericovonwernich-org",
     "github_slug": "platform"
   },
   "score": 65,
   "rank": "silver",
-  "last_updated": "2026-02-11T01:58:06Z",
+  "last_updated": "2026-02-12T01:51:18Z",
   "has_api": false,
   "checks_hash": "01365f82dcdc35208f679ceeac063df7b35a9dbbd4f47dabad09d840500e711d",
   "checks_count": 13,
